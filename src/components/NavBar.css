@@ -3,10 +3,11 @@
     background-color: #94D35C;
     justify-content: space-evenly;
     width: 100vw;
-    font-size: 1.5rem;
     padding: 10px;
 }
 
-button {
+.nav-button {
     background-color: #94D35C;
+    font-weight: 600;
+    font-size: 1.2rem;
 }

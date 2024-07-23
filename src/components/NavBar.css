@@ -1,0 +1,12 @@
+.nav-container {
+    display: flex;
+    background-color: #94D35C;
+    justify-content: space-evenly;
+    width: 100vw;
+    font-size: 1.5rem;
+    padding: 10px;
+}
+
+button {
+    background-color: #94D35C;
+}

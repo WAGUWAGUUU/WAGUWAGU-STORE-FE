@@ -59,3 +59,52 @@ export const getStoreByOwnerId = async (ownerId) => {
     // console.error("Error in getStoreByOwnerId", error);
   }
 };
+
+export const changeMenuPossible = async (menuId) => {
+  try {
+    const res = await storeApi(`/api/v1/menu/${menuId}/menu-possible`, "get");
+    return res.data;
+  } catch (error) {
+    // console.error("Error in changeMenuPossible", error);
+  }
+};
+
+export const deleteMenu = async (menuId) => {
+  try {
+    const res = await storeApi(`/api/v1/menu/${menuId}`, "delete");
+    return res.data;
+  } catch (error) {
+    // console.error("Error in deleteMenu", error);
+  }
+};
+
+export const updateMenu = async (menuId, type, data) => {
+  try {
+    const res = await storeApi(
+      `/api/v1/menu/${menuId}?type=${type}`,
+      "put",
+      data
+    );
+    return res.data;
+  } catch (error) {
+    // console.error("Error in updateMenu", error);
+  }
+};
+
+export const updateOption = async (id, data) => {
+  try {
+    const res = await storeApi(`/api/v1/options/${id}`, "put", data);
+    return res.data;
+  } catch (error) {
+    // console.error("Error in updateOption", error);
+  }
+};
+
+export const deleteOption = async (id) => {
+  try {
+    const res = await storeApi(`/api/v1/options/${id}`, "delete");
+    return res.data;
+  } catch (error) {
+    // console.error("Error in deleteOption", error);
+  }
+};

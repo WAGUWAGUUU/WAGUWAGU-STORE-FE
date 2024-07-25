@@ -5,6 +5,8 @@ import { getStoreByOwnerId } from "../config/storeApi";
 const MyMenuPage = () => {
   const [store, setStore] = useState(null);
   const [menu, setMenu] = useState(null);
+  const [onMenuInfoModal, setOnMenuInfoModal] = useState(false);
+
   const getStoreByOwnerIdApi = async () => {
     try {
       const response = await getStoreByOwnerId(3613397573);
@@ -20,8 +22,17 @@ const MyMenuPage = () => {
 
   return (
     <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-      <ShowMenuList store={store} setMenu={setMenu} />
-      <ShowMenuDetail menu={menu} />
+      <ShowMenuList
+        store={store}
+        setMenu={setMenu}
+        onMenuInfoModal={onMenuInfoModal}
+      />
+      <ShowMenuDetail
+        menu={menu}
+        setMenu={setMenu}
+        onMenuInfoModal={onMenuInfoModal}
+        setOnMenuInfoModal={setOnMenuInfoModal}
+      />
     </div>
   );
 };

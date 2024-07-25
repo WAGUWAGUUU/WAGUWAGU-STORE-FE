@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
 import "./ShowMenuDetail.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { getMenuByMenuId, getOptionListsByMenuId } from "../config/storeApi";
+import {
+  changeMenuPossible,
+  deleteMenu,
+  deleteOption,
+  getMenuByMenuId,
+  getOptionListsByMenuId,
+} from "../config/storeApi";
 import tteokbokki from "./../assets/tteokbokki.png";
-const ShowMenuDetail = ({ menu }) => {
-  //   const { menuId } = useParams();
+import StoreInfoModal from "./MenuInfoModal";
+import MenuInfoModal from "./MenuInfoModal";
+import { createPortal } from "react-dom";
+import OptionInfoModal from "./OptionInfoModal";
+const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
   const [menuInfo, setMenuInfo] = useState({});
   const [optionLists, setOptionLists] = useState([]);
-  const navigator = useNavigate();
-
+  const [onOptionInfoModal, setOnOptionInfoModal] = useState(false);
+  const [onOptionDeleted, setOnOptionDeleted] = useState(false);
   const getMenuByMenuIdApi = async () => {
     try {
       const response = await getMenuByMenuId(menu);
@@ -28,15 +37,71 @@ const ShowMenuDetail = ({ menu }) => {
     }
   };
 
+  const changeMenuPossibleApi = async () => {
+    try {
+      const response = await changeMenuPossible(menu);
+      window.location.reload();
+    } catch {
+      console.log("error in changeMenuPossibleApi");
+    }
+  };
+
+  const deleteMenuApi = async () => {
+    try {
+      const result = confirm("진짜 삭제하시겠습니까?");
+      if (result) {
+        await deleteMenu(menu);
+        window.location.reload();
+      }
+    } catch {
+      console.log("error in deleteMenuApi");
+    }
+  };
+
+  const deleteOptionApi = async (optionId) => {
+    try {
+      const result = confirm("진짜 삭제하시겠습니까?");
+      if (result) {
+        await deleteOption(optionId);
+        setOnOptionDeleted(true);
+      }
+    } catch {
+      console.log("error in deleteOptionApi");
+    }
+  };
+
   useEffect(() => {
     if (menu) {
       getMenuByMenuIdApi();
       getOptionListsByMenuIdApi();
+      setOnMenuInfoModal(false);
     }
     console.log(menuInfo);
   }, [menu]);
 
-  return (
+  useEffect(() => {
+    if (!onMenuInfoModal) {
+      getMenuByMenuIdApi();
+      getOptionListsByMenuIdApi();
+    }
+  }, [onMenuInfoModal]);
+
+  useEffect(() => {
+    if (!onOptionInfoModal) {
+      getMenuByMenuIdApi();
+      getOptionListsByMenuIdApi();
+    }
+  }, [onOptionInfoModal]);
+
+  useEffect(() => {
+    if (onOptionDeleted) {
+      setOnOptionDeleted(false);
+      getMenuByMenuIdApi();
+      getOptionListsByMenuIdApi();
+    }
+  }, [onOptionDeleted]);
+
+  return menu !== null ? (
     <div
       className="my-menu-detail-container"
       style={{ width: window.innerWidth / 2.1 }}
@@ -118,18 +183,64 @@ const ShowMenuDetail = ({ menu }) => {
                   <p style={{ marginTop: 10 }}>가격 {menuInfo.menuPrice}원</p>
                 </div>
               </div>
-              <button
-                style={{
-                  borderStyle: "solid",
-                  borderColor: "#94D35C",
-                  padding: "0px 7px",
-                  borderWidth: 3,
-                  marginTop: "10px",
-                  alignSelf: "flex-end",
-                }}
-              >
-                메뉴 수정
-              </button>
+              <div style={{ alignSelf: "flex-end" }}>
+                <button
+                  style={{
+                    borderStyle: "solid",
+                    borderColor: "#94D35C",
+                    padding: "5px",
+                    borderWidth: 3,
+                    marginTop: "10px",
+                    alignSelf: "center",
+                  }}
+                  onClick={() => {
+                    changeMenuPossibleApi();
+                  }}
+                >
+                  {menuInfo.menuPossible ? (
+                    <p>메뉴 막기</p>
+                  ) : (
+                    <p>메뉴 막기 취소</p>
+                  )}
+                </button>
+                <button
+                  style={{
+                    borderStyle: "solid",
+                    borderColor: "#94D35C",
+                    padding: "5px",
+                    borderWidth: 3,
+                    marginTop: "10px",
+                    alignSelf: "center",
+                  }}
+                  onClick={() => setOnMenuInfoModal(!onMenuInfoModal)}
+                >
+                  메뉴 수정
+                </button>
+                <button
+                  style={{
+                    borderStyle: "solid",
+                    borderColor: "#94D35C",
+                    padding: "5px",
+                    borderWidth: 3,
+                    marginTop: "10px",
+                    alignSelf: "center",
+                  }}
+                  onClick={() => {
+                    deleteMenuApi();
+                  }}
+                >
+                  메뉴 삭제
+                </button>
+                {onMenuInfoModal && (
+                  <MenuInfoModal
+                    setOnMenuInfoModal={setOnMenuInfoModal}
+                    menuId={menuInfo.menuId}
+                    menuName={menuInfo.menuName}
+                    menuIntroduction={menuInfo.menuIntroduction}
+                    menuPrice={menuInfo.menuPrice}
+                  />
+                )}
+              </div>
             </div>
           </div>
           <div
@@ -138,7 +249,7 @@ const ShowMenuDetail = ({ menu }) => {
             {optionLists ? (
               optionLists.map((optionList, index) => (
                 <div
-                  key={index}
+                  key={optionList.listId}
                   style={{
                     marginTop: "20px",
                     display: "flex",
@@ -162,7 +273,7 @@ const ShowMenuDetail = ({ menu }) => {
                           key={option.optionId}
                           // style={{ padding: "20px 40px", display: "flex" }}
                           style={{
-                            width: window.innerWidth / 3.8,
+                            width: window.innerWidth / 4.1,
                             borderColor: "#94D35C",
                             borderWidth: 5,
                             borderStyle: "dotted",
@@ -179,19 +290,52 @@ const ShowMenuDetail = ({ menu }) => {
                           <p>{option.optionTitle}</p>
                           <p>{option.optionPrice}원</p>
                         </div>
-                        <button
-                          style={{
-                            borderStyle: "solid",
-                            borderColor: "#94D35C",
-                            padding: "0px 7px",
-                            borderWidth: 3,
-                            height: "30px",
-                            width: "50px",
-                            fontSize: "15px",
-                          }}
-                        >
-                          수정
-                        </button>
+                        <div>
+                          <button
+                            style={{
+                              borderStyle: "solid",
+                              borderColor: "#94D35C",
+                              padding: "0px 7px",
+                              borderWidth: 3,
+                              height: "30px",
+                              width: "50px",
+                              fontSize: "15px",
+                            }}
+                            onClick={() =>
+                              setOnOptionInfoModal((prev) => ({
+                                ...prev,
+                                [option.optionId]: !prev[option.optionId],
+                              }))
+                            }
+                          >
+                            수정
+                          </button>
+                          <button
+                            style={{
+                              borderStyle: "solid",
+                              borderColor: "#94D35C",
+                              padding: "0px 7px",
+                              borderWidth: 3,
+                              height: "30px",
+                              width: "50px",
+                              fontSize: "15px",
+                            }}
+                            onClick={() => {
+                              deleteOptionApi(option.optionId);
+                            }}
+                          >
+                            삭제
+                          </button>
+                        </div>
+
+                        {onOptionInfoModal[option.optionId] && (
+                          <OptionInfoModal
+                            setOnOptionInfoModal={setOnOptionInfoModal}
+                            optionId={option.optionId}
+                            optionTitle={option.optionTitle}
+                            optionPrice={option.optionPrice}
+                          />
+                        )}
                       </div>
                     ))
                   ) : (
@@ -229,6 +373,8 @@ const ShowMenuDetail = ({ menu }) => {
         <p style={{ fontSize: "30px", color: "#FFFFFF" }}>+</p>
       </button>
     </div>
+  ) : (
+    <div></div>
   );
 };
 export default ShowMenuDetail;

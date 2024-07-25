@@ -5,13 +5,11 @@ import {
   getMenuCategoryByStore,
 } from "../config/storeApi";
 import tteokbokki from "./../assets/tteokbokki.png";
-import { useNavigate } from "react-router-dom";
 
-const ShowMenuList = ({ store, setMenu }) => {
+const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
   const [categories, setCategories] = useState([]);
   const [menus, setMenus] = useState([]);
   const [selectedId, setSelectedId] = useState("");
-  const navigator = useNavigate();
   const getMenuCategoryByStoreApi = async () => {
     try {
       const response = await getMenuCategoryByStore(store);
@@ -36,9 +34,13 @@ const ShowMenuList = ({ store, setMenu }) => {
 
   useEffect(() => {
     getMenuCategoryByStoreApi();
-    console.log("hi");
-    console.log(menus);
   }, [store]);
+
+  useEffect(() => {
+    if (!onMenuInfoModal) {
+      getMenuCategoryByStoreApi();
+    }
+  }, [onMenuInfoModal]);
 
   return (
     <div

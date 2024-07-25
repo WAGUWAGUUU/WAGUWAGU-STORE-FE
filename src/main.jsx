@@ -20,8 +20,9 @@ const router = createBrowserRouter([
       { path: "/HistoryInquiry", element: <HistoryInquiry /> },
       // { path: "/login", element: <Login /> },
       // { path: "/board", element: <Boards /> },
-      { path: "/my-menu", element: <RedirectToDefaultMenu /> },
-      { path: "/my-menu/:menuId", element: <MyMenuPage /> },
+      // { path: "/my-menu", element: <RedirectToDefaultMenu /> },
+      { path: "/my-menu", element: <MyMenuPage /> },
+      // { path: "/mystore", element: <MyStore /> },
     ],
   },
 ]);

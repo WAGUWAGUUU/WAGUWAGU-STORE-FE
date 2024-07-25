@@ -7,14 +7,14 @@ import {
 import tteokbokki from "./../assets/tteokbokki.png";
 import { useNavigate } from "react-router-dom";
 
-const ShowMenuList = () => {
+const ShowMenuList = ({ store, setMenu }) => {
   const [categories, setCategories] = useState([]);
   const [menus, setMenus] = useState([]);
   const [selectedId, setSelectedId] = useState("");
   const navigator = useNavigate();
   const getMenuCategoryByStoreApi = async () => {
     try {
-      const response = await getMenuCategoryByStore(1);
+      const response = await getMenuCategoryByStore(store);
       console.log(response);
       setCategories(response);
       response.forEach((category) => {
@@ -38,7 +38,7 @@ const ShowMenuList = () => {
     getMenuCategoryByStoreApi();
     console.log("hi");
     console.log(menus);
-  }, []);
+  }, [store]);
 
   return (
     <div
@@ -74,7 +74,8 @@ const ShowMenuList = () => {
                         }}
                         onClick={() => {
                           setSelectedId(menu.menuId);
-                          navigator(`/my-menu/${menu.menuId}`);
+                          //   navigator(`/my-menu/${menu.menuId}`);
+                          setMenu(menu.menuId);
                         }}
                       >
                         <div style={{ width: "80%" }}>

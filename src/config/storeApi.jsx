@@ -50,3 +50,12 @@ export const getOptionsByOptionListId = async (optionListId) => {
     console.error("Error in getOptionsByOptionListId", error);
   }
 };
+
+export const getStoreByOwnerId = async (ownerId) => {
+  try {
+    const res = await storeApi(`/api/v1/store/owner/${ownerId}`, "get");
+    return res.data;
+  } catch (error) {
+    // console.error("Error in getStoreByOwnerId", error);
+  }
+};

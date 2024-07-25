@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./ShowMenuDetail.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getMenuByMenuId, getOptionListsByMenuId } from "../config/storeApi";
 import tteokbokki from "./../assets/tteokbokki.png";
-const ShowMenuDetail = () => {
-  const { menuId } = useParams();
+const ShowMenuDetail = ({ menu }) => {
+  //   const { menuId } = useParams();
   const [menuInfo, setMenuInfo] = useState({});
   const [optionLists, setOptionLists] = useState([]);
+  const navigator = useNavigate();
 
   const getMenuByMenuIdApi = async () => {
     try {
-      const response = await getMenuByMenuId(menuId);
+      const response = await getMenuByMenuId(menu);
       setMenuInfo(response);
     } catch {
       console.log("error in getMenuByMenuIdApi");
@@ -19,7 +20,7 @@ const ShowMenuDetail = () => {
 
   const getOptionListsByMenuIdApi = async () => {
     try {
-      const response = await getOptionListsByMenuId(menuId);
+      const response = await getOptionListsByMenuId(menu);
       setOptionLists(response);
       console.log("optionList " + response);
     } catch {
@@ -28,12 +29,12 @@ const ShowMenuDetail = () => {
   };
 
   useEffect(() => {
-    if (menuId) {
+    if (menu) {
       getMenuByMenuIdApi();
       getOptionListsByMenuIdApi();
     }
     console.log(menuInfo);
-  }, [menuId]);
+  }, [menu]);
 
   return (
     <div
@@ -221,6 +222,9 @@ const ShowMenuDetail = () => {
           display: "flex",
           justifyContent: "space-around",
         }}
+        // onClick={() => {
+        //   navigator(`/mystore`);
+        // }}
       >
         <p style={{ fontSize: "30px", color: "#FFFFFF" }}>+</p>
       </button>

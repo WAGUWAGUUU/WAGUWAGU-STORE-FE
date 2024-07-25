@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './HistoryInquiry.css';
+import StatusBox from '../components/StatusBox';
 
 const HistoryInquiry = () => {
   const [histories, setHistories] = useState([
@@ -43,6 +44,30 @@ const HistoryInquiry = () => {
   const firstDate = formatDate(selectedFirstDate);
   const secondDate = formatDate(selectedSecondDate);
 
+  const handleInquiry = async () => {
+    try {
+      const response = await fetch(`/your-api-endpoint`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        params: {
+          startDate: selectedFirstDate,
+          endDate: selectedSecondDate,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setHistories(data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   return (
     <div className="history-inquiry">
       <div className="date-range">
@@ -53,7 +78,7 @@ const HistoryInquiry = () => {
         <div className="date-box">{secondDate.year}</div>
         <div className="date-box">{secondDate.month}</div>
         <div className="date-box">{secondDate.day}</div>
-        <button className="inquiry-button">조회</button>
+        <button className="inquiry-button" onClick={handleInquiry}>조회</button>
         <button className="inquiry-button" onClick={toggleDateInput}>날짜설정</button>
       </div>
 
@@ -62,8 +87,8 @@ const HistoryInquiry = () => {
           <input
             type="date"
             id="firstDateInput"
-            value={selectedFirstDate} // Changed selectedDate to selectedFirstDate <------
-            onChange={handleFirstDateChange} // Changed handleDateChange to handleFirstDateChange <------
+            value={selectedFirstDate} 
+            onChange={handleFirstDateChange} 
           />
           <input
             type="date"
@@ -73,33 +98,41 @@ const HistoryInquiry = () => {
           />
         </div>
       )}
-        
-      <div className="history-summary">
-        <div className="summary-box">
-          <div className="status-header">배달 완료건</div>
-          <div className="status-count">{statusCounts['배달 완료'] || 0}개</div>
-        </div>
-        <div className="summary-box">
-          <div className="status-header">주문 취소건</div>
-          <div className="status-count">{statusCounts['주문 취소'] || 0}개</div>
-        </div>
-        <div className="summary-box">
-          <div className="status-header">금액 통계</div>
-          <div className="status-count">3개</div>
-        </div>
-        <div className="summary-box">
-          <div className="status-header">배달 수수료</div>
-          <div className="status-count">1개</div>
-        </div>
-        <div className="summary-box">
-          <div className="status-header">기타 등등</div>
-          <div className="status-count">1개</div>
-        </div>
+
+      <div className="order-summary">
+        <StatusBox
+          status="배달 완료건"
+          count={`${statusCounts['배달 완료'] || 0}`}
+        />
+
+        <StatusBox
+          status="주문 취소건"
+          count={`${statusCounts['주문 취소'] || 0}`}
+        />
+        <StatusBox
+          status="금액 통계"
+          statusCounts={statusCounts['금액 통계'] || 0}개
+        />
+        <StatusBox
+          status="배달 수수료"
+          statusCounts={statusCounts['배달 수수료'] || 0}개
+        />
+        <StatusBox
+          status="기타 등등"
+          statusCounts={statusCounts['기타 등등'] || 0}개
+        />
       </div>
+
       <div className="history-details">
         {histories.map((history) => (
           <div key={history.id} className="history-box">
             <div className="history-status">{history.status}</div>
+            <div>주문아이디:{history.id}</div>
+            <div>고객아이디:{history.customerId}</div>
+            <div>메뉴:{history.menu}</div>
+            <div>옵션:{history.options}</div>
+            <div>고객요청:{history.request}</div>
+            <div>고객주소:{history.address}</div>
           </div>
         ))}
       </div>

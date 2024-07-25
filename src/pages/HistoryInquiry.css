@@ -110,3 +110,10 @@
   font-size: 24px;
   font-weight: bold;
 }
+
+.order-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+  }

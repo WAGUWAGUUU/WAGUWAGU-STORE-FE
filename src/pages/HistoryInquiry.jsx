@@ -4,14 +4,14 @@ import StatusBox from '../components/StatusBox';
 
 const HistoryInquiry = () => {
   const [histories, setHistories] = useState([
-    { id: 1, customerId: 'cust01', menu: 'Menu1', options: 'Option1', request: 'No onions', address: '123 Main St', estimatedTime: '20 mins', status: '배달 완료' },
-    { id: 2, customerId: 'cust02', menu: 'Menu2', options: 'Option2', request: 'Extra sauce', address: '456 Oak St', estimatedTime: '15 mins', status: '배달 완료' },
-    { id: 3, customerId: 'cust03', menu: 'Menu3', options: 'Option3', request: 'Less spicy', address: '789 Pine St', estimatedTime: '30 mins', status: '주문 취소' },
-    { id: 4, customerId: 'cust04', menu: 'Menu4', options: 'Option4', request: 'No salt', address: '101 Maple St', estimatedTime: '25 mins', status: '주문 취소' },
-    { id: 5, customerId: 'cust05', menu: 'Menu5', options: 'Option5', request: 'No cheese', address: '202 Birch St', estimatedTime: '20 mins', status: '주문 취소' },
-    { id: 6, customerId: 'cust06', menu: 'Menu6', options: 'Option6', request: 'Extra spicy', address: '303 Cedar St', estimatedTime: '10 mins', status: '배달 완료' },
-    { id: 7, customerId: 'cust07', menu: 'Menu7', options: 'Option7', request: 'Gluten-free', address: '404 Spruce St', estimatedTime: '35 mins', status: '배달 완료' },
-    { id: 8, customerId: 'cust08', menu: 'Menu8', options: 'Option8', request: 'Less oil', address: '505 Walnut St', estimatedTime: '40 mins', status: '배달 완료' },
+    { id: 1, customerId: 'cust01', menu: 'Menu1', options: 'Option1', request: 'No onions', address: '123 Main St', estimatedTime: '20 mins', status: '배달완료' },
+    { id: 2, customerId: 'cust02', menu: 'Menu2', options: 'Option2', request: 'Extra sauce', address: '456 Oak St', estimatedTime: '15 mins', status: '배달완료' },
+    { id: 3, customerId: 'cust03', menu: 'Menu3', options: 'Option3', request: 'Less spicy', address: '789 Pine St', estimatedTime: '30 mins', status: '주문취소' },
+    { id: 4, customerId: 'cust04', menu: 'Menu4', options: 'Option4', request: 'No salt', address: '101 Maple St', estimatedTime: '25 mins', status: '주문취소' },
+    { id: 5, customerId: 'cust05', menu: 'Menu5', options: 'Option5', request: 'No cheese', address: '202 Birch St', estimatedTime: '20 mins', status: '주문취소' },
+    { id: 6, customerId: 'cust06', menu: 'Menu6', options: 'Option6', request: 'Extra spicy', address: '303 Cedar St', estimatedTime: '10 mins', status: '배달완료' },
+    { id: 7, customerId: 'cust07', menu: 'Menu7', options: 'Option7', request: 'Gluten-free', address: '404 Spruce St', estimatedTime: '35 mins', status: '배달완료' },
+    { id: 8, customerId: 'cust08', menu: 'Menu8', options: 'Option8', request: 'Less oil', address: '505 Walnut St', estimatedTime: '40 mins', status: '배달완료' },
   ]);
 
   const statusCounts = histories.reduce((counts, history) => {
@@ -102,12 +102,12 @@ const HistoryInquiry = () => {
       <div className="order-summary">
         <StatusBox
           status="배달 완료건"
-          count={`${statusCounts['배달 완료'] || 0}`}
+          count={`${statusCounts['배달완료'] || 0}`}
         />
 
         <StatusBox
           status="주문 취소건"
-          count={`${statusCounts['주문 취소'] || 0}`}
+          count={`${statusCounts['주문취소'] || 0}`}
         />
         <StatusBox
           status="금액 통계"

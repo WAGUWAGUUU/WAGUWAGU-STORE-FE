@@ -156,26 +156,41 @@ const ShowMenuDetail = () => {
 
                   {optionList.options.length > 0 ? (
                     optionList.options.map((option) => (
-                      <div
-                        key={option.optionId}
-                        // style={{ padding: "20px 40px", display: "flex" }}
-                        style={{
-                          width: window.innerWidth / 3,
-                          borderColor: "#94D35C",
-                          borderWidth: 5,
-                          borderStyle: "dotted",
-                          borderTopLeftRadius: "50px",
-                          borderTopRightRadius: "50px",
-                          borderEndEndRadius: "50px",
-                          paddingLeft: "20px",
-                          padding: "5px 20px",
-                          margin: "10px 20px",
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <p>{option.optionTitle}</p>
-                        <p>{option.optionPrice}원</p>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <div
+                          key={option.optionId}
+                          // style={{ padding: "20px 40px", display: "flex" }}
+                          style={{
+                            width: window.innerWidth / 3.8,
+                            borderColor: "#94D35C",
+                            borderWidth: 5,
+                            borderStyle: "dotted",
+                            borderTopLeftRadius: "50px",
+                            borderTopRightRadius: "50px",
+                            borderEndEndRadius: "50px",
+                            paddingLeft: "20px",
+                            padding: "5px 20px",
+                            margin: "10px 20px",
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <p>{option.optionTitle}</p>
+                          <p>{option.optionPrice}원</p>
+                        </div>
+                        <button
+                          style={{
+                            borderStyle: "solid",
+                            borderColor: "#94D35C",
+                            padding: "0px 7px",
+                            borderWidth: 3,
+                            height: "30px",
+                            width: "50px",
+                            fontSize: "15px",
+                          }}
+                        >
+                          수정
+                        </button>
                       </div>
                     ))
                   ) : (
@@ -195,6 +210,20 @@ const ShowMenuDetail = () => {
       ) : (
         <p>메뉴 정보가 없습니다</p>
       )}
+      <button
+        style={{
+          borderColor: "#FFFFFF",
+          backgroundColor: "#FBA138",
+          borderWidth: 3,
+          width: "50px",
+          height: "50px",
+          borderRadius: "100%",
+          display: "flex",
+          justifyContent: "space-around",
+        }}
+      >
+        <p style={{ fontSize: "30px", color: "#FFFFFF" }}>+</p>
+      </button>
     </div>
   );
 };

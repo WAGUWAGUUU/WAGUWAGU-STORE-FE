@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {getInfo, updateInfo} from "../config/authApi.js";
-import {useNavigate} from "react-router-dom";
+import { getInfo, updateInfo } from "../config/authApi.js";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const SignupPage = () => {
@@ -84,10 +84,10 @@ const SignupPage = () => {
             alert("An error occurred while converting the address.");
         }
     };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Simple validation
         if (!ownerEmail || !ownerName || !ownerAddress || !ownerBusinessNumber) {
             setError('Please fill in all fields.');
             return;
@@ -109,60 +109,84 @@ const SignupPage = () => {
 
     return (
         <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-            <h1>회원가입</h1>
-            <br/>
-            <form onSubmit={handleSubmit}>
-                <div style={{marginBottom: '15px'}}>
-                    <label htmlFor="email">이메일</label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={ownerEmail}
-                        onChange={(e) => setOwnerEmail(e.target.value)} // This will not trigger when readOnly
-                        required
-                        style={{width: '100%', padding: '8px', boxSizing: 'border-box'}}
-                        readOnly // Add this attribute to make the input read-only
-                    />
-                </div>
-                <div style={{marginBottom: '15px'}}>
-                    <label htmlFor="name">이름</label>
-                    <input
-                        type="text"
-                        id="name"
-                        value={ownerName}
-                        onChange={(e) => setOwnerName(e.target.value)}
-                        required
-                        style={{width: '100%', padding: '8px', boxSizing: 'border-box' }}
-                    />
-                </div>
-                <div style={{marginBottom: '15px'}}>
-                    <label htmlFor="address">가게 주소</label>
-                    <input
-                        type="text"
-                        id="address"
-                        value={ownerAddress}
-                        onChange={(e) => setOwnerAddress(e.target.value)}
-                        required
-                        style={{width: '100%', padding: '8px', boxSizing: 'border-box'}}
-                    />
-                    <button onClick={handleAddressChange}>
-                        주소확인
-                    </button>
-                </div>
-                <div style={{marginBottom: '15px'}}>
-                    <label htmlFor="businessNumber">사업자번호</label>
-                    <input
-                        type="text"
-                        id="businessNumber"
-                        value={ownerBusinessNumber}
-                        onChange={(e) => setOwnerBusinessNumber(e.target.value)}
-                        required
-                        style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-                    />
-                </div>
-                {error && <div style={{ color: 'red', marginBottom: '15px' }}>{error}</div>}
-                <button type="submit" style={{ padding: '10px 20px' }}>가입완료</button>
-            </form>
+            <div className="content-area" style={{
+                backgroundColor: '#e8f5e9',
+                padding: '30px',
+                borderRadius: '10px',
+                margin: '20px',
+                textAlign: 'center'
+            }}>
+                <h2 style={{ fontSize: '2em', color: '#2e7d32', marginBottom: '20px' }}>회원가입</h2>
+                <form onSubmit={handleSubmit}>
+                    <div style={{ marginBottom: '15px' }}>
+                        <label htmlFor="email">이메일</label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={ownerEmail}
+                            onChange={(e) => setOwnerEmail(e.target.value)} // This will not trigger when readOnly
+                            required
+                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                            readOnly // Add this attribute to make the input read-only
+                        />
+                    </div>
+                    <div style={{ marginBottom: '15px' }}>
+                        <label htmlFor="name">이름</label>
+                        <input
+                            type="text"
+                            id="name"
+                            value={ownerName}
+                            onChange={(e) => setOwnerName(e.target.value)}
+                            required
+                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                        />
+                    </div>
+                    <div style={{ marginBottom: '15px' }}>
+                        <label htmlFor="address">가게 주소</label>
+                        <input
+                            type="text"
+                            id="address"
+                            value={ownerAddress}
+                            onChange={(e) => setOwnerAddress(e.target.value)}
+                            required
+                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                        />
+                        <button type="button" onClick={handleAddressChange} style={{
+                            marginTop: '10px',
+                            backgroundColor: '#66bb6a',
+                            color: 'white',
+                            padding: '10px 20px',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                            fontSize: '1em'
+                        }}>
+                            주소확인
+                        </button>
+                    </div>
+                    <div style={{ marginBottom: '15px' }}>
+                        <label htmlFor="businessNumber">사업자번호</label>
+                        <input
+                            type="text"
+                            id="businessNumber"
+                            value={ownerBusinessNumber}
+                            onChange={(e) => setOwnerBusinessNumber(e.target.value)}
+                            required
+                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                        />
+                    </div>
+                    {error && <div style={{ color: 'red', marginBottom: '15px' }}>{error}</div>}
+                    <button type="submit" style={{
+                        padding: '10px 20px',
+                        backgroundColor: '#66bb6a',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        fontSize: '1em'
+                    }}>가입완료</button>
+                </form>
+            </div>
         </div>
     );
 };

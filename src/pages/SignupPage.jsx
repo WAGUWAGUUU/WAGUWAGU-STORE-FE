@@ -88,7 +88,6 @@ const SignupPage = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Simple validation
         if (!ownerEmail || !ownerName || !ownerAddress || !ownerBusinessNumber) {
             setError('Please fill in all fields.');
             return;

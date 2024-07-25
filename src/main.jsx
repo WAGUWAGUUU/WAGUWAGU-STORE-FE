@@ -1,9 +1,9 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./index.css";
-import Layout from "./pages/Layout.jsx";
-
-import {RouterProvider, createBrowserRouter} from "react-router-dom";
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import './index.css'
+import Layout from './pages/Layout.jsx'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import MyStore from './pages/MyStore.jsx'
 import OrderNotification from "./pages/OrderNotification.jsx";
 import HistoryInquiry from "./pages/HistoryInquiry.jsx";
 import MyMenuPage from "./pages/MyMenuPage.jsx";
@@ -19,8 +19,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       // 예시
-      // { path: "/", element: <Counter /> },
-      // { path: "/join", element: <Signup /> },
+      { path: "/mystore", element: <MyStore /> },
       { path: "/OrderNotification", element: <OrderNotification /> },
       { path: "/HistoryInquiry", element: <HistoryInquiry /> },
       { path: "/Login", element: <LoginPage /> },

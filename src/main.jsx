@@ -10,7 +10,7 @@ import RedirectToDefaultMenu from "./pages/RedirectToDefaultMenu.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import CallbackPage from "./pages/CallbackPage.jsx";
-// import SignupPage from "./pages/SignupPage.jsx";
+import MyPage from "./pages/MyPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
       { path: "/Login", element: <LoginPage /> },
       { path: "/owners/callback", element: <CallbackPage /> },
       { path: "/signup", element: <SignupPage /> },
-      // { path: "/login", element: <Login /> },
+      { path: "/mypage", element: <MyPage /> },
       // { path: "/board", element: <Boards /> },
       { path: "/my-menu", element: <RedirectToDefaultMenu /> },
       { path: "/my-menu/:menuId", element: <MyMenuPage /> },

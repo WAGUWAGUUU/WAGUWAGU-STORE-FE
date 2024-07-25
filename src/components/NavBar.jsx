@@ -20,7 +20,14 @@ const NavBar = () => {
         <button className="nav-button">마이 스토어 설정</button>
       </nav>
       <nav className="nav-item">
-        <button className="nav-button">내 계정 정보</button>
+        {/*<button className="nav-button">내 계정 정보</button>*/}
+          <Link
+              to="/mypage"
+              style={{ textDecoration: "none" }}
+              className="nav-button"
+          >
+              마이페이지
+          </Link>
       </nav>
     </div>
   );

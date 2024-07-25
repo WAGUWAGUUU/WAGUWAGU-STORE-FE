@@ -5,7 +5,13 @@ const NavBar = () => {
   return (
     <div className="nav-container">
       <nav className="nav-item">
-        <button className="nav-button">주문 내역</button>
+        <Link
+          to="/OrderNotification"
+          style={{ textDecoration: "none" }}
+          className="nav-button"
+        >
+          내 주문창
+        </Link>
       </nav>
       <nav className="nav-item">
         <Link
@@ -21,6 +27,15 @@ const NavBar = () => {
       </nav>
       <nav className="nav-item">
         <button className="nav-button">내 계정 정보</button>
+      </nav>
+      <nav className="nav-item">
+        <Link
+          to="/HistoryInquiry"
+          style={{ textDecoration: "none" }}
+          className="nav-button"
+        >
+          가게 내역
+        </Link>
       </nav>
     </div>
   );

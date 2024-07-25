@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import Layout from "./pages/Layout.jsx";
+
 import {RouterProvider, createBrowserRouter} from "react-router-dom";
 import OrderNotification from "./pages/OrderNotification.jsx";
 import HistoryInquiry from "./pages/HistoryInquiry.jsx";

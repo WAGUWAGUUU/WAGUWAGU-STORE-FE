@@ -153,18 +153,35 @@ const ShowMenuDetail = () => {
                   >
                     {optionList.listName}
                   </p>
-                  {optionList.options ? (
+
+                  {optionList.options.length > 0 ? (
                     optionList.options.map((option) => (
                       <div
                         key={option.optionId}
-                        style={{ padding: "20px 40px", display: "flex" }}
+                        // style={{ padding: "20px 40px", display: "flex" }}
+                        style={{
+                          width: window.innerWidth / 3,
+                          borderColor: "#94D35C",
+                          borderWidth: 5,
+                          borderStyle: "dotted",
+                          borderTopLeftRadius: "50px",
+                          borderTopRightRadius: "50px",
+                          borderEndEndRadius: "50px",
+                          paddingLeft: "20px",
+                          padding: "5px 20px",
+                          margin: "10px 20px",
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
                       >
                         <p>{option.optionTitle}</p>
                         <p>{option.optionPrice}원</p>
                       </div>
                     ))
                   ) : (
-                    <p>옵션이 없습니다</p>
+                    <div style={{ padding: "20px 40px", display: "flex" }}>
+                      옵션이 없습니다
+                    </div>
                   )}
                 </div>
               ))

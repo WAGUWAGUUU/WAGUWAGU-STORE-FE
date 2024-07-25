@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './NavBar.css'
 
 const NavBar = () => {
@@ -14,11 +15,13 @@ const NavBar = () => {
           마이 메뉴
           </button>
         </nav>
-        <nav className="nav-item">
-          <button className='nav-button'>
-          마이 스토어 설정
-          </button>
-        </nav>
+        <Link to="/mystore">
+          <nav className="nav-item">
+            <button className='nav-button'>
+            마이 스토어 설정
+            </button>
+          </nav>
+        </Link>
         <nav className="nav-item">
           <button className='nav-button'>
           내 계정 정보

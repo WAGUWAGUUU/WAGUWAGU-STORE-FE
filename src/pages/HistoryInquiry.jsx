@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './HistoryInquiry.css';
 import StatusBox from '../components/StatusBox';
 import { selectByDate } from '../config/orderApi';
@@ -7,8 +7,9 @@ const HistoryInquiry = () => {
   const [histories, setHistories] = useState([]);
   const [selectedFirstDate, setSelectedFirstDate] = useState('');
   const [selectedSecondDate, setSelectedSecondDate] = useState('');
+  const [requestId, setRequestId] = useState(''); // State for requestId
   const [showDateInput, setShowDateInput] = useState(false);
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState(0);
 
   const statusCounts = histories.reduce((counts, history) => {
     counts[history.status] = (counts[history.status] || 0) + 1;
@@ -23,18 +24,46 @@ const HistoryInquiry = () => {
     setSelectedSecondDate(event.target.value);
   };
 
+  const handleRequestIdChange = (event) => {
+    setRequestId(event.target.value);
+  };
+
   const toggleDateInput = () => {
     setShowDateInput((prevShowDateInput) => !prevShowDateInput);
   };
 
   const handleInquiry = async () => {
     try {
-      const data = await selectByDate('requestId', selectedFirstDate, selectedSecondDate, pageNumber);
+      setPageNumber(0);
+      const data = await selectByDate(requestId, selectedFirstDate, selectedSecondDate, 0);
       setHistories(data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
+
+  const loadMoreHistories = async () => {
+    try {
+      const newPageNumber = pageNumber + 1;
+      const data = await selectByDate(requestId, selectedFirstDate, selectedSecondDate, newPageNumber);
+      setHistories((prevHistories) => [...prevHistories, ...data]);
+      setPageNumber(newPageNumber);
+    } catch (error) {
+      console.error('Error fetching more data:', error);
+    }
+  };
+
+  const handleScroll = () => {
+    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) return;
+    loadMoreHistories();
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [selectedFirstDate, selectedSecondDate, pageNumber, requestId]);
 
   const formatDate = (date) => {
     if (!date) return { year: '', month: '', day: '' };
@@ -73,6 +102,13 @@ const HistoryInquiry = () => {
             value={selectedSecondDate}
             onChange={handleSecondDateChange}
           />
+          <input
+            type="text"
+            id="requestIdInput"
+            placeholder="Request ID"
+            value={requestId}
+            onChange={handleRequestIdChange}
+          />
         </div>
       )}
 
@@ -104,6 +140,7 @@ const HistoryInquiry = () => {
           <div key={history.id} className="history-box">
             <div className="history-status">{history.status}</div>
             <div>주문아이디: {history.id}</div>
+            <div>상태: {history.orderState.join(', ')}</div> {/* Display orderState array */}
             <div>고객아이디: {history.customerId}</div>
             <div>메뉴: {history.menu}</div>
             <div>옵션: {history.options}</div>

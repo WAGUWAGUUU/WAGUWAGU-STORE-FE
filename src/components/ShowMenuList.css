@@ -3,4 +3,6 @@
   padding: 3%;
   border-radius: 50px;
   background-color: #e2ebde;
+  display: flex;
+  flex-direction: column;
 }

@@ -1,9 +1,9 @@
 import axios from "axios";
-export const storeApi = async (url, method, body, params) => {
+export const orderApi = async (url, method, body, params) => {
   const res = await axios({
     url,
     method,
-    baseURL: "http://192.168.0.17:8080", // baseURL
+    baseURL: "http://localhost:8080/api/v1/order",
     data: body,
     params: params,
     //   headers: {

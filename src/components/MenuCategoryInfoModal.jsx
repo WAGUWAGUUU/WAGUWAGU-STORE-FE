@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from "react";
-import {
-  updateMenuCategoryName,
-  updateOptionListName,
-} from "../config/storeApi";
-import "./MenuCategoryInfoModal.css";
+import React, { useState } from "react";
+import { updateMenuCategoryName } from "../config/storeApi";
+import "./MenuModal.css";
 
 const MenuCategoryInfoModal = (props) => {
   const menuCategoryId = props.menuCategoryId;
@@ -25,9 +22,9 @@ const MenuCategoryInfoModal = (props) => {
   };
 
   return (
-    <div className="modal-container">
+    <div className="menu-category-modal-container">
       <button
-        className="modal-close"
+        className="menu-modal-close"
         onClick={() => {
           closeModal();
         }}
@@ -35,14 +32,7 @@ const MenuCategoryInfoModal = (props) => {
         X
       </button>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          margin: "40px",
-        }}
-      >
+      <div className="menu-modal-textAreas" style={{ margin: "40px" }}>
         <textarea
           type="text"
           value={menuCategoryName}
@@ -50,27 +40,11 @@ const MenuCategoryInfoModal = (props) => {
             setMenuCategoryName(e.target.value);
           }}
           rows="2"
-          style={{
-            border: "2px solid #94D35C",
-            outlineColor: "#FBA138",
-            borderRadius: "10px",
-            padding: "5px",
-            resize: "none",
-            width: "400px",
-            marginBottom: "5px",
-          }}
+          className="menu-modal-textArea"
         />
 
         <button
-          style={{
-            borderStyle: "solid",
-            borderColor: "#94D35C",
-            padding: "0px 7px",
-            borderWidth: 3,
-            height: "30px",
-            width: "50px",
-            fontSize: "15px",
-          }}
+          className="menu-modal-button"
           onClick={() => {
             updateMenuCategoryNameApi(menuCategoryId);
           }}

@@ -23,6 +23,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
   const [onOptionListInfoModal, setOnOptionListInfoModal] = useState(false);
   const [onOptionDeleted, setOnOptionDeleted] = useState(false);
   const [onOptionListDeleted, setOnOptionListDeleted] = useState(false);
+  const navigator = useNavigate();
 
   const getMenuByMenuIdApi = async () => {
     try {
@@ -98,28 +99,28 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
   }, [menu]);
 
   useEffect(() => {
-    if (!onMenuInfoModal) {
+    if (menu && !onMenuInfoModal) {
       getMenuByMenuIdApi();
       getOptionListsByMenuIdApi();
     }
   }, [onMenuInfoModal]);
 
   useEffect(() => {
-    if (!onOptionInfoModal) {
+    if (menu && !onOptionInfoModal) {
       getMenuByMenuIdApi();
       getOptionListsByMenuIdApi();
     }
   }, [onOptionInfoModal]);
 
   useEffect(() => {
-    if (!onOptionListInfoModal) {
+    if (menu && !onOptionListInfoModal) {
       getMenuByMenuIdApi();
       getOptionListsByMenuIdApi();
     }
   }, [onOptionListInfoModal]);
 
   useEffect(() => {
-    if (onOptionDeleted) {
+    if (menu && onOptionDeleted) {
       setOnOptionDeleted(false);
       getMenuByMenuIdApi();
       getOptionListsByMenuIdApi();
@@ -127,7 +128,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
   }, [onOptionDeleted]);
 
   useEffect(() => {
-    if (onOptionListDeleted) {
+    if (menu && onOptionListDeleted) {
       setOnOptionListDeleted(false);
       getMenuByMenuIdApi();
       getOptionListsByMenuIdApi();
@@ -446,9 +447,9 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
           display: "flex",
           justifyContent: "space-around",
         }}
-        // onClick={() => {
-        //   navigator(`/mystore`);
-        // }}
+        onClick={() => {
+          navigator(`/mystore`);
+        }}
       >
         <p style={{ fontSize: "30px", color: "#FFFFFF" }}>+</p>
       </button>

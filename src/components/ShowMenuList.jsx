@@ -51,17 +51,19 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
   };
 
   useEffect(() => {
-    getMenuCategoryByStoreApi();
+    if (store) {
+      getMenuCategoryByStoreApi();
+    }
   }, [store]);
 
   useEffect(() => {
-    if (!onMenuInfoModal) {
+    if (store && !onMenuInfoModal) {
       getMenuCategoryByStoreApi();
     }
   }, [onMenuInfoModal]);
 
   useEffect(() => {
-    if (!onMenuCategoryInfoModal) {
+    if (store && !onMenuCategoryInfoModal) {
       getMenuCategoryByStoreApi();
     }
   }, [onMenuCategoryInfoModal]);

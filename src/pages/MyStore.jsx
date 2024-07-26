@@ -1,19 +1,19 @@
-import Delivery from "../components/Delivery"
-import Store from "../components/Store"
-import Menu from "../components/Menu"
-import './MyStore.css'
-import { useEffect, useState } from "react"
-import { getStoreByOwnerId } from "../api/Store"
+import Delivery from "../components/Delivery";
+import Store from "../components/Store";
+import Menu from "../components/Menu";
+import "./MyStore.css";
+import { useEffect, useState } from "react";
+import { getStoreByOwnerId } from "../api/Store";
 
 const MyStore = () => {
   const [store, setStore] = useState(null);
 
   const getStore = async () => {
     // const ownerId = localStorage.getItem("id");
-    // const res = getStoreByOwnerId(ownerId); 
-    const res = await getStoreByOwnerId(1);
+    // const res = getStoreByOwnerId(ownerId);
+    const res = await getStoreByOwnerId(3613397573);
     setStore(res);
-  }
+  };
 
   useEffect(() => {
     getStore();
@@ -23,7 +23,7 @@ const MyStore = () => {
     <>
       <div className="mystore-container">
         <div className="mystore-left">
-          <Store store={store} setStore={setStore}/>
+          <Store store={store} setStore={setStore} />
           <Delivery store={store} setStore={setStore} />
         </div>
         <div className="mystore-right">
@@ -31,7 +31,7 @@ const MyStore = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default MyStore
+export default MyStore;

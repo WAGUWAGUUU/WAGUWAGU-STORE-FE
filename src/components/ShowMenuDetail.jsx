@@ -5,19 +5,25 @@ import {
   changeMenuPossible,
   deleteMenu,
   deleteOption,
+  deleteOptionList,
   getMenuByMenuId,
   getOptionListsByMenuId,
+  updateOptionListName,
 } from "../config/storeApi";
 import tteokbokki from "./../assets/tteokbokki.png";
 import StoreInfoModal from "./MenuInfoModal";
 import MenuInfoModal from "./MenuInfoModal";
 import { createPortal } from "react-dom";
 import OptionInfoModal from "./OptionInfoModal";
+import OptionListInfoModal from "./OptionListInfoModal";
 const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
   const [menuInfo, setMenuInfo] = useState({});
   const [optionLists, setOptionLists] = useState([]);
   const [onOptionInfoModal, setOnOptionInfoModal] = useState(false);
+  const [onOptionListInfoModal, setOnOptionListInfoModal] = useState(false);
   const [onOptionDeleted, setOnOptionDeleted] = useState(false);
+  const [onOptionListDeleted, setOnOptionListDeleted] = useState(false);
+
   const getMenuByMenuIdApi = async () => {
     try {
       const response = await getMenuByMenuId(menu);
@@ -39,7 +45,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
 
   const changeMenuPossibleApi = async () => {
     try {
-      const response = await changeMenuPossible(menu);
+      await changeMenuPossible(menu);
       window.location.reload();
     } catch {
       console.log("error in changeMenuPossibleApi");
@@ -70,6 +76,18 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
     }
   };
 
+  const deleteOptionListApi = async (optionId) => {
+    try {
+      const result = confirm("진짜 삭제하시겠습니까?");
+      if (result) {
+        await deleteOptionList(optionId);
+        setOnOptionListDeleted(true);
+      }
+    } catch {
+      console.log("error in deleteOptionListApi");
+    }
+  };
+
   useEffect(() => {
     if (menu) {
       getMenuByMenuIdApi();
@@ -94,12 +112,27 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
   }, [onOptionInfoModal]);
 
   useEffect(() => {
+    if (!onOptionListInfoModal) {
+      getMenuByMenuIdApi();
+      getOptionListsByMenuIdApi();
+    }
+  }, [onOptionListInfoModal]);
+
+  useEffect(() => {
     if (onOptionDeleted) {
       setOnOptionDeleted(false);
       getMenuByMenuIdApi();
       getOptionListsByMenuIdApi();
     }
   }, [onOptionDeleted]);
+
+  useEffect(() => {
+    if (onOptionListDeleted) {
+      setOnOptionListDeleted(false);
+      getMenuByMenuIdApi();
+      getOptionListsByMenuIdApi();
+    }
+  }, [onOptionListDeleted]);
 
   return menu !== null ? (
     <div
@@ -257,14 +290,61 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
                     alignItems: "flex-start",
                   }}
                 >
-                  <p
-                    style={{
-                      fontSize: 18,
-                      color: "#757575",
-                    }}
-                  >
-                    {optionList.listName}
-                  </p>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <p
+                      style={{
+                        fontSize: 18,
+                        color: "#757575",
+                      }}
+                    >
+                      {optionList.listName}
+                    </p>
+                    <div>
+                      <button
+                        style={{
+                          borderStyle: "solid",
+                          borderColor: "#94D35C",
+                          padding: "0px 7px",
+                          marginLeft: "20px",
+                          borderWidth: 3,
+                          height: "30px",
+                          width: "50px",
+                          fontSize: "15px",
+                        }}
+                        onClick={() =>
+                          setOnOptionListInfoModal((prev) => ({
+                            ...prev,
+                            [optionList.listId]: !prev[optionList.listId],
+                          }))
+                        }
+                      >
+                        수정
+                      </button>
+                      <button
+                        style={{
+                          borderStyle: "solid",
+                          borderColor: "#94D35C",
+                          padding: "0px 7px",
+                          borderWidth: 3,
+                          height: "30px",
+                          width: "50px",
+                          fontSize: "15px",
+                        }}
+                        onClick={() => {
+                          deleteOptionListApi(optionList.listId);
+                        }}
+                      >
+                        삭제
+                      </button>
+                      {onOptionListInfoModal && (
+                        <OptionListInfoModal
+                          setOnOptionListInfoModal={setOnOptionListInfoModal}
+                          optionListId={optionList.listId}
+                          optionListTitle={optionList.listName}
+                        />
+                      )}
+                    </div>
+                  </div>
 
                   {optionList.options.length > 0 ? (
                     optionList.options.map((option) => (

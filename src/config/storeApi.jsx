@@ -9,6 +9,27 @@ export const getMenuCategoryByStore = async (storeId) => {
   }
 };
 
+export const deleteMenuCategory = async (menuCategoryId) => {
+  try {
+    const res = await storeApi(
+      `/api/v1/menu-category/${menuCategoryId}`,
+      "delete"
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error in deleteMenuCategory", error);
+  }
+};
+
+export const updateMenuCategoryName = async (id, data) => {
+  try {
+    const res = await storeApi(`/api/v1/menu-category/${id}/name`, "put", data);
+    return res.data;
+  } catch (error) {
+    // console.error("Error in updateMenuCategoryName", error);
+  }
+};
+
 export const getMenuByMenuCategory = async (menuCategoryId) => {
   try {
     const res = await storeApi(
@@ -106,5 +127,23 @@ export const deleteOption = async (id) => {
     return res.data;
   } catch (error) {
     // console.error("Error in deleteOption", error);
+  }
+};
+
+export const deleteOptionList = async (id) => {
+  try {
+    const res = await storeApi(`/api/v1/option-lists/${id}`, "delete");
+    return res.data;
+  } catch (error) {
+    // console.error("Error in deleteOptionList", error);
+  }
+};
+
+export const updateOptionListName = async (id, data) => {
+  try {
+    const res = await storeApi(`/api/v1/option-lists/${id}/name`, "put", data);
+    return res.data;
+  } catch (error) {
+    // console.error("Error in updateOptionListName", error);
   }
 };

@@ -9,7 +9,7 @@ const MyMenuPage = () => {
 
   const getStoreByOwnerIdApi = async () => {
     try {
-      const response = await getStoreByOwnerId(3613397573);
+      const response = await getStoreByOwnerId(localStorage.getItem("ownerId"));
       setStore(response.storeId);
     } catch {
       console.log("error in getStoreByOwnerIdApi");

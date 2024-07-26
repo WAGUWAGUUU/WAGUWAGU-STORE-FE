@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
 import "./ShowMenuList.css";
 import {
+  deleteMenuCategory,
   getMenuByMenuCategory,
   getMenuCategoryByStore,
 } from "../config/storeApi";
 import tteokbokki from "./../assets/tteokbokki.png";
-import { useNavigate } from "react-router-dom";
+import MenuCategoryInfoModal from "./MenuCategoryInfoModal";
 
-const ShowMenuList = () => {
+const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
   const [categories, setCategories] = useState([]);
   const [menus, setMenus] = useState([]);
   const [selectedId, setSelectedId] = useState("");
-  const navigator = useNavigate();
+  const [onMenuCategoryInfoModal, setOnMenuCategoryInfoModal] = useState("");
+
   const getMenuCategoryByStoreApi = async () => {
     try {
-      const response = await getMenuCategoryByStore(1);
+      const response = await getMenuCategoryByStore(store);
       console.log(response);
       setCategories(response);
       response.forEach((category) => {
@@ -34,11 +36,37 @@ const ShowMenuList = () => {
     }
   };
 
+  const deleteMenuCategoryApi = async (menuCategoryId) => {
+    try {
+      const result = confirm(
+        "메뉴까지 같이 삭제됩니다. 진짜 삭제하시겠습니까?"
+      );
+      if (result) {
+        await deleteMenuCategory(menuCategoryId);
+        window.location.reload();
+      }
+    } catch {
+      console.log("error in deleteMenuCategoryApi");
+    }
+  };
+
   useEffect(() => {
-    getMenuCategoryByStoreApi();
-    console.log("hi");
-    console.log(menus);
-  }, []);
+    if (store) {
+      getMenuCategoryByStoreApi();
+    }
+  }, [store]);
+
+  useEffect(() => {
+    if (store && !onMenuInfoModal) {
+      getMenuCategoryByStoreApi();
+    }
+  }, [onMenuInfoModal]);
+
+  useEffect(() => {
+    if (store && !onMenuCategoryInfoModal) {
+      getMenuCategoryByStoreApi();
+    }
+  }, [onMenuCategoryInfoModal]);
 
   return (
     <div
@@ -49,73 +77,125 @@ const ShowMenuList = () => {
         categories.map((category) => {
           return (
             <div key={category.menuCategoryId}>
-              <div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
                 <p style={{ fontSize: 25, paddingBottom: 5 }}>
                   {category.menuCategoryName}
                 </p>
-                {menus[category.menuCategoryId] ? (
-                  menus[category.menuCategoryId].map((menu) => {
-                    const color =
-                      menu.menuId === selectedId ? "#FBA138" : "#94D35C";
-                    return (
-                      <div
-                        key={menu.menuId}
-                        style={{
-                          borderColor: color,
-                          borderWidth: 5,
-                          borderStyle: "dotted",
-                          borderTopLeftRadius: "50px",
-                          borderTopRightRadius: "50px",
-                          borderEndEndRadius: "50px",
-                          paddingLeft: "50px",
-                          padding: "20px",
-                          margin: "20px",
-                          display: "flex",
-                        }}
-                        onClick={() => {
-                          setSelectedId(menu.menuId);
-                          navigator(`/my-menu/${menu.menuId}`);
-                        }}
-                      >
-                        <div style={{ width: "80%" }}>
-                          {menu.menuPossible ? (
-                            <p style={{ fontSize: 20 }}>{menu.menuName}</p>
-                          ) : (
-                            <p style={{ fontSize: 20, color: "red" }}>
-                              [주문 막아놓음] {menu.menuName}
-                            </p>
-                          )}
-                          <p
-                            style={{
-                              marginTop: 5,
-                              color: "#757575",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {menu.menuIntroduction}
-                          </p>
-                          <p style={{ marginTop: 10 }}>
-                            가격 {menu.menuPrice}원
-                          </p>
-                        </div>
-                        <div>
-                          <img
-                            width="80px"
-                            height="80px"
-                            style={{ margin: "0px" }}
-                            src={tteokbokki}
-                          />
-                        </div>
-                      </div>
-                      // </TouchableOpacity>
-                    );
-                  })
-                ) : (
-                  <p>Loading...</p>
-                )}
+                <div>
+                  <button
+                    style={{
+                      borderStyle: "solid",
+                      borderColor: "#94D35C",
+                      padding: "0px 7px",
+                      marginLeft: "20px",
+                      borderWidth: 3,
+                      height: "30px",
+                      width: "50px",
+                      fontSize: "15px",
+                    }}
+                    onClick={() =>
+                      setOnMenuCategoryInfoModal((prev) => ({
+                        ...prev,
+                        [category.menuCategoryId]:
+                          !prev[category.menuCategoryId],
+                      }))
+                    }
+                  >
+                    수정
+                  </button>
+                  <button
+                    style={{
+                      borderStyle: "solid",
+                      borderColor: "#94D35C",
+                      padding: "0px 7px",
+                      borderWidth: 3,
+                      height: "30px",
+                      width: "50px",
+                      fontSize: "15px",
+                    }}
+                    onClick={() => {
+                      deleteMenuCategoryApi(category.menuCategoryId);
+                    }}
+                  >
+                    삭제
+                  </button>
+                  {onMenuCategoryInfoModal && (
+                    <MenuCategoryInfoModal
+                      setOnMenuCategoryInfoModal={setOnMenuCategoryInfoModal}
+                      menuCategoryId={category.menuCategoryId}
+                      menuCategoryName={category.menuCategoryName}
+                    />
+                  )}
+                </div>
               </div>
+
+              {menus[category.menuCategoryId] ? (
+                menus[category.menuCategoryId].map((menu) => {
+                  const color =
+                    menu.menuId === selectedId ? "#FBA138" : "#94D35C";
+                  return (
+                    <div
+                      key={menu.menuId}
+                      style={{
+                        borderColor: color,
+                        borderWidth: 5,
+                        borderStyle: "dotted",
+                        borderTopLeftRadius: "50px",
+                        borderTopRightRadius: "50px",
+                        borderEndEndRadius: "50px",
+                        paddingLeft: "50px",
+                        padding: "20px",
+                        margin: "20px",
+                        display: "flex",
+                      }}
+                      onClick={() => {
+                        setSelectedId(menu.menuId);
+                        //   navigator(`/my-menu/${menu.menuId}`);
+                        setMenu(menu.menuId);
+                      }}
+                    >
+                      <div style={{ width: "80%" }}>
+                        {menu.menuPossible ? (
+                          <p style={{ fontSize: 20 }}>{menu.menuName}</p>
+                        ) : (
+                          <p style={{ fontSize: 20, color: "red" }}>
+                            [주문 막아놓음] {menu.menuName}
+                          </p>
+                        )}
+                        <p
+                          style={{
+                            marginTop: 5,
+                            color: "#757575",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {menu.menuIntroduction}
+                        </p>
+                        <p style={{ marginTop: 10 }}>가격 {menu.menuPrice}원</p>
+                      </div>
+                      <div>
+                        <img
+                          width="80px"
+                          height="80px"
+                          style={{ margin: "0px" }}
+                          src={tteokbokki}
+                        />
+                      </div>
+                    </div>
+                    // </TouchableOpacity>
+                  );
+                })
+              ) : (
+                <p>Loading...</p>
+              )}
             </div>
           );
         })

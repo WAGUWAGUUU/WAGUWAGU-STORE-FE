@@ -1,13 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import Layout from './pages/Layout.jsx'
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import MyStore from './pages/MyStore.jsx'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import Layout from "./pages/Layout.jsx";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import MyStore from "./pages/MyStore.jsx";
 import OrderNotification from "./pages/OrderNotification.jsx";
 import HistoryInquiry from "./pages/HistoryInquiry.jsx";
 import MyMenuPage from "./pages/MyMenuPage.jsx";
-import RedirectToDefaultMenu from "./pages/RedirectToDefaultMenu.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import CallbackPage from "./pages/CallbackPage.jsx";
@@ -27,8 +26,7 @@ const router = createBrowserRouter([
       { path: "/signup", element: <SignupPage /> },
       { path: "/mypage", element: <MyPage /> },
       // { path: "/board", element: <Boards /> },
-      { path: "/my-menu", element: <RedirectToDefaultMenu /> },
-      { path: "/my-menu/:menuId", element: <MyMenuPage /> },
+      { path: "/my-menu", element: <MyMenuPage /> },
     ],
   },
 ]);

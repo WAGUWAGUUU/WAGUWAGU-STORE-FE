@@ -29,8 +29,13 @@ const Menu = ({store, setStore}) => {
   }
 
   const getMenuCategories = async () => {
-    const res = await getMenuCategoriesByStoreId(store.storeId);
-    setMenuCategories(res);
+    // store 가 mystore.jsx에서 주입될 때까지 null로 가져옴
+    if (store) {
+      const res = await getMenuCategoriesByStoreId(store.storeId);
+      setMenuCategories(res);
+    } else {
+      
+    }
   }
   
   const saveMenuInfo = async () => {
@@ -56,14 +61,14 @@ const Menu = ({store, setStore}) => {
   };
 
   const getMenus = async () => {
-    const arr = [];
-    for (let category of menuCategories) {
-      const res = await getMenuByMenuCategoryId(category.menuCategoryId);
-      for (let menu of res) {
-        arr.push(menu);
+      const arr = [];
+      for (let category of menuCategories) {
+        const res = await getMenuByMenuCategoryId(category.menuCategoryId);
+        for (let menu of res) {
+          arr.push(menu);
+        };
       };
-    };
-    setMenus(arr);
+      setMenus(arr);
   }
 
   const createOptionList = async () => {
@@ -85,29 +90,24 @@ const Menu = ({store, setStore}) => {
   }
   
   
-  const getOptionLists = async () => {
-    const arr = [];
-    for (let menu of menus) {
-      try {
-        const res = await getOptionListByMenuId(menu.menuId);
-        for (let optionList of res) {
-          arr.push(optionList);
-        };
-      } catch(e) {
-        continue; // 옵션 카테고리를 안 갖고 있는 메뉴는 뛰어 넘는다.
-      } 
-    };
-    setOptionLists(arr);
-  }
+  // const getOptionLists = async () => {
+  //     const arr = [];
+  //     for (let menu of menus) {
+  //       try {
+  //         const res = await getOptionListByMenuId(menu.menuId);
+  //         for (let optionList of res) {
+  //           arr.push(optionList);
+  //         };
+  //       } catch(e) {
+  //         continue; // 옵션 카테고리를 안 갖고 있는 메뉴는 뛰어 넘는다.
+  //       } 
+  //     };
+  //     setOptionLists(arr);
+  // }
 
   const getOptionListsBySelectedMenu = async () => {
-    try {
       const res = await getOptionListByMenuId(selectedMenuId);
       setOptionLists(res);
-    } catch (e) {
-      console.log("없어요~");
-      setOptionLists([]);
-    }
   };
 
   const createOption = async () => {
@@ -130,21 +130,24 @@ const Menu = ({store, setStore}) => {
 
 
   useEffect(() => {
-    getMenuCategories();
+    if (store) getMenuCategories();
+    else console.log("getMenuCategories : 다음 렌더링에서 가게 정보 가져올 예정");
   }, [menuCategoriesAdded, store]);
 
   useEffect(() => {
-    getMenus();
+    if (menuCategories) getMenus();
+    else console.log("getMenus : 다음 렌더링에서 메뉴 카테고리 가져올 예정");
   }, [menuAdded, menuCategories]);
 
-  useEffect(() => {
-    getOptionLists();
-  }, [optionListAdded, menus]);
+  // useEffect(() => {
+  //   if(menus) getOptionLists();
+  //   else console.log("getOptionLists : 다음 렌더링에서 메뉴 가져올 예정");
+  // }, [optionListAdded, menus]);
 
   useEffect(() => {
-    console.log("가져온다 실시")
-    getOptionListsBySelectedMenu();
-  }, [selectedMenuId]);
+   if(selectedMenuId) getOptionListsBySelectedMenu();
+   else console.log("getOptionListsBySelectedMenu : 메뉴 선택 시 진행 예정");
+  }, [optionListAdded, selectedMenuId]);
 
   return (
     <>
@@ -215,12 +218,12 @@ const Menu = ({store, setStore}) => {
           </div>
           <div className='option-select-item'>
             <select id="option-list-select" className='store-input'>
-              {optionLists.length === 0 && <option disabled selected hidden value="default">옵션 카테고리를 먼저 추가해주세요</option>}
               <option disabled selected hidden value="default">옵션 카테고리 선택</option>
               {optionLists && optionLists.length > 0 && optionLists.map((el,i) => {
-                console.log(el);
+                console.log(el); 
                 return (<option key={el.listId + el.listName} value={el.optionListId}>{el.listName}</option>)
               })}
+              {optionLists.length === 0 && <option disabled value="default">옵션 카테고리를 먼저 추가해주세요</option>}
             </select>
           </div>
         </div>

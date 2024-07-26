@@ -2,12 +2,11 @@ import { useState } from 'react';
 import './Delivery.css'
 import { saveDeliveryInfo } from '../api/Delivery';
 
-const Delivery = () => {
+const Delivery = ({store, setStore}) => {
   const [secondInitRange, setSecondInitRange] = useState("미정");
   const [thirdInitRange, setThirdInitRange] = useState("미정");
   const [fourthInitRange, setFourthInitRange] = useState("미정");
   const [fifthInitRange, setFifthInitRange] = useState("미정");
-  const [store, setStore] = useState(null);
 
   const setInitRange = (value, i) => {
     switch (i) {

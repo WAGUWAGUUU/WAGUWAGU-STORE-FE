@@ -17,7 +17,6 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      // 예시
       { path: "/mystore", element: <MyStore /> },
       { path: "/OrderNotification", element: <OrderNotification /> },
       { path: "/HistoryInquiry", element: <HistoryInquiry /> },

@@ -36,9 +36,9 @@ const Store = ({ store, setStore }) => {
       // back에 저장
       const storeInfo = {
         storeName: storeName,
-        storeAddressString: storeAddress,
-        storeAddressX: longitude,
-        storeAddressY: latitude,
+        storeAddress: storeAddress,
+        storeLongitude: longitude,
+        storeLatitude: latitude,
         storeOpenAt: storeOpenAt,
         storeCloseAt: storeCloseAt,
         storePhone: storePhoneNumber,
@@ -76,7 +76,7 @@ const Store = ({ store, setStore }) => {
             id="store-address"
             className="store-input"
             placeholder="가게 주소를 입력해주세요"
-            defaultValue={store && store.storeAddressString}
+            defaultValue={store && store.storeAddress}
           />
         </div>
         <h3 className="store-item">가게 카테고리</h3>

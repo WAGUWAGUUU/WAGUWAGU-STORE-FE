@@ -9,9 +9,8 @@ const MyMenuPage = () => {
 
   const getStoreByOwnerIdApi = async () => {
     try {
-      // const response = await getStoreByOwnerId(localStorage.getItem("ownerId"));
-      const response = await getStoreByOwnerId(2);
-
+      const response = await getStoreByOwnerId(localStorage.getItem("ownerId"));
+      // const response = await getStoreByOwnerId(2);
       setStore(response.storeId);
     } catch {
       console.log("error in getStoreByOwnerIdApi");

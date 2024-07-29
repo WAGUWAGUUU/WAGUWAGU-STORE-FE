@@ -26,7 +26,6 @@ const router = createBrowserRouter([
       { path: "/api/v1/owners/callback", element: <CallbackPage /> },
       { path: "/signup", element: <SignupPage /> },
       { path: "/mypage", element: <MyPage /> },
-      // { path: "/board", element: <Boards /> },
       { path: "/my-menu", element: <RedirectToDefaultMenu /> },
       { path: "/my-menu/:menuId", element: <MyMenuPage /> },
     ],

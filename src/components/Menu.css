@@ -1,0 +1,23 @@
+.option-select-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.menu-save-button {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    padding: 10px 30px;
+    border-radius: 13px;
+    background-color: #94D35C;
+    font-weight: 600;
+}
+
+hr {
+    margin-bottom: 40px;
+    border-bottom-color: #60ce31;
+}
+
+.option-select-item {
+    flex: 1;
+}

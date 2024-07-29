@@ -1,0 +1,13 @@
+.delivery-fee-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.delivery-range-input {
+    margin-bottom: 20px;
+    border-radius: 13px;
+    padding: 8px;
+    width: 50px;
+    border: 1px solid #60ce31;
+    font-size: 1rem;
+}

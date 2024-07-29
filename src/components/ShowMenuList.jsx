@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from "react";
 import "./ShowMenuList.css";
 import {
+  deleteMenuCategory,
   getMenuByMenuCategory,
   getMenuCategoryByStore,
 } from "../config/storeApi";
 import tteokbokki from "./../assets/tteokbokki.png";
+import MenuCategoryInfoModal from "./MenuCategoryInfoModal";
 import { useNavigate } from "react-router-dom";
 
-const ShowMenuList = () => {
+const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
   const [categories, setCategories] = useState([]);
   const [menus, setMenus] = useState([]);
   const [selectedId, setSelectedId] = useState("");
+  const [onMenuCategoryInfoModal, setOnMenuCategoryInfoModal] = useState("");
   const navigator = useNavigate();
+
   const getMenuCategoryByStoreApi = async () => {
     try {
-      const response = await getMenuCategoryByStore(1);
+      const response = await getMenuCategoryByStore(store);
       console.log(response);
       setCategories(response);
       response.forEach((category) => {
@@ -34,94 +38,150 @@ const ShowMenuList = () => {
     }
   };
 
+  const deleteMenuCategoryApi = async (menuCategoryId) => {
+    try {
+      const result = confirm(
+        "메뉴까지 같이 삭제됩니다. 진짜 삭제하시겠습니까?"
+      );
+      if (result) {
+        await deleteMenuCategory(menuCategoryId);
+        window.location.reload();
+      }
+    } catch {
+      console.log("error in deleteMenuCategoryApi");
+    }
+  };
+
   useEffect(() => {
-    getMenuCategoryByStoreApi();
-    console.log("hi");
-    console.log(menus);
-  }, []);
+    if (store) {
+      getMenuCategoryByStoreApi();
+    }
+  }, [store]);
+
+  useEffect(() => {
+    if (store && !onMenuInfoModal) {
+      getMenuCategoryByStoreApi();
+    }
+  }, [onMenuInfoModal]);
+
+  useEffect(() => {
+    if (store && !onMenuCategoryInfoModal) {
+      getMenuCategoryByStoreApi();
+    }
+  }, [onMenuCategoryInfoModal]);
 
   return (
     <div
-      className="my-menu-container"
+      className="my-menu-list-container"
       style={{ width: window.innerWidth / 2.1 }}
     >
       {categories ? (
         categories.map((category) => {
           return (
             <div key={category.menuCategoryId}>
-              <div>
+              <div className="my-menu-list-container2">
                 <p style={{ fontSize: 25, paddingBottom: 5 }}>
                   {category.menuCategoryName}
                 </p>
-                {menus[category.menuCategoryId] ? (
-                  menus[category.menuCategoryId].map((menu) => {
-                    const color =
-                      menu.menuId === selectedId ? "#FBA138" : "#94D35C";
-                    return (
-                      <div
-                        key={menu.menuId}
-                        style={{
-                          borderColor: color,
-                          borderWidth: 5,
-                          borderStyle: "dotted",
-                          borderTopLeftRadius: "50px",
-                          borderTopRightRadius: "50px",
-                          borderEndEndRadius: "50px",
-                          paddingLeft: "50px",
-                          padding: "20px",
-                          margin: "20px",
-                          display: "flex",
-                        }}
-                        onClick={() => {
-                          setSelectedId(menu.menuId);
-                          navigator(`/my-menu/${menu.menuId}`);
-                        }}
-                      >
-                        <div style={{ width: "80%" }}>
-                          {menu.menuPossible ? (
-                            <p style={{ fontSize: 20 }}>{menu.menuName}</p>
-                          ) : (
-                            <p style={{ fontSize: 20, color: "red" }}>
-                              [주문 막아놓음] {menu.menuName}
-                            </p>
-                          )}
-                          <p
-                            style={{
-                              marginTop: 5,
-                              color: "#757575",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {menu.menuIntroduction}
-                          </p>
-                          <p style={{ marginTop: 10 }}>
-                            가격 {menu.menuPrice}원
-                          </p>
-                        </div>
-                        <div>
-                          <img
-                            width="80px"
-                            height="80px"
-                            style={{ margin: "0px" }}
-                            src={tteokbokki}
-                          />
-                        </div>
-                      </div>
-                      // </TouchableOpacity>
-                    );
-                  })
-                ) : (
-                  <p>Loading...</p>
-                )}
+                <div>
+                  <button
+                    className="my-menu-list-modify-button"
+                    onClick={() =>
+                      setOnMenuCategoryInfoModal((prev) => ({
+                        ...prev,
+                        [category.menuCategoryId]:
+                          !prev[category.menuCategoryId],
+                      }))
+                    }
+                  >
+                    수정
+                  </button>
+                  <button
+                    style={{
+                      margin: "0px",
+                    }}
+                    className="my-menu-list-modify-button"
+                    onClick={() => {
+                      deleteMenuCategoryApi(category.menuCategoryId);
+                    }}
+                  >
+                    삭제
+                  </button>
+                  {onMenuCategoryInfoModal && (
+                    <MenuCategoryInfoModal
+                      setOnMenuCategoryInfoModal={setOnMenuCategoryInfoModal}
+                      menuCategoryId={category.menuCategoryId}
+                      menuCategoryName={category.menuCategoryName}
+                    />
+                  )}
+                </div>
               </div>
+
+              {menus[category.menuCategoryId] ? (
+                menus[category.menuCategoryId].map((menu) => {
+                  const color =
+                    menu.menuId === selectedId ? "#FBA138" : "#94D35C";
+                  return (
+                    <div
+                      key={menu.menuId}
+                      style={{
+                        borderColor: color,
+                      }}
+                      className="my-menu-list-menuInfo-box"
+                      onClick={() => {
+                        setSelectedId(menu.menuId);
+                        setMenu(menu.menuId);
+                      }}
+                    >
+                      <div style={{ width: "80%" }}>
+                        {menu.menuPossible ? (
+                          <p style={{ fontSize: 20 }}>{menu.menuName}</p>
+                        ) : (
+                          <p style={{ fontSize: 20, color: "red" }}>
+                            [주문 막아놓음] {menu.menuName}
+                          </p>
+                        )}
+                        <p
+                          style={{
+                            marginTop: 5,
+                            color: "#757575",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {menu.menuIntroduction}
+                        </p>
+                        <p style={{ marginTop: 10 }}>가격 {menu.menuPrice}원</p>
+                      </div>
+                      <div>
+                        <img
+                          width="80px"
+                          height="80px"
+                          style={{ margin: "0px" }}
+                          src={tteokbokki}
+                        />
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p>Loading...</p>
+              )}
             </div>
           );
         })
       ) : (
         <div />
       )}
+      <button
+        className="my-menu-list-plus-button"
+        onClick={() => {
+          navigator(`/mystore`);
+        }}
+      >
+        <p style={{ fontSize: "30px", color: "#FFFFFF" }}>+</p>
+      </button>
     </div>
   );
 };

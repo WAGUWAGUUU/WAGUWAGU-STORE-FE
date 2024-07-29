@@ -23,7 +23,7 @@ const router = createBrowserRouter([
       { path: "/OrderNotification", element: <OrderNotification /> },
       { path: "/HistoryInquiry", element: <HistoryInquiry /> },
       { path: "/Login", element: <LoginPage /> },
-      { path: "/owners/callback", element: <CallbackPage /> },
+      { path: "/api/v1/owners/callback", element: <CallbackPage /> },
       { path: "/signup", element: <SignupPage /> },
       { path: "/mypage", element: <MyPage /> },
       // { path: "/board", element: <Boards /> },

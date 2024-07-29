@@ -9,9 +9,9 @@ const MyStore = () => {
   const [store, setStore] = useState(null);
 
   const getStore = async () => {
-    // const ownerId = localStorage.getItem("id");
-    // const res = getStoreByOwnerId(ownerId);
-    const res = await getStoreByOwnerId(3613397573);
+    const ownerId = localStorage.getItem("id");
+    const res = getStoreByOwnerId(ownerId);
+    // const res = await getStoreByOwnerId(1);
     setStore(res);
   };
 
@@ -19,6 +19,7 @@ const MyStore = () => {
     getStore();
   }, []);
 
+  console.log(store);
   return (
     <>
       <div className="mystore-container">

@@ -40,7 +40,7 @@ const Store = ({store, setStore}) => {
         , storeMinimumOrderAmount: minOrderAmount
         , storeIntroduction: storeIntroduction
         , storeCategory: storeCategory
-        , ownerId: 1 
+        , ownerId: localStorage.getItem("id")
         // , ownerId: localStorage.getItem("id") 
       };
       await saveStore(storeInfo);

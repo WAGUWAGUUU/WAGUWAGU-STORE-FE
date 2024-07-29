@@ -267,7 +267,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
                       >
                         삭제
                       </button>
-                      {onOptionListInfoModal && (
+                      {onOptionListInfoModal[optionList.listId] && (
                         <OptionListInfoModal
                           setOnOptionListInfoModal={setOnOptionListInfoModal}
                           optionListId={optionList.listId}

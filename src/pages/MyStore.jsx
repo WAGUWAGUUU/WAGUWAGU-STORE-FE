@@ -10,8 +10,8 @@ const MyStore = () => {
 
   const getStore = async () => {
     // const ownerId = localStorage.getItem("id");
-    // const res = getStoreByOwnerId(ownerId);
-    const res = await getStoreByOwnerId(3613397573);
+    // const res = getStoreByOwnerId(1);
+    const res = await getStoreByOwnerId(localStorage.getItem("ownerId"));
     setStore(res);
   };
 

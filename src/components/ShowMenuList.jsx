@@ -15,7 +15,7 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
   const [selectedId, setSelectedId] = useState("");
   const [onMenuCategoryInfoModal, setOnMenuCategoryInfoModal] = useState("");
   const navigator = useNavigate();
-
+  const [activeCategoryId, setActiveCategoryId] = useState("");
   const getMenuCategoryByStoreApi = async () => {
     try {
       const response = await getMenuCategoryByStore(store);
@@ -86,13 +86,7 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
                 <div>
                   <button
                     className="my-menu-list-modify-button"
-                    onClick={() =>
-                      setOnMenuCategoryInfoModal((prev) => ({
-                        ...prev,
-                        [category.menuCategoryId]:
-                          !prev[category.menuCategoryId],
-                      }))
-                    }
+                    onClick={() => setActiveCategoryId(category.menuCategoryId)}
                   >
                     수정
                   </button>
@@ -107,9 +101,10 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
                   >
                     삭제
                   </button>
-                  {onMenuCategoryInfoModal && (
+
+                  {activeCategoryId === category.menuCategoryId && (
                     <MenuCategoryInfoModal
-                      setOnMenuCategoryInfoModal={setOnMenuCategoryInfoModal}
+                      setOnMenuCategoryInfoModal={setActiveCategoryId}
                       menuCategoryId={category.menuCategoryId}
                       menuCategoryName={category.menuCategoryName}
                     />

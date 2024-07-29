@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./ShowMenuDetail.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   changeMenuPossible,
   deleteMenu,
@@ -8,12 +8,9 @@ import {
   deleteOptionList,
   getMenuByMenuId,
   getOptionListsByMenuId,
-  updateOptionListName,
 } from "../config/storeApi";
 import tteokbokki from "./../assets/tteokbokki.png";
-import StoreInfoModal from "./MenuInfoModal";
 import MenuInfoModal from "./MenuInfoModal";
-import { createPortal } from "react-dom";
 import OptionInfoModal from "./OptionInfoModal";
 import OptionListInfoModal from "./OptionListInfoModal";
 const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
@@ -142,61 +139,24 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
     >
       {menuInfo ? (
         <div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                margin: "20px",
-              }}
-            >
+          <div className="my-menu-detail-menuInfo-container">
+            <div className="my-menu-detail-menuInfo-container2">
               <img
                 width={window.innerWidth / 3}
                 height="200px"
-                //   style={{ margin: "20px" }}
                 src={tteokbokki}
               />
-              <button
-                style={{
-                  borderStyle: "solid",
-                  borderColor: "#94D35C",
-                  padding: "0px 7px",
-                  borderWidth: 3,
-                  marginTop: "10px",
-                  alignSelf: "flex-end",
-                }}
-              >
+              <button className="my-menu-detail-modify-button">
                 사진 수정
               </button>
             </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                margin: "20px",
-              }}
-            >
+            <div className="my-menu-detail-menuInfo-container2">
               <div
                 key={menuInfo.menuId}
                 style={{
                   width: window.innerWidth / 3,
-                  borderColor: "#94D35C",
-                  borderWidth: 5,
-                  borderStyle: "dotted",
-                  borderTopLeftRadius: "50px",
-                  borderTopRightRadius: "50px",
-                  borderEndEndRadius: "50px",
-                  paddingLeft: "50px",
-                  padding: "20px",
-                  margin: "5px",
-                  display: "flex",
                 }}
+                className="my-menu-detail-menuInfo-box"
               >
                 <div>
                   {menuInfo.menuPossible ? (
@@ -220,13 +180,10 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
               <div style={{ alignSelf: "flex-end" }}>
                 <button
                   style={{
-                    borderStyle: "solid",
-                    borderColor: "#94D35C",
                     padding: "5px",
-                    borderWidth: 3,
-                    marginTop: "10px",
                     alignSelf: "center",
                   }}
+                  className="my-menu-detail-modify-button"
                   onClick={() => {
                     changeMenuPossibleApi();
                   }}
@@ -239,26 +196,20 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
                 </button>
                 <button
                   style={{
-                    borderStyle: "solid",
-                    borderColor: "#94D35C",
                     padding: "5px",
-                    borderWidth: 3,
-                    marginTop: "10px",
                     alignSelf: "center",
                   }}
+                  className="my-menu-detail-modify-button"
                   onClick={() => setOnMenuInfoModal(!onMenuInfoModal)}
                 >
                   메뉴 수정
                 </button>
                 <button
                   style={{
-                    borderStyle: "solid",
-                    borderColor: "#94D35C",
                     padding: "5px",
-                    borderWidth: 3,
-                    marginTop: "10px",
                     alignSelf: "center",
                   }}
+                  className="my-menu-detail-modify-button"
                   onClick={() => {
                     deleteMenuApi();
                   }}
@@ -277,21 +228,14 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
               </div>
             </div>
           </div>
-          <div
-            style={{ display: "flex", flexDirection: "column", margin: "20px" }}
-          >
+          <div className="my-menu-detail-menuInfo-container2">
             {optionLists ? (
               optionLists.map((optionList, index) => (
                 <div
                   key={optionList.listId}
-                  style={{
-                    marginTop: "20px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                  }}
+                  className="my-menu-detail-optionList-container"
                 >
-                  <div style={{ display: "flex", alignItems: "center" }}>
+                  <div className="my-menu-detail-optionList-container2">
                     <p
                       style={{
                         fontSize: 18,
@@ -302,16 +246,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
                     </p>
                     <div>
                       <button
-                        style={{
-                          borderStyle: "solid",
-                          borderColor: "#94D35C",
-                          padding: "0px 7px",
-                          marginLeft: "20px",
-                          borderWidth: 3,
-                          height: "30px",
-                          width: "50px",
-                          fontSize: "15px",
-                        }}
+                        className="my-menu-detail-optionList-modify-button"
                         onClick={() =>
                           setOnOptionListInfoModal((prev) => ({
                             ...prev,
@@ -323,21 +258,16 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
                       </button>
                       <button
                         style={{
-                          borderStyle: "solid",
-                          borderColor: "#94D35C",
-                          padding: "0px 7px",
-                          borderWidth: 3,
-                          height: "30px",
-                          width: "50px",
-                          fontSize: "15px",
+                          margin: "0px",
                         }}
+                        className="my-menu-detail-optionList-modify-button"
                         onClick={() => {
                           deleteOptionListApi(optionList.listId);
                         }}
                       >
                         삭제
                       </button>
-                      {onOptionListInfoModal && (
+                      {onOptionListInfoModal[optionList.listId] && (
                         <OptionListInfoModal
                           setOnOptionListInfoModal={setOnOptionListInfoModal}
                           optionListId={optionList.listId}
@@ -349,39 +279,27 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
 
                   {optionList.options.length > 0 ? (
                     optionList.options.map((option) => (
-                      <div style={{ display: "flex", alignItems: "center" }}>
+                      <div className="my-menu-detail-optionList-container2">
                         <div
                           key={option.optionId}
-                          // style={{ padding: "20px 40px", display: "flex" }}
                           style={{
                             width: window.innerWidth / 4.1,
-                            borderColor: "#94D35C",
-                            borderWidth: 5,
-                            borderStyle: "dotted",
-                            borderTopLeftRadius: "50px",
-                            borderTopRightRadius: "50px",
-                            borderEndEndRadius: "50px",
                             paddingLeft: "20px",
                             padding: "5px 20px",
                             margin: "10px 20px",
-                            display: "flex",
                             justifyContent: "space-between",
                           }}
+                          className="my-menu-detail-menuInfo-box"
                         >
                           <p>{option.optionTitle}</p>
                           <p>{option.optionPrice}원</p>
                         </div>
-                        <div>
+                        <div style={{ display: "flex" }}>
                           <button
                             style={{
-                              borderStyle: "solid",
-                              borderColor: "#94D35C",
-                              padding: "0px 7px",
-                              borderWidth: 3,
-                              height: "30px",
-                              width: "50px",
-                              fontSize: "15px",
+                              marginLeft: "20px",
                             }}
+                            className="my-menu-detail-optionList-modify-button"
                             onClick={() =>
                               setOnOptionInfoModal((prev) => ({
                                 ...prev,
@@ -393,14 +311,9 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
                           </button>
                           <button
                             style={{
-                              borderStyle: "solid",
-                              borderColor: "#94D35C",
-                              padding: "0px 7px",
-                              borderWidth: 3,
-                              height: "30px",
-                              width: "50px",
-                              fontSize: "15px",
+                              marginLeft: "0px",
                             }}
+                            className="my-menu-detail-optionList-modify-button"
                             onClick={() => {
                               deleteOptionApi(option.optionId);
                             }}
@@ -437,16 +350,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
         <p>메뉴 정보가 없습니다</p>
       )}
       <button
-        style={{
-          borderColor: "#FFFFFF",
-          backgroundColor: "#FBA138",
-          borderWidth: 3,
-          width: "50px",
-          height: "50px",
-          borderRadius: "100%",
-          display: "flex",
-          justifyContent: "space-around",
-        }}
+        className="my-menu-detail-plus-button"
         onClick={() => {
           navigator(`/mystore`);
         }}

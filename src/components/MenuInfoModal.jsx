@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { updateMenu } from "../config/storeApi";
-import "./MenuInfoModal.css";
+import "./MenuModal.css";
 const MenuInfoModal = (props) => {
   const [menuName, setMenuName] = useState(props.menuName);
   const [menuIntroduction, setMenuIntroduction] = useState(
@@ -39,9 +39,9 @@ const MenuInfoModal = (props) => {
   };
 
   return (
-    <div className="modal-container">
+    <div className="menu-modal-container">
       <button
-        className="modal-close"
+        className="menu-modal-close"
         onClick={() => {
           closeModal();
         }}
@@ -49,15 +49,7 @@ const MenuInfoModal = (props) => {
         X
       </button>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          margin: "20px",
-          marginTop: "40px",
-        }}
-      >
+      <div className="menu-modal-textAreas">
         <textarea
           type="text"
           value={menuName}
@@ -65,26 +57,10 @@ const MenuInfoModal = (props) => {
             setMenuName(e.target.value);
           }}
           rows="2"
-          style={{
-            border: "2px solid #94D35C",
-            outlineColor: "#FBA138",
-            borderRadius: "10px",
-            padding: "5px",
-            resize: "none",
-            width: "400px",
-            marginBottom: "5px",
-          }}
+          className="menu-modal-textArea"
         />
         <button
-          style={{
-            borderStyle: "solid",
-            borderColor: "#94D35C",
-            padding: "0px 7px",
-            borderWidth: 3,
-            height: "30px",
-            width: "50px",
-            fontSize: "15px",
-          }}
+          className="menu-modal-button"
           onClick={() => {
             updateMenuNameApi();
           }}
@@ -92,14 +68,7 @@ const MenuInfoModal = (props) => {
           수정
         </button>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          margin: "20px",
-        }}
-      >
+      <div className="menu-modal-textAreas" style={{ marginTop: "20px" }}>
         <textarea
           type="text"
           value={menuIntroduction}
@@ -107,26 +76,10 @@ const MenuInfoModal = (props) => {
             setMenuIntroduction(e.target.value);
           }}
           rows="5"
-          style={{
-            borderRadius: "10px",
-            padding: "5px",
-            resize: "none",
-            width: "400px",
-            border: "2px solid #94D35C",
-            outlineColor: "#FBA138",
-            marginBottom: "5px",
-          }}
+          className="menu-modal-textArea"
         />
         <button
-          style={{
-            borderStyle: "solid",
-            borderColor: "#94D35C",
-            padding: "0px 7px",
-            borderWidth: 3,
-            height: "30px",
-            width: "50px",
-            fontSize: "15px",
-          }}
+          className="menu-modal-button"
           onClick={() => {
             updateMenuIntroductionApi();
           }}
@@ -134,14 +87,7 @@ const MenuInfoModal = (props) => {
           수정
         </button>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          margin: "20px",
-        }}
-      >
+      <div className="menu-modal-textAreas" style={{ marginTop: "20px" }}>
         <textarea
           type="text"
           value={menuPrice}
@@ -149,26 +95,10 @@ const MenuInfoModal = (props) => {
             setMenuPrice(e.target.value);
           }}
           rows="2"
-          style={{
-            borderRadius: "10px",
-            padding: "5px",
-            resize: "none",
-            width: "400px",
-            border: "2px solid #94D35C",
-            outlineColor: "#FBA138",
-            marginBottom: "5px",
-          }}
+          className="menu-modal-textArea"
         />
         <button
-          style={{
-            borderStyle: "solid",
-            borderColor: "#94D35C",
-            padding: "0px 7px",
-            borderWidth: 3,
-            height: "30px",
-            width: "50px",
-            fontSize: "15px",
-          }}
+          className="menu-modal-button"
           onClick={() => {
             updateMenuPriceApi();
           }}

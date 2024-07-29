@@ -7,13 +7,15 @@ import {
 } from "../config/storeApi";
 import tteokbokki from "./../assets/tteokbokki.png";
 import MenuCategoryInfoModal from "./MenuCategoryInfoModal";
+import { useNavigate } from "react-router-dom";
 
 const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
   const [categories, setCategories] = useState([]);
   const [menus, setMenus] = useState([]);
   const [selectedId, setSelectedId] = useState("");
   const [onMenuCategoryInfoModal, setOnMenuCategoryInfoModal] = useState("");
-
+  const navigator = useNavigate();
+  const [activeCategoryId, setActiveCategoryId] = useState("");
   const getMenuCategoryByStoreApi = async () => {
     try {
       const response = await getMenuCategoryByStore(store);
@@ -70,64 +72,39 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
 
   return (
     <div
-      className="my-menu-container"
+      className="my-menu-list-container"
       style={{ width: window.innerWidth / 2.1 }}
     >
       {categories ? (
         categories.map((category) => {
           return (
             <div key={category.menuCategoryId}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
+              <div className="my-menu-list-container2">
                 <p style={{ fontSize: 25, paddingBottom: 5 }}>
                   {category.menuCategoryName}
                 </p>
                 <div>
                   <button
-                    style={{
-                      borderStyle: "solid",
-                      borderColor: "#94D35C",
-                      padding: "0px 7px",
-                      marginLeft: "20px",
-                      borderWidth: 3,
-                      height: "30px",
-                      width: "50px",
-                      fontSize: "15px",
-                    }}
-                    onClick={() =>
-                      setOnMenuCategoryInfoModal((prev) => ({
-                        ...prev,
-                        [category.menuCategoryId]:
-                          !prev[category.menuCategoryId],
-                      }))
-                    }
+                    className="my-menu-list-modify-button"
+                    onClick={() => setActiveCategoryId(category.menuCategoryId)}
                   >
                     수정
                   </button>
                   <button
                     style={{
-                      borderStyle: "solid",
-                      borderColor: "#94D35C",
-                      padding: "0px 7px",
-                      borderWidth: 3,
-                      height: "30px",
-                      width: "50px",
-                      fontSize: "15px",
+                      margin: "0px",
                     }}
+                    className="my-menu-list-modify-button"
                     onClick={() => {
                       deleteMenuCategoryApi(category.menuCategoryId);
                     }}
                   >
                     삭제
                   </button>
-                  {onMenuCategoryInfoModal && (
+
+                  {activeCategoryId === category.menuCategoryId && (
                     <MenuCategoryInfoModal
-                      setOnMenuCategoryInfoModal={setOnMenuCategoryInfoModal}
+                      setOnMenuCategoryInfoModal={setActiveCategoryId}
                       menuCategoryId={category.menuCategoryId}
                       menuCategoryName={category.menuCategoryName}
                     />
@@ -144,19 +121,10 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
                       key={menu.menuId}
                       style={{
                         borderColor: color,
-                        borderWidth: 5,
-                        borderStyle: "dotted",
-                        borderTopLeftRadius: "50px",
-                        borderTopRightRadius: "50px",
-                        borderEndEndRadius: "50px",
-                        paddingLeft: "50px",
-                        padding: "20px",
-                        margin: "20px",
-                        display: "flex",
                       }}
+                      className="my-menu-list-menuInfo-box"
                       onClick={() => {
                         setSelectedId(menu.menuId);
-                        //   navigator(`/my-menu/${menu.menuId}`);
                         setMenu(menu.menuId);
                       }}
                     >
@@ -190,7 +158,6 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
                         />
                       </div>
                     </div>
-                    // </TouchableOpacity>
                   );
                 })
               ) : (
@@ -202,6 +169,14 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
       ) : (
         <div />
       )}
+      <button
+        className="my-menu-list-plus-button"
+        onClick={() => {
+          navigator(`/mystore`);
+        }}
+      >
+        <p style={{ fontSize: "30px", color: "#FFFFFF" }}>+</p>
+      </button>
     </div>
   );
 };

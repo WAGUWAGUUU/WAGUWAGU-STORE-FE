@@ -34,6 +34,7 @@ const SignupPage = () => {
                     if (ownerAddress === null) {
                         setOwnerEmail(ownerEmail);
                         setOwnerName(ownerName);
+                        localStorage.setItem('ownerId', ownerId);
                     } else {
                         navigate("/signup");
                         localStorage.setItem('ownerId', ownerId);
@@ -97,6 +98,12 @@ const SignupPage = () => {
                 { ownerName, ownerAddress, ownerBusinessNumber, ownerLatitude, ownerLongitude });
             if (res.status === 200) {
                 alert('가입 완료');
+                localStorage.setItem('ownerName', ownerName);
+                localStorage.setItem('ownerEmail', ownerEmail);
+                localStorage.setItem('ownerAddress', ownerAddress);
+                localStorage.setItem('ownerLatitude', ownerLatitude);
+                localStorage.setItem('ownerLongitude', ownerLongitude);
+                localStorage.setItem('ownerBusinessNumber', ownerBusinessNumber);
                 navigate('/');
             } else {
                 alert('가입 실패');

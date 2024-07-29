@@ -1,4 +1,4 @@
-\.order-notification {
+.order-notification {
     background-color: #e6f7d1; 
     padding: 20px;
 }
@@ -27,9 +27,10 @@
 
 .order-summary {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around; /* Changed to space-around */
     gap: 10px;
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Added to wrap items if needed */
 }
 
 .order-details {
@@ -37,18 +38,17 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 16px;
-    display: flex;
-    flex-direction: row;
 }
 
 .order-card {
-    flex: 1 1 calc(33.33% - 16px); 
+    flex: 1 1 calc(25% - 20px); /* Adjusted to 25% to fit four cards in one row */
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
-    max-width: 300px; 
-    min-width: 200px; 
+    max-width: 300px;
+    min-width: 200px;
+    margin: 10px; /* Added margin for better spacing */
 }
 
 .aram-box {

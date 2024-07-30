@@ -30,12 +30,10 @@ const Menu = ({store, setStore}) => {
 
   const getMenuCategories = async () => {
     // store 가 mystore.jsx에서 주입될 때까지 null로 가져옴
-    if (store) {
-      const res = await getMenuCategoriesByStoreId(store.storeId);
-      setMenuCategories(res);
-    } else {
-      
-    }
+    console.log(store, "menuCategories");
+    const res = await getMenuCategoriesByStoreId(store.storeId);
+    console.log(res, "getmenuCategories")
+    setMenuCategories(res);
   }
   
   const saveMenuInfo = async () => {
@@ -74,11 +72,8 @@ const Menu = ({store, setStore}) => {
   const createOptionList = async () => {
     const menuId = document.getElementById("menu-select").value;
     const optionListName = document.getElementById("option-list-name").value;
-    console.log(menuId);
-    console.log(optionListName);
     if (menuId !== "default" && optionListName !== "") {
       const optionListRequest = {menuId : menuId, listName: optionListName};
-      console.log(optionListRequest);
       try {
         await saveOptionList(optionListRequest);
         alert("저장이 완료되었습니다");
@@ -220,7 +215,6 @@ const Menu = ({store, setStore}) => {
             <select id="option-list-select" className='store-input'>
               <option disabled selected hidden value="default">옵션 카테고리 선택</option>
               {optionLists && optionLists.length > 0 && optionLists.map((el,i) => {
-                console.log(el); 
                 return (<option key={el.listId + el.listName} value={el.optionListId}>{el.listName}</option>)
               })}
               {optionLists.length === 0 && <option disabled value="default">옵션 카테고리를 먼저 추가해주세요</option>}

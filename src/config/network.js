@@ -13,3 +13,4 @@ export const api = async (url, method, body, params, headers) => {
   });
   return res;
 };
+

@@ -1,26 +1,21 @@
 import { orderApi } from "./orderNetwork";
 
-export const selectByOwner = async (ownerId) => {
-  console.log(ownerId);
+export const selectByOwner = async (storeId) => {
+  console.log(storeId);
   try {
     const res = await orderApi(
-      `${ownerId}`, // Correctly pass the ownerId in the URL
-      "GET" // Ensure the HTTP method is in uppercase
+      `/store/${storeId}/all`, 
+      "GET" 
     );
     console.log(res);
     return res;
   } catch (error) {
     console.error("Error in selectByOwner", error);
-    throw error; // It's good practice to rethrow the error to let the caller handle it
+    throw error;
   }
 };
   
 export const selectByDate = async (requestId, startDate, endDate, pageNumber) => {
-  console.log(requestId);
-  console.log(startDate);
-  console.log(endDate);
-  console.log(pageNumber);
-
 
   try {
     const url = `/${requestId}/history`;
@@ -51,9 +46,9 @@ export const selectByDate = async (requestId, startDate, endDate, pageNumber) =>
       return await orderApi(
         `/request/${orderId}`,
         "POST",
-        status, // Passing status as a string
+        status,
         null,
-        { 'Content-Type': 'text/plain' } // Ensure the content type is set to plain text
+        { 'Content-Type': 'text/plain' } 
       );
     } catch (error) {
       console.error("Error in updateState", error);

@@ -60,10 +60,12 @@ const OrderNotification = () => {
   };
 
   const handleStatusChange = async (orderId, newStatus) => {
-    console.log(`Changing status of order ${orderId} to ${newStatus}`);
-
+    const updateRequest = {
+      status: newStatus,
+    };
+  
     try {
-      await updateState(orderId, newStatus);
+      await updateState(orderId, updateRequest);
       setOrders(orders.map(order => {
         if (order.id === orderId || order.orderId === orderId) {
           return { ...order, status: newStatus };
@@ -73,18 +75,14 @@ const OrderNotification = () => {
     } catch (error) {
       console.error('Error updating order status:', error);
     }
-
+  
     setSelectedOrder(null);
   };
 
   const handleOrderClick = (event, orderId, currentStatus) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    console.log('Order clicked, rect:', rect);
-    console.log('Current status:', currentStatus);
     setDropdownPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
-    console.log('Dropdown position set to:', { top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
     setSelectedOrder(orderId);
-    console.log('Selected order set to:', orderId);
   };
 
   useEffect(() => {

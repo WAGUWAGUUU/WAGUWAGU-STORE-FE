@@ -36,7 +36,7 @@ const OrderNotification = () => {
       if (Array.isArray(response)) {
         const processedOrders = response.map(order => ({
           ...order,
-          status: order.orderState[order.orderState.length - 1] // 리스트의 마지막 상태를 사용
+          status: order.orderState[order.orderState.length - 1]
         }));
         setOrders(processedOrders);
       } else {
@@ -59,9 +59,10 @@ const OrderNotification = () => {
     fetchOrders(ownerId);
   };
 
-  const handleStatusChange = async (orderId, newStatus) => {
+  const handleStatusChange = async (orderId, newStatus,newdue) => {
     const updateRequest = {
       status: newStatus,
+      due: newdue
     };
   
     try {
@@ -123,7 +124,7 @@ const OrderNotification = () => {
       case '배달중':
         return '#6E5656';
       case '배달 완료':
-        return '#ffffff';
+        return '#808080';
       default:
         return '#ffffff';
     }

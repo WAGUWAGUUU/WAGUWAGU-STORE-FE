@@ -9,9 +9,9 @@ const MyStore = () => {
   const [store, setStore] = useState(null);
 
   const getStore = async () => {
-    // const ownerId = localStorage.getItem("id");
-    // const res = getStoreByOwnerId(1);
-    const res = await getStoreByOwnerId(localStorage.getItem("ownerId"));
+    const ownerId = localStorage.getItem("ownerId");
+    const res = await getStoreByOwnerId(ownerId);
+    // const res = await getStoreByOwnerId(1);
     setStore(res);
   };
 

@@ -1,5 +1,5 @@
 import { getAddressDetail } from "../api/Address";
-import { saveStore } from "../api/Store";
+import { deleteStoreById, saveStore, updateStoreById } from "../api/Store";
 import "./Store.css";
 
 const Store = ({ store, setStore }) => {
@@ -54,6 +54,67 @@ const Store = ({ store, setStore }) => {
     }
   };
 
+  const deleteStoreInfo = async () => {
+    if (store) {
+      await deleteStoreById(store.storeId);
+      alert("삭제가 완료되었습니다")
+    } 
+  }
+
+  const updateStoreInfo = async () => {
+    const storeName = document.getElementById("store-name").value;
+    const storeAddress = document.getElementById("store-address").value;
+    const storeCategory = document.getElementById("store-category").value;
+    const storeOpenAt = document.getElementById("store-open-time").value;
+    const storeCloseAt = document.getElementById("store-close-time").value;
+    const storeIntroduction =
+      document.getElementById("store-introduction").value;
+    const minOrderAmount = document.getElementById(
+      "minimum-order-amount"
+    ).value;
+    const storePhoneNumber =
+      document.getElementById("store-phone-number").value;
+    
+    console.log(storeCategory, "업데이트");
+
+    // input 값에 빈 칸이 있는지 검증
+    if (
+      storeName !== "" &&
+      storeAddress !== "" &&
+      storeCategory !== "default" &&
+      storeOpenAt !== "" &&
+      storeCloseAt !== "" &&
+      storeIntroduction !== "" &&
+      minOrderAmount !== "" &&
+      storePhoneNumber !== ""
+    ) {
+      // 주소로 위, 경도 정보 가져오기 with kakao api
+      const res = await getAddressDetail(storeAddress);
+      const latitude = res.documents[0].y;
+      const longitude = res.documents[0].x;
+
+      // back에 저장
+      const udpateInfo = {
+        storeName: storeName,
+        storeAddress: storeAddress,
+        storeLongitude: longitude,
+        storeLatitude: latitude,
+        storeOpenAt: storeOpenAt,
+        storeCloseAt: storeCloseAt,
+        storePhone: storePhoneNumber,
+        storeMinimumOrderAmount: minOrderAmount,
+        storeIntroduction: storeIntroduction,
+        storeCategory: storeCategory,
+      };
+      
+      await updateStoreById(store.storeId, udpateInfo);
+      alert("수정이 완료되었습니다");
+    } else {
+      alert("빈 칸을 채워주세요");
+    }
+  }
+
+  
   return (
     <>
       <div className="store-container">
@@ -84,20 +145,13 @@ const Store = ({ store, setStore }) => {
           <select
             id="store-category"
             className="store-input"
-            defaultValue={store && store.storeCategory}
           >
-            <option disabled selected hidden value="default">
+            <option disabled hidden selected={!store} value="default">
               가게 카테고리 선택
             </option>
-            <option value="피자">피자</option>
-            <option value="중식">중식</option>
-            <option value="치킨">치킨</option>
-            <option value="디저트">디저트</option>
-            <option value="양식">양식</option>
-            <option value="한식">한식</option>
-            <option value="일식">일식</option>
-            <option value="회">회</option>
-            <option value="기타">기타</option>
+            {["피자", "중식", "치킨", "디저트", "양식", "한식", "일식", "회", "기타"].map((el, i) => {
+              return <option value={el} key={i} selected={store && store.storeCategory === el}>{el}</option>
+            })}
           </select>
         </div>
         <h3 className="store-item">영업 시간</h3>
@@ -146,10 +200,18 @@ const Store = ({ store, setStore }) => {
             defaultValue={store && store.storePhone}
           />
         </div>
-        <div>
-          <button className="store-save-button" onClick={saveStoreInfo}>
-            저장
-          </button>
+        <div className="store-button-container">
+          <div>
+            <button className="store-save-button" onClick={store ? updateStoreInfo : saveStoreInfo}>
+              {store ? "수정" : "저장"}
+            </button>
+          </div>
+          {store && 
+          <div>
+            <button className="store-delete-button" onClick={deleteStoreInfo}>
+              삭제
+            </button>
+          </div>}
         </div>
       </div>
     </>

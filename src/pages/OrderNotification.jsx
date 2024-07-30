@@ -36,7 +36,7 @@ const OrderNotification = () => {
       if (Array.isArray(response)) {
         const processedOrders = response.map(order => ({
           ...order,
-          status: order.orderState[0].split(':')[0] // 예시로 첫 번째 상태를 사용
+          status: order.orderState[order.orderState.length - 1] // 리스트의 마지막 상태를 사용
         }));
         setOrders(processedOrders);
       } else {
@@ -99,7 +99,7 @@ const OrderNotification = () => {
     return <div>{error}</div>;
   }
 
-  const statusOptions = ['주문 요청', '조리중', '배달 요청', '배달 수락', '배달중','배달 완료'];
+  const statusOptions = ['주문 요청', '조리중', '배달 요청', '배달 수락', '배달중', '배달 완료'];
 
   const statuses = orders.map(order => order.status);
 

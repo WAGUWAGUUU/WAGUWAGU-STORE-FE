@@ -65,20 +65,23 @@ const OrderNotification = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     const now = moment().tz('Asia/Seoul');
+    let dueTime = null;
   
-    const dueTime = now.clone().add(minutes, 'minutes').tz('Asia/Seoul').format();
-
+    if (newStatus === '배달 요청') {
+      dueTime = now.clone().add(minutes, 'minutes').tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss');
+    }
+  
     const updateRequest = {
       status: newStatus,
-      due: newStatus === '배달 요청' ? dueTime : null,
+      riderId: null,  // Ensure riderId is included, even if null
+      due: dueTime,
     };
-
-    console.log(`Current time: ${now.format()}`);
-    console.log(`Due time after adding ${minutes} minutes: ${dueTime}`);
-
+  
+    console.log('Update request payload:', updateRequest);
+  
     try {
-      await updateState(orderId, updateRequest);
-      console.log(updateRequest.due);
+      const response = await updateState(orderId, updateRequest);
+      console.log('Update response:', response);
       setOrders(orders.map(order => {
         if (order.id === orderId || order.orderId === orderId) {
           return { ...order, status: newStatus };
@@ -86,9 +89,9 @@ const OrderNotification = () => {
         return order;
       }));
     } catch (error) {
-      console.error('Error updating order status:', error);
+      console.error('Error updating order status:', error.response ? error.response.data : error.message);
     }
-
+  
     setSelectedOrder(null);
     setShowDueTimeInput(false);
   };

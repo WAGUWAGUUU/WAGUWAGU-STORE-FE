@@ -68,7 +68,7 @@ const OrderNotification = () => {
     let dueTime = null;
   
     if (newStatus === '배달 요청') {
-      dueTime = now.clone().add(minutes, 'minutes').tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss');
+      dueTime = now.clone().add(minutes, 'minutes').tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss.SSS'); // LocalDateTime format without offset
     }
   
     const updateRequest = {

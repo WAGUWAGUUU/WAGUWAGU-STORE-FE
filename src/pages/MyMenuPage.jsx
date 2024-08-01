@@ -2,29 +2,29 @@ import React, { useEffect, useState } from "react";
 import ShowMenuList from "../components/ShowMenuList";
 import ShowMenuDetail from "../components/ShowMenuDetail";
 import { getStoreByOwnerId } from "../config/storeApi";
+
+import { useQuery } from "@apollo/client";
+import { GET_STORE_BY_OWNERID } from "../config/storeRoles.jsx";
+import { client } from "../main.jsx";
+
 const MyMenuPage = () => {
   const [store, setStore] = useState(null);
   const [menu, setMenu] = useState(null);
   const [onMenuInfoModal, setOnMenuInfoModal] = useState(false);
 
-  const getStoreByOwnerIdApi = async () => {
-    try {
-      const response = await getStoreByOwnerId(localStorage.getItem("ownerId"));
-      // const response = await getStoreByOwnerId(2);
-      setStore(response.storeId);
-    } catch {
-      console.log("error in getStoreByOwnerIdApi");
-    }
-  };
+  const { data, loading, error } = useQuery(GET_STORE_BY_OWNERID, {
+    variables: { ownerId: localStorage.getItem("ownerId") },
+  });
 
-  useEffect(() => {
-    getStoreByOwnerIdApi();
-  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  console.log("Data" + data.getStoreByOwnerId.storeId);
 
   return (
     <div style={{ display: "flex", justifyContent: "space-evenly" }}>
       <ShowMenuList
-        store={store}
+        store={data.getStoreByOwnerId.storeId}
         setMenu={setMenu}
         onMenuInfoModal={onMenuInfoModal}
       />

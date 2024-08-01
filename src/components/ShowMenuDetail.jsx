@@ -2,17 +2,19 @@ import React, { useEffect, useState } from "react";
 import "./ShowMenuDetail.css";
 import { useNavigate } from "react-router-dom";
 import {
-  changeMenuPossible,
-  deleteMenu,
   deleteOption,
   deleteOptionList,
-  getMenuByMenuId,
   getOptionListsByMenuId,
 } from "../config/storeApi";
 import tteokbokki from "./../assets/tteokbokki.png";
 import MenuInfoModal from "./MenuInfoModal";
 import OptionInfoModal from "./OptionInfoModal";
 import OptionListInfoModal from "./OptionListInfoModal";
+import {
+  changeMenuPossibleQL,
+  deleteMenuQL,
+  getMenuByMenuIdQL,
+} from "../config/storeGraphQL";
 const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
   const [menuInfo, setMenuInfo] = useState({});
   const [optionLists, setOptionLists] = useState([]);
@@ -24,8 +26,10 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
 
   const getMenuByMenuIdApi = async () => {
     try {
-      const response = await getMenuByMenuId(menu);
+      console.log("hihhihiih" + menu);
+      const response = await getMenuByMenuIdQL({ menuId: menu });
       setMenuInfo(response);
+      console.log("getMenu" + response);
     } catch {
       console.log("error in getMenuByMenuIdApi");
     }
@@ -43,7 +47,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
 
   const changeMenuPossibleApi = async () => {
     try {
-      await changeMenuPossible(menu);
+      await changeMenuPossibleQL({ menuId: menu });
       window.location.reload();
     } catch {
       console.log("error in changeMenuPossibleApi");
@@ -54,7 +58,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
     try {
       const result = confirm("진짜 삭제하시겠습니까?");
       if (result) {
-        await deleteMenu(menu);
+        await deleteMenuQL({ menuId: menu });
         window.location.reload();
       }
     } catch {

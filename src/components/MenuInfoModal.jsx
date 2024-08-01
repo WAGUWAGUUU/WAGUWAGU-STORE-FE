@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { updateMenu } from "../config/storeApi";
 import "./MenuModal.css";
+import { updateMenuQL } from "../config/storeGraphQL";
 const MenuInfoModal = (props) => {
   const [menuName, setMenuName] = useState(props.menuName);
   const [menuIntroduction, setMenuIntroduction] = useState(
@@ -13,7 +13,10 @@ const MenuInfoModal = (props) => {
 
   const updateMenuNameApi = async () => {
     try {
-      await updateMenu(props.menuId, "name", { value: menuName });
+      await updateMenuQL({
+        menuId: props.menuId,
+        input: { type: "name", value: menuName },
+      });
       alert("이름 변경 성공");
     } catch {
       console.log("error in updateMenuNameApi");
@@ -21,8 +24,9 @@ const MenuInfoModal = (props) => {
   };
   const updateMenuIntroductionApi = async () => {
     try {
-      await updateMenu(props.menuId, "introduction", {
-        value: menuIntroduction,
+      await updateMenuQL({
+        menuId: props.menuId,
+        input: { type: "introduction", value: menuIntroduction },
       });
       alert("메뉴 정보 변경 성공");
     } catch {
@@ -31,7 +35,10 @@ const MenuInfoModal = (props) => {
   };
   const updateMenuPriceApi = async () => {
     try {
-      await updateMenu(props.menuId, "price", { value: menuPrice });
+      await updateMenuQL({
+        menuId: props.menuId,
+        input: { type: "price", value: menuPrice },
+      });
       alert("메뉴 가격 변경 성공");
     } catch {
       console.log("error in updateMenuPriceApi");

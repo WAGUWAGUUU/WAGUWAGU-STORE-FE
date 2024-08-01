@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "./ShowMenuList.css";
-import {
-  deleteMenuCategory,
-  getMenuByMenuCategory,
-  getMenuCategoryByStore,
-} from "../config/storeApi";
+// import {
+//   deleteMenuCategory,
+//   getMenuByMenuCategory,
+//   getMenuCategoryByStore,
+// } from "../config/storeApi";
 import tteokbokki from "./../assets/tteokbokki.png";
 import MenuCategoryInfoModal from "./MenuCategoryInfoModal";
 import { useNavigate } from "react-router-dom";
+import {
+  deleteMenuCategoryQL,
+  getMenuByMenuCategoryQL,
+  getMenuCategoryByStoreQL,
+} from "../config/storeGraphQL";
 
 const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
   const [categories, setCategories] = useState([]);
@@ -16,9 +21,11 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
   const [onMenuCategoryInfoModal, setOnMenuCategoryInfoModal] = useState("");
   const navigator = useNavigate();
   const [activeCategoryId, setActiveCategoryId] = useState("");
+  // const [storeId, setStoreId] = useState("");
+
   const getMenuCategoryByStoreApi = async () => {
     try {
-      const response = await getMenuCategoryByStore(store);
+      const response = await getMenuCategoryByStoreQL({ storeId: store });
       console.log(response);
       setCategories(response);
       response.forEach((category) => {
@@ -31,7 +38,7 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
 
   const getMenuByMenuCategoryApi = async (menuCategoryId) => {
     try {
-      const response = await getMenuByMenuCategory(menuCategoryId);
+      const response = await getMenuByMenuCategoryQL({ menuCategoryId });
       setMenus((prevMenus) => ({ ...prevMenus, [menuCategoryId]: response }));
     } catch {
       console.log("error in getMenuByMenuCategoryApi");
@@ -44,7 +51,7 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
         "메뉴까지 같이 삭제됩니다. 진짜 삭제하시겠습니까?"
       );
       if (result) {
-        await deleteMenuCategory(menuCategoryId);
+        await deleteMenuCategoryQL({ menuCategoryId });
         window.location.reload();
       }
     } catch {

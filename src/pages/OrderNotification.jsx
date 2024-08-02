@@ -66,40 +66,56 @@ const OrderNotification = () => {
   const handleStatusChange = async (orderId, newStatus) => {
     const now = moment().tz('Asia/Seoul');
     let dueTime = null;
-  
+
     if (newStatus === '배달 요청') {
       dueTime = now.clone().add(minutes, 'minutes').tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss.SSS'); // LocalDateTime format without offset
     }
-  
+
     const updateRequest = {
       status: newStatus,
-      riderId: null,  // Ensure riderId is included, even if null
+      riderId: null,
       due: dueTime,
     };
-  
+
     console.log('Update request payload:', updateRequest);
-  
+
     try {
       const response = await updateState(orderId, updateRequest);
       console.log('Update response:', response);
       setOrders(orders.map(order => {
         if (order.id === orderId || order.orderId === orderId) {
-          return { ...order, status: newStatus };
+          return { ...order, status: newStatus, due: dueTime };
         }
         return order;
       }));
     } catch (error) {
       console.error('Error updating order status:', error.response ? error.response.data : error.message);
     }
-  
+
     setSelectedOrder(null);
     setShowDueTimeInput(false);
   };
 
-  const handleOrderClick = (event, orderId, currentStatus) => {
+  const handleOrderClick = (event, status, orderId) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    setDropdownPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
+    const dropdownWidth = 150; // Assuming a fixed width for the dropdown
+    const dropdownHeight = 200; // Assuming a fixed height for the dropdown
+    let top = rect.bottom + window.scrollY;
+    let left = rect.left + window.scrollX;
+
+    // Check if the dropdown would go off the right edge of the viewport
+    if (left + dropdownWidth > window.innerWidth) {
+      left = window.innerWidth - dropdownWidth - 10; // Add some margin from the right edge
+    }
+
+    // Check if the dropdown would go off the bottom edge of the viewport
+    if (top + dropdownHeight > window.innerHeight) {
+      top = rect.top + window.scrollY - dropdownHeight; // Position above the element
+    }
+
+    setDropdownPosition({ top, left });
     setSelectedOrder(orderId);
+    console.log(`Dropdown position set to top: ${top}, left: ${left}`);
   };
 
   useEffect(() => {
@@ -189,12 +205,13 @@ const OrderNotification = () => {
               status={order.status}
               statusColor={getStatusColor(order.status)}
               customerId={order.customerId}
-              menu={order.menu}
+              menu={order.menuItems}
               options={order.options}
-              request={order.request}
-              address={order.address}
+              customerRequests={order.customerRequests}
+              customerAddress={order.customerAddress}
               estimatedTime={order.estimatedTime}
-              onClick={(event) => handleOrderClick(event, order.orderId, order.status)}
+              dau={order.due}  // Pass the 'due' value as 'dau'
+              onStatusClick={handleOrderClick}  // Pass the click handler for the status
               backgroundColor={getStatusColor(order.status)}
             />
           ))

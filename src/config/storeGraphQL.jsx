@@ -1,7 +1,7 @@
 import axios from "axios";
-const endpoint = "http://192.168.0.17:8080/graphql";
+const endpoint = "http://172.29.32.141:8080/graphql";
 
-export const GET_STORE_BY_OWNERID = async (variables) => {
+export const getStoreByOwnerIdQL = async (variables) => {
   try {
     const data = await axios.post(
       endpoint,
@@ -31,9 +31,7 @@ export const GET_STORE_BY_OWNERID = async (variables) => {
         },
       }
     );
-    return data.status === 200
-      ? data.data.data.getMenuCategoryByStoreId
-      : "error";
+    return data.status === 200 ? data.data.data.getStoreByOwnerId : "error";
   } catch (error) {
     return error;
   }
@@ -242,6 +240,206 @@ export const updateMenuQL = async (variables) => {
                 updateMenu(menuId: $menuId,input: $input)
               }
             `,
+        variables: variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    return error;
+  }
+};
+
+// MyStore.jsx
+
+export const saveStoreQL = async (variables) => {
+  try {
+    await axios.post(
+      endpoint,
+      {
+        query: `
+                mutation createStore($input: StoreRequestDto) {
+                  createStore(input: $input)
+                }
+              `,
+        variables: variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    return error;
+  }
+};
+
+export const deleteStoreByIdQL = async (variables) => {
+  try {
+    await axios.post(
+      endpoint,
+      {
+        query: `
+              mutation deleteStore($storeId: ID) {
+                deleteStore(storeId: $storeId)
+              }
+            `,
+        variables: variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    return error;
+  }
+};
+
+export const updateStoreByIdQL = async (variables) => {
+  try {
+    await axios.post(
+      endpoint,
+      {
+        query: `
+                mutation updateStoreInfo($storeId: ID,$input: StoreUpdateRequest) {
+                  updateStoreInfo(storeId: $storeId,input: $input)
+                }
+              `,
+        variables: variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    return error;
+  }
+};
+
+export const saveDeliveryInfoQL = async (variables) => {
+  try {
+    await axios.post(
+      endpoint,
+      {
+        query: `
+                  mutation createStoreDeliveryInfo($storeId: ID,$input: StoreDeliveryInfoRequestDto) {
+                    createStoreDeliveryInfo(storeId: $storeId,input: $input)
+                  }
+                `,
+        variables: variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    return error;
+  }
+};
+
+export const updateDeliveryInfoQL = async (variables) => {
+  try {
+    await axios.post(
+      endpoint,
+      {
+        query: `
+                  mutation updateStoreDeliveryInfo($storeId: ID,$input: StoreDeliveryInfoRequestDto) {
+                    updateStoreDeliveryInfo(storeId: $storeId,input: $input)
+                  }
+                `,
+        variables: variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getDeliveryInfoQL = async (variables) => {
+  try {
+    console.log("getDelvierInfo 들어옴");
+    const data = await axios.post(
+      endpoint,
+      {
+        query: `
+            query getStoreDeliveryInfoAllByStoreId($storeId: ID) {
+              getStoreDeliveryInfoAllByStoreId(storeId: $storeId) {
+                storeDeliveryInfoState
+                storeDeliveryInfoFee
+                storeDeliveryInfoDistanceEnd
+              }
+            }
+          `,
+        variables: variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(
+      "getDeliveryInfoQL : " +
+        data.data.data.getStoreDeliveryInfoAllByStoreId.storeDeliveryInfoState
+    );
+    return data.status === 200
+      ? data.data.data.getStoreDeliveryInfoAllByStoreId
+      : null;
+  } catch (error) {
+    return error;
+  }
+};
+
+// Menu.jsx
+
+export const saveMenuCategoryQL = async (variables) => {
+  try {
+    await axios.post(
+      endpoint,
+      {
+        query: `
+                  mutation createMenuCategory($input: MenuCategoryRequestDto) {
+                    createMenuCategory(input: $input)
+                  }
+                `,
+        variables: variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    return error;
+  }
+};
+
+export const saveMenuQL = async (variables) => {
+  try {
+    await axios.post(
+      endpoint,
+      {
+        query: `
+                  mutation createMenu($input: MenuRequestDto) {
+                    createMenu(input: $input)
+                  }
+                `,
         variables: variables,
       },
       {

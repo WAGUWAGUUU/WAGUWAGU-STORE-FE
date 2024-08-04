@@ -25,7 +25,9 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
 
   const getMenuCategoryByStoreApi = async () => {
     try {
-      const response = await getMenuCategoryByStoreQL({ storeId: store });
+      const response = await getMenuCategoryByStoreQL({
+        storeId: store.storeId,
+      });
       console.log(response);
       setCategories(response);
       response.forEach((category) => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Outlet } from 'react-router-dom';
+import moment from 'moment-timezone';
 import '../components/OrderAlarmBox.css';
 import './OrderNotification.css';
 import StatusBox from '../components/StatusBox';
@@ -13,6 +14,9 @@ const OrderNotification = () => {
   const [error, setError] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [minutes, setMinutes] = useState(0);
+  const [showDueTimeInput, setShowDueTimeInput] = useState(false);
+  const [dueTimeInputPosition, setDueTimeInputPosition] = useState({ top: 0, left: 0 });
   const dropdownRef = useRef(null);
 
   const currentDate = new Date();
@@ -36,7 +40,7 @@ const OrderNotification = () => {
       if (Array.isArray(response)) {
         const processedOrders = response.map(order => ({
           ...order,
-          status: order.orderState[order.orderState.length - 1] // 리스트의 마지막 상태를 사용
+          status: order.orderState[order.orderState.length - 1]
         }));
         setOrders(processedOrders);
       } else {
@@ -60,10 +64,24 @@ const OrderNotification = () => {
   };
 
   const handleStatusChange = async (orderId, newStatus) => {
-    console.log(`Changing status of order ${orderId} to ${newStatus}`);
-
+    const now = moment().tz('Asia/Seoul');
+    let dueTime = null;
+  
+    if (newStatus === '배달 요청') {
+      dueTime = now.clone().add(minutes, 'minutes').tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss.SSS'); // LocalDateTime format without offset
+    }
+  
+    const updateRequest = {
+      status: newStatus,
+      riderId: null,  // Ensure riderId is included, even if null
+      due: dueTime,
+    };
+  
+    console.log('Update request payload:', updateRequest);
+  
     try {
-      await updateState(orderId, newStatus);
+      const response = await updateState(orderId, updateRequest);
+      console.log('Update response:', response);
       setOrders(orders.map(order => {
         if (order.id === orderId || order.orderId === orderId) {
           return { ...order, status: newStatus };
@@ -71,20 +89,17 @@ const OrderNotification = () => {
         return order;
       }));
     } catch (error) {
-      console.error('Error updating order status:', error);
+      console.error('Error updating order status:', error.response ? error.response.data : error.message);
     }
-
+  
     setSelectedOrder(null);
+    setShowDueTimeInput(false);
   };
 
   const handleOrderClick = (event, orderId, currentStatus) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    console.log('Order clicked, rect:', rect);
-    console.log('Current status:', currentStatus);
     setDropdownPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
-    console.log('Dropdown position set to:', { top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
     setSelectedOrder(orderId);
-    console.log('Selected order set to:', orderId);
   };
 
   useEffect(() => {
@@ -125,9 +140,19 @@ const OrderNotification = () => {
       case '배달중':
         return '#6E5656';
       case '배달 완료':
-        return '#ffffff';
+        return '#808080';
       default:
         return '#ffffff';
+    }
+  };
+
+  const handleStatusOptionClick = (event, status) => {
+    if (status === '배달 요청') {
+      setDueTimeInputPosition({ top: event.clientY + window.scrollY, left: event.clientX + window.scrollX });
+      setShowDueTimeInput(true);
+    } else {
+      setShowDueTimeInput(false);
+      handleStatusChange(selectedOrder, status);
     }
   };
 
@@ -187,11 +212,24 @@ const OrderNotification = () => {
             <div 
               key={status}
               className="status-option"
-              onClick={() => handleStatusChange(selectedOrder, status)}
+              onClick={(event) => handleStatusOptionClick(event, status)}
             >
               {status}
             </div>
           ))}
+        </div>
+      )}
+      {showDueTimeInput && (
+        <div className="due-time-input" style={{ top: dueTimeInputPosition.top, left: dueTimeInputPosition.left }}>
+          <input 
+            type="number"
+            value={minutes}
+            onChange={(e) => setMinutes(parseInt(e.target.value))}
+            placeholder="Enter minutes"
+          />
+          <button onClick={() => handleStatusChange(selectedOrder, '배달 요청')}>
+            배달 시간 설정
+          </button>
         </div>
       )}
       <Outlet />

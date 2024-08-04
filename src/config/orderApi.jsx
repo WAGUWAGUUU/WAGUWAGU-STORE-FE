@@ -40,18 +40,14 @@ export const selectByDate = async (requestId, startDate, endDate, pageNumber) =>
 
 
 
-  export const updateState = async (orderId, status) => {
-    console.log('서버 전달하는 orderId : ' + orderId);
-    try {
-      return await orderApi(
-        `/request/${orderId}`,
-        "POST",
-        status,
-        null,
-        { 'Content-Type': 'text/plain' } 
-      );
-    } catch (error) {
-      console.error("Error in updateState", error);
-      throw error;
-    }
-  };
+export const updateState = async (orderId, data) => {
+  console.log('서버 전달하는 orderId : ' + orderId);
+  console.log('Update request payload:', data);
+  try {
+    const response = await orderApi(`/request/${orderId}`, "POST", data);
+    return response;
+  } catch (error) {
+    console.error('Error in updateState:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};

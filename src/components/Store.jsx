@@ -1,5 +1,10 @@
 import { getAddressDetail } from "../api/Address";
 import { deleteStoreById, saveStore, updateStoreById } from "../api/Store";
+import {
+  deleteStoreByIdQL,
+  saveStoreQL,
+  updateStoreByIdQL,
+} from "../config/storeGraphQL";
 import "./Store.css";
 
 const Store = ({ store, setStore }) => {
@@ -47,7 +52,7 @@ const Store = ({ store, setStore }) => {
         storeCategory: storeCategory,
         ownerId: localStorage.getItem("ownerId"),
       };
-      await saveStore(storeInfo);
+      await saveStoreQL({ input: storeInfo });
       alert("저장이 완료되었습니다");
     } else {
       alert("빈 칸을 채워주세요");
@@ -56,10 +61,10 @@ const Store = ({ store, setStore }) => {
 
   const deleteStoreInfo = async () => {
     if (store) {
-      await deleteStoreById(store.storeId);
-      alert("삭제가 완료되었습니다")
-    } 
-  }
+      await deleteStoreByIdQL({ storeId: store.storeId });
+      alert("삭제가 완료되었습니다");
+    }
+  };
 
   const updateStoreInfo = async () => {
     const storeName = document.getElementById("store-name").value;
@@ -74,7 +79,7 @@ const Store = ({ store, setStore }) => {
     ).value;
     const storePhoneNumber =
       document.getElementById("store-phone-number").value;
-    
+
     console.log(storeCategory, "업데이트");
 
     // input 값에 빈 칸이 있는지 검증
@@ -94,27 +99,29 @@ const Store = ({ store, setStore }) => {
       const longitude = res.documents[0].x;
 
       // back에 저장
-      const udpateInfo = {
+      const updateInfo = {
         storeName: storeName,
         storeAddress: storeAddress,
-        storeLongitude: longitude,
-        storeLatitude: latitude,
         storeOpenAt: storeOpenAt,
         storeCloseAt: storeCloseAt,
         storePhone: storePhoneNumber,
-        storeMinimumOrderAmount: minOrderAmount,
+        storeMinimumOrderAmount: parseInt(minOrderAmount),
         storeIntroduction: storeIntroduction,
         storeCategory: storeCategory,
+        storeLongitude: parseFloat(longitude),
+        storeLatitude: parseFloat(latitude),
       };
-      
-      await updateStoreById(store.storeId, udpateInfo);
+
+      await updateStoreByIdQL({
+        storeId: store.storeId,
+        input: updateInfo,
+      });
       alert("수정이 완료되었습니다");
     } else {
       alert("빈 칸을 채워주세요");
     }
-  }
+  };
 
-  
   return (
     <>
       <div className="store-container">
@@ -142,15 +149,30 @@ const Store = ({ store, setStore }) => {
         </div>
         <h3 className="store-item">가게 카테고리</h3>
         <div>
-          <select
-            id="store-category"
-            className="store-input"
-          >
+          <select id="store-category" className="store-input">
             <option disabled hidden selected={!store} value="default">
               가게 카테고리 선택
             </option>
-            {["피자", "중식", "치킨", "디저트", "양식", "한식", "일식", "회", "기타"].map((el, i) => {
-              return <option value={el} key={i} selected={store && store.storeCategory === el}>{el}</option>
+            {[
+              "피자",
+              "중식",
+              "치킨",
+              "디저트",
+              "양식",
+              "한식",
+              "일식",
+              "회",
+              "기타",
+            ].map((el, i) => {
+              return (
+                <option
+                  value={el}
+                  key={i}
+                  selected={store && store.storeCategory === el}
+                >
+                  {el}
+                </option>
+              );
             })}
           </select>
         </div>
@@ -202,16 +224,20 @@ const Store = ({ store, setStore }) => {
         </div>
         <div className="store-button-container">
           <div>
-            <button className="store-save-button" onClick={store ? updateStoreInfo : saveStoreInfo}>
+            <button
+              className="store-save-button"
+              onClick={store ? updateStoreInfo : saveStoreInfo}
+            >
               {store ? "수정" : "저장"}
             </button>
           </div>
-          {store && 
-          <div>
-            <button className="store-delete-button" onClick={deleteStoreInfo}>
-              삭제
-            </button>
-          </div>}
+          {store && (
+            <div>
+              <button className="store-delete-button" onClick={deleteStoreInfo}>
+                삭제
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>

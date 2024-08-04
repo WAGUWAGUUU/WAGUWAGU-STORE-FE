@@ -19,12 +19,12 @@ const MyMenuPage = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
-  console.log("Data" + data.getStoreByOwnerId.storeId);
+  console.log("Data" + data.getStoreByOwnerId);
 
   return (
     <div style={{ display: "flex", justifyContent: "space-evenly" }}>
       <ShowMenuList
-        store={data.getStoreByOwnerId.storeId}
+        store={data.getStoreByOwnerId}
         setMenu={setMenu}
         onMenuInfoModal={onMenuInfoModal}
       />

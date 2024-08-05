@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import { getAddressDetail } from "../api/Address";
 import { deleteStoreById, saveStore, updateStoreById } from "../api/Store";
 import {
+  blockStoreIsOpenedQL,
+  checkBlockStoreIsOpenedQL,
   deleteStoreByIdQL,
   saveStoreQL,
   updateStoreByIdQL,
@@ -8,6 +11,8 @@ import {
 import "./Store.css";
 
 const Store = ({ store, setStore }) => {
+  const [blockStoreIsOpened, setBlockStoreIsOpened] = useState(false);
+
   const saveStoreInfo = async () => {
     const storeName = document.getElementById("store-name").value;
     const storeAddress = document.getElementById("store-address").value;
@@ -122,6 +127,24 @@ const Store = ({ store, setStore }) => {
     }
   };
 
+  const changeBlockStoreIsOpened = async () => {
+    await blockStoreIsOpenedQL({ storeId: store.storeId });
+    setBlockStoreIsOpened(!blockStoreIsOpened);
+  };
+
+  useEffect(() => {
+    const checkBlockStoreIsOpened = async () => {
+      if (store) {
+        const result = await checkBlockStoreIsOpenedQL({
+          storeId: store.storeId,
+        });
+        console.log("result**" + result);
+        setBlockStoreIsOpened(result);
+      }
+    };
+    checkBlockStoreIsOpened();
+  }, [store]);
+
   return (
     <>
       <div className="store-container">
@@ -222,6 +245,29 @@ const Store = ({ store, setStore }) => {
             defaultValue={store && store.storePhone}
           />
         </div>
+
+        <h3 className="store-item"> 영업 멈춤 수동 설정</h3>
+        <p
+          className="store-item"
+          style={{ color: "#757575", marginLeft: "10px" }}
+        >
+          *영업 시간 중 영업 멈춤 설정이 가능합니다.*
+        </p>
+        <div>
+          <button
+            className="store-save-button"
+            style={{
+              backgroundColor: "white",
+              borderColor: "#94D35C",
+              borderWidth: "3px",
+              marginTop: "0px",
+            }}
+            onClick={() => changeBlockStoreIsOpened()}
+          >
+            {blockStoreIsOpened ? "영업 중 막기 취소" : "영업 중 막기"}
+          </button>
+        </div>
+
         <div className="store-button-container">
           <div>
             <button

@@ -15,7 +15,7 @@ import MyPage from "./pages/MyPage.jsx";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 export const client = new ApolloClient({
-  uri: "http://172.29.32.141:8080/graphql",
+  uri: "http://192.168.0.17:8080/graphql",
   cache: new InMemoryCache(),
 });
 

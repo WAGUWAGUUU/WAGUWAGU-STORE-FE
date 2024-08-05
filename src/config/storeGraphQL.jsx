@@ -1,5 +1,5 @@
 import axios from "axios";
-const endpoint = "http://172.29.32.141:8080/graphql";
+const endpoint = "http://192.168.0.17:8080/graphql";
 
 export const getStoreByOwnerIdQL = async (variables) => {
   try {
@@ -448,6 +448,56 @@ export const saveMenuQL = async (variables) => {
         },
       }
     );
+  } catch (error) {
+    return error;
+  }
+};
+
+// blockIsOpened
+
+export const blockStoreIsOpenedQL = async (variables) => {
+  try {
+    await axios.post(
+      endpoint,
+      {
+        query: `
+              mutation blockStoreIsOpened($storeId: ID) {
+                blockStoreIsOpened(storeId: $storeId)
+              }
+            `,
+        variables: variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    return error;
+  }
+};
+
+export const checkBlockStoreIsOpenedQL = async (variables) => {
+  try {
+    const data = await axios.post(
+      endpoint,
+      {
+        query: `
+            query checkBlockStoreIsOpened($storeId: ID) {
+              checkBlockStoreIsOpened(storeId: $storeId)
+            }
+          `,
+        variables: variables,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return data.status === 200 ? data.data.data.checkBlockStoreIsOpened : null;
   } catch (error) {
     return error;
   }

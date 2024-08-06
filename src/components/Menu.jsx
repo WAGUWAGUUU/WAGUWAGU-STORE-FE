@@ -20,12 +20,12 @@ const Menu = ({ store }) => {
   const [optionListName, setOptionListName] = useState('');
   const [optionTitle, setOptionTitle] = useState('');
   const [optionPrice, setOptionPrice] = useState('');
-  const [newOptions, setNewOptions] = useState([]);
+  const [newOptions, setNewOptions] = useState([{ optionTitle: '', optionPrice: '' }]);
   const [showOptionListInput, setShowOptionListInput] = useState(false);
   const [loading, setLoading] = useState(false);
   const [newOptionTitle, setNewOptionTitle] = useState('');
   const [newOptionPrice, setNewOptionPrice] = useState('');
-  const [options, setOptions] = useState([]); // 추가: 옵션 리스트의 옵션들을 저장할 상태
+  const [options, setOptions] = useState([]);
 
   const handleError = (message) => alert(message);
 
@@ -183,7 +183,7 @@ const Menu = ({ store }) => {
   };
 
   const getOptionByList = async () => {
-    if (selectedOptionListId) {
+    if (selectedOptionListId && selectedOptionListId !== "default") {
       try {
         const res = await getOptions(selectedOptionListId);
         if (res.status === 200) {
@@ -196,8 +196,6 @@ const Menu = ({ store }) => {
       }
     }
   };
-
-
 
   const createOption = async () => {
     const selectedOptionListId = document.getElementById("option-list-select").value;
@@ -220,15 +218,19 @@ const Menu = ({ store }) => {
     }
   };
 
-  const handleAddOption = () => {
-    if (newOptionTitle && newOptionPrice) {
-      setNewOptions(prev => [
-        ...prev,
-        { optionTitle: newOptionTitle, optionPrice: parseFloat(newOptionPrice), isChecked: false }
-      ]);
-    } else {
-      handleError("빈 칸을 채워주세요");
-    }
+  const handleAddNewOption = () => {
+    setNewOptions(prev => [...prev, { optionTitle: '', optionPrice: '' }]);
+  };
+
+  const handleRemoveOption = (index) => {
+    setNewOptions(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleNewOptionChange = (index, field, value) => {
+    const updatedOptions = newOptions.map((option, i) =>
+        i === index ? { ...option, [field]: value } : option
+    );
+    setNewOptions(updatedOptions);
   };
 
   useEffect(() => {
@@ -280,18 +282,18 @@ const Menu = ({ store }) => {
 
         <h2 className='store-item'>메뉴 카테고리 추가</h2>
         <div>
-          <input id="menu-category" className='store-input' placeholder='메뉴 카테고리를 입력해주세요'/>
+          <input id="menu-category" className='store-input' placeholder='메뉴 카테고리를 입력해주세요' />
         </div>
         <div>
           <button className='menu-save-button' onClick={createMenuCategory} disabled={loading}>
             {loading ? '저장 중...' : '저장'}
           </button>
         </div>
-        <hr/>
+        <hr />
 
         <h2 className='store-item'>메뉴 추가</h2>
         <div className='store-input'>
-          <input id="image" type='file'/>
+          <input id="image" type='file' />
         </div>
         <h3 className='store-item'>메뉴 카테고리</h3>
         <div>
@@ -304,22 +306,22 @@ const Menu = ({ store }) => {
         </div>
         <h3 className='store-item'>메뉴 이름</h3>
         <div>
-          <input id="menu-name" className='store-input' placeholder='메뉴 이름을 입력해주세요'/>
+          <input id="menu-name" className='store-input' placeholder='메뉴 이름을 입력해주세요' />
         </div>
         <h3 className='store-item'>메뉴 소개</h3>
         <div>
-          <textarea id="menu-introduction" className='store-input' placeholder='메뉴를 소개해주세요' rows={4}/>
+          <textarea id="menu-introduction" className='store-input' placeholder='메뉴를 소개해주세요' rows={4} />
         </div>
         <h3 className='store-item'>메뉴 금액</h3>
         <div>
-          <input id="menu-price" className='store-input' placeholder='메뉴 금액을 입력해주세요'/>
+          <input id="menu-price" className='store-input' placeholder='메뉴 금액을 입력해주세요' />
         </div>
         <div>
           <button className='menu-save-button' onClick={saveMenuInfo} disabled={loading}>
             {loading ? '저장 중...' : '저장'}
           </button>
         </div>
-        <hr/>
+        <hr />
 
         <h2 className='store-item'>옵션 카테고리 추가</h2>
         <div>
@@ -373,26 +375,28 @@ const Menu = ({ store }) => {
                   value={optionListName}
                   onChange={e => setOptionListName(e.target.value)}
               />
-              <h3>새로운 옵션 추가</h3>
-              <div>
-                <input
-                    id="list-option-title"
-                    className='store-input'
-                    placeholder='옵션 제목'
-                    value={newOptionTitle}
-                    onChange={e => setNewOptionTitle(e.target.value)}
-                />
-              </div>
-              <div>
-                <input
-                    id="list-option-price"
-                    className='store-input'
-                    placeholder='옵션 금액'
-                    value={newOptionPrice}
-                    onChange={e => setNewOptionPrice(e.target.value)}
-                />
-              </div>
-              <button className='menu-save-button' onClick={handleAddOption} disabled={loading}>옵션 추가하기</button>
+
+              {newOptions.map((option, index) => (
+                  <div key={index} style={{marginBottom: '10px'}}>
+                    <h3>새로운 옵션 추가</h3>
+                    <input
+                        className='store-input'
+                        placeholder='옵션 제목'
+                        value={option.optionTitle}
+                        onChange={e => handleNewOptionChange(index, 'optionTitle', e.target.value)}
+                    />
+                    <input
+                        className='store-input'
+                        placeholder='옵션 금액'
+                        value={option.optionPrice}
+                        onChange={e => handleNewOptionChange(index, 'optionPrice', e.target.value)}
+                    />
+                    {newOptions.length > 1 && (
+                        <button className='menu-save-button' onClick={() => handleRemoveOption(index)}>-</button>
+                    )}
+                  </div>
+              ))}
+              <button className='menu-save-button' onClick={handleAddNewOption} disabled={loading}>+</button>
             </div>
         )}
         <div>
@@ -401,7 +405,7 @@ const Menu = ({ store }) => {
             {loading ? '저장 중...' : '저장'}
           </button>
         </div>
-        <hr/>
+        <hr />
 
         <h2 className='store-item'>옵션 추가</h2>
         <div className='option-select-container'>
@@ -431,12 +435,12 @@ const Menu = ({ store }) => {
         <h3 className='store-item'>옵션 제목</h3>
         <div>
           <input id="option-title" className='store-input' placeholder='옵션 제목을 입력해주세요' value={optionTitle}
-                 onChange={e => setOptionTitle(e.target.value)}/>
+                 onChange={e => setOptionTitle(e.target.value)} />
         </div>
         <h3 className='store-item'>옵션 금액</h3>
         <div>
           <input id="option-price" className='store-input' placeholder='옵션 금액을 입력해주세요' value={optionPrice}
-                 onChange={e => setOptionPrice(e.target.value)}/>
+                 onChange={e => setOptionPrice(e.target.value)} />
         </div>
         <div>
           <button className='menu-save-button' onClick={createOption} disabled={loading}>

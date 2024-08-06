@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getAddressDetail } from "../api/Address";
 import { deleteStoreById, saveStore, updateStoreById } from "../api/Store";
 import {
@@ -9,9 +9,14 @@ import {
   updateStoreByIdQL,
 } from "../config/storeGraphQL";
 import "./Store.css";
+import axios from "axios";
+import storeImagePng from "./../assets/food icon.png";
 
 const Store = ({ store, setStore }) => {
   const [blockStoreIsOpened, setBlockStoreIsOpened] = useState(false);
+
+  const inputRef = useRef(null);
+  const [storeImage, setStoreImage] = useState("");
 
   const saveStoreInfo = async () => {
     const storeName = document.getElementById("store-name").value;
@@ -143,15 +148,83 @@ const Store = ({ store, setStore }) => {
       }
     };
     checkBlockStoreIsOpened();
+    fetchUserProfileImage();
   }, [store]);
+
+  // 사진 업로드
+  const handleFileClick = () => {
+    inputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      uploadFile(file);
+    } else {
+      uploadFile(storeImagePng);
+    }
+  };
+
+  const uploadFile = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      await axios.post(
+        `http://192.168.0.17:8080/api/v1/store/${store.storeId}/photo`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      fetchUserProfileImage();
+    } catch (error) {
+      console.error("Error upload file", error);
+    }
+  };
+
+  const fetchUserProfileImage = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.0.17:8080/api/v1/store/${store.storeId}/photo`
+      );
+      console.log(response.data);
+      setStoreImage(response.data);
+    } catch (error) {
+      setStoreImage(storeImagePng);
+    }
+    console.log("12345      " + storeImage);
+  };
 
   return (
     <>
       <div className="store-container">
         <h1 className="store-title">🏡 가게 정보</h1>
+        <img
+          src={storeImage}
+          style={{
+            width: "150px",
+            height: "150px",
+            alignSelf: "center",
+            marginBottom: "50px",
+          }}
+          onClick={handleFileClick}
+        ></img>
         <div className="store-input">
-          <input id="image" type="file" />
+          <input
+            id="image"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            ref={inputRef}
+            style={{ display: "none" }}
+          />
         </div>
+        <div className="store-save-button" onClick={handleFileClick}>
+          이미지 업로드
+        </div>
+
         <h3 className="store-item">가게명</h3>
         <div>
           <input

@@ -1,7 +1,19 @@
 import React from 'react';
 import './OrderAlarmBox.css';
 
-const OrderAlarmBox = ({ orderNumber, status, customerId, menu, dau, options, customerAddress, customerRequests, estimatedTime, onStatusClick, backgroundColor }) => {
+const OrderAlarmBox = ({ 
+  orderNumber, 
+  status, 
+  customerId, 
+  menu = [],  // Default to empty array
+  dau, 
+  options = [],  // Default to empty array
+  customerAddress, 
+  customerRequests, 
+  estimatedTime, 
+  onStatusClick, 
+  backgroundColor 
+}) => {
   return (
     <div className="aram-box" style={{ backgroundColor }}>
       <div className="header">Order <span className="number">{orderNumber}</span></div>
@@ -14,7 +26,7 @@ const OrderAlarmBox = ({ orderNumber, status, customerId, menu, dau, options, cu
         {menu.map((menuItem, menuIndex) => (
           <div key={menuIndex}>
             <div className="menuName">{menuItem.menuName}</div>
-            {menuItem.selectedOptions.map((option, optionIndex) => (
+            {menuItem.selectedOptions && menuItem.selectedOptions.map((option, optionIndex) => (
               <div key={optionIndex}>
                 <div className="listName">{option.listName}</div>
                 {option.options && option.options.map((opt, optIndex) => (

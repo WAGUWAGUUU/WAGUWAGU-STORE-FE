@@ -12,6 +12,13 @@ import SignupPage from "./pages/SignupPage.jsx";
 import CallbackPage from "./pages/CallbackPage.jsx";
 import MyPage from "./pages/MyPage.jsx";
 
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+
+export const client = new ApolloClient({
+  uri: "http://192.168.0.17:8080/graphql",
+  cache: new InMemoryCache(),
+});
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -33,6 +40,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <ApolloProvider client={client}>
+      <RouterProvider router={router} />
+    </ApolloProvider>
   </React.StrictMode>
 );

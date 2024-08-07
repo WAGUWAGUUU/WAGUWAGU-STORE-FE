@@ -1,50 +1,63 @@
 .store-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: hsl(102, 25%, 90%);
-    padding: 50px;
-    margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: hsl(102, 25%, 90%);
+  padding: 50px;
+  margin-bottom: 50px;
 }
 
 .store-title {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }
 
 .store-item {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 .store-input {
-    margin-bottom: 30px;
-    border-radius: 13px;
-    padding: 8px;
-    width: 100%;
-    border: 1px solid #60ce31;
-    font-size: 1rem;
+  margin-bottom: 30px;
+  border-radius: 13px;
+  padding: 8px;
+  width: 100%;
+  border: 1px solid #60ce31;
+  font-size: 1rem;
 }
 
 .store-button-container {
-    display: flex;
+  display: flex;
 }
-
 
 .store-save-button {
-    margin-top: 20px;
-    margin-bottom: 30px;
-    padding: 10px 30px;
-    border-radius: 13px;
-    background-color: #94D35C;
-    font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  padding: 10px 30px;
+  border-radius: 13px;
+  background-color: #94d35c;
+  font-weight: 600;
 }
 
-
 .store-delete-button {
-    margin-top: 20px;
-    margin-bottom: 30px;
-    margin-left: 30px;
-    padding: 10px 30px;
-    border-radius: 13px;
-    background-color: #94D35C;
-    font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  margin-left: 30px;
+  padding: 10px 30px;
+  border-radius: 13px;
+  background-color: #94d35c;
+  font-weight: 600;
+}
+
+.store-image-button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.store-image-button {
+  margin-top: 5px;
+  margin-bottom: 30px;
+  margin-left: 10px;
+  padding: 5px 10px;
+  border-radius: 13px;
+  background-color: #94d35c;
+  font-weight: 600;
 }

@@ -151,7 +151,7 @@ const Menu = ({ store }) => {
       try {
         setLoading(true);
         const res = await saveOptionList(optionListRequest);
-        if (res.status === 200) {
+        if (res.status === 201) {
           alert("옵션 카테고리가 추가되었습니다");
           setStoreOptionList(prev => [...prev, optionListRequest]); // Update state with new option list
           setOptionListName(''); // Clear input field
@@ -380,6 +380,16 @@ const Menu = ({ store }) => {
     }
   };
 
+
+  const handleSave = () => {
+    if (showOptionListInput) {
+      createOptionListAndOptions(selectedMenuId, optionListName, newOptions);
+    } else {
+      createOptionListAndOptions(selectedMenuId, optionListName, options); // 기존 옵션리스트에 추가
+    }
+  };
+
+
   // 사진 업로드
 
   // 사진이랑 이미지 업로드 눌렀을 때 사진 넣을 수 있는 창 뜸
@@ -569,7 +579,7 @@ const Menu = ({ store }) => {
         )}
         <div>
           <button className='menu-save-button'
-                  onClick={showOptionListInput ? () => createOptionListAndOptions(selectedMenuId, optionListName, newOptions) : createOptionList}
+                  onClick={handleSave}
                   disabled={loading}>
             {loading ? '저장 중...' : '저장'}
           </button>

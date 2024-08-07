@@ -1,6 +1,18 @@
-import { useEffect, useState } from 'react';
-import { getMenuCategoriesByStoreId, saveMenuCategory } from '../api/MenuCategory';
-import { getMenuByMenuCategoryId, saveMenu } from '../api/Menu';
+import { useEffect, useRef, useState } from "react";
+import {
+  getMenuCategoriesByStoreId,
+  saveMenuCategory,
+} from "../api/MenuCategory";
+import "./Menu.css";
+import { getMenuByMenuCategoryId, saveMenu } from "../api/Menu";
+import {
+  getMenuByMenuCategoryQL,
+  getMenuCategoryByStoreQL,
+  saveMenuCategoryQL,
+  saveMenuQL,
+} from "../config/storeGraphQL";
+import menuImagePng from "./../assets/menu.png";
+import axios from "axios";
 import {
   getOptionListByMenuId,
   getOptionListsByStoreId,
@@ -31,56 +43,70 @@ const Menu = ({ store }) => {
   const [options, setOptions] = useState([]);
   const [optionsOfMenu, setOptionsOfMenu] = useState([]); // For 2nd part
 
-  const handleError = (message) => alert(message);
+  const inputRef = useRef(null);
+  const [menuImage, setMenuImage] = useState(menuImagePng);
+  const [menuFile, setMenuFile] = useState("");
+  const [menuImageUuid, setMenuImageUuid] = useState("");
 
-  const createMenuCategory = async () => {
+  const createMenuCategroy = async () => {
     const menuCategory = document.getElementById("menu-category").value;
-    if (menuCategory) {
-      const menuCategoryInfo = { menuCategoryName: menuCategory, storeId: store.storeId };
+    if (menuCategory !== "") {
+      const menuCategoryInfo = {
+        menuCategoryName: menuCategory,
+        storeId: store.storeId,
+      };
       try {
-        setLoading(true);
-        await saveMenuCategory(menuCategoryInfo);
+        await saveMenuCategoryQL({ input: menuCategoryInfo });
         alert("저장이 완료되었습니다");
-        setMenuCategories(prev => [...prev, menuCategoryInfo]);
-      } catch {
-        handleError("해당 메뉴 카테고리는 이미 존재합니다");
-      } finally {
-        setLoading(false);
+        setMenuCategoriesAdded({}); //
+      } catch (e) {
+        alert("해당 메뉴 카테고리는 이미 존재합니다");
       }
-    } else {
-      handleError("빈 칸을 채워주세요");
-    }
+    } else alert("빈 칸을 채워주세요");
   };
 
   const getMenuCategories = async () => {
-    try {
-      setLoading(true);
-      const res = await getMenuCategoriesByStoreId(store.storeId);
-      setMenuCategories(res);
-    } catch {
-      handleError("메뉴 카테고리 불러오기에 실패했습니다");
-    } finally {
-      setLoading(false);
-    }
+    // store 가 mystore.jsx에서 주입될 때까지 null로 가져옴
+    console.log(store, "menuCategories");
+    const res = await getMenuCategoryByStoreQL({ storeId: store.storeId });
+    console.log(res, "getmenuCategories");
+    setMenuCategories(res);
   };
 
   const saveMenuInfo = async () => {
-    const menuCategoryId = document.getElementById("menu-category-select").value;
+    const menuCategoryId = document.getElementById(
+      "menu-category-select"
+    ).value;
     const menuName = document.getElementById("menu-name").value;
     const menuIntroduction = document.getElementById("menu-introduction").value;
     const menuPrice = document.getElementById("menu-price").value;
 
-    if (menuCategoryId !== "default" && menuName && menuIntroduction && menuPrice) {
-      const saveInfo = { menuName, menuIntroduction, menuPrice, menuCategoryId };
+    let imageUrl = "";
+    if (menuFile) {
+      imageUrl = await uploadFile(menuFile);
+    }
+    console.log("Abc" + imageUrl);
+
+    if (
+      menuCategoryId !== "default" &&
+      menuName !== "" &&
+      menuIntroduction !== "" &&
+      menuPrice !== ""
+    ) {
+      const saveInfo = {
+        menuName: menuName,
+        menuIntroduction: menuIntroduction,
+        menuPrice: parseInt(menuPrice),
+        menuCategoryId: menuCategoryId,
+        menuImage: imageUrl,
+      };
       try {
-        setLoading(true);
-        await saveMenu(saveInfo);
+        console.log("savemenu 들어옴" + typeof menuPrice);
+        await saveMenuQL({ input: saveInfo });
         alert("저장이 완료되었습니다");
-        setMenus(prev => [...prev, saveInfo]);
-      } catch {
-        handleError("해당 메뉴는 이미 존재합니다");
-      } finally {
-        setLoading(false);
+        setMenuAdded({});
+      } catch (e) {
+        alert("해당 메뉴는 이미 존재합니다");
       }
     } else {
       handleError("빈 칸을 채워주세요");
@@ -89,12 +115,12 @@ const Menu = ({ store }) => {
 
   const getMenus = async () => {
     const arr = [];
-    for (const category of menuCategories) {
-      try {
-        const res = await getMenuByMenuCategoryId(category.menuCategoryId);
-        arr.push(...res);
-      } catch {
-        handleError("메뉴 불러오기에 실패했습니다");
+    for (let category of menuCategories) {
+      const res = await getMenuByMenuCategoryQL({
+        menuCategoryId: category.menuCategoryId,
+      });
+      for (let menu of res) {
+        arr.push(menu);
       }
     }
     setMenus(arr);
@@ -309,6 +335,11 @@ const Menu = ({ store }) => {
   }, [selectedMenuId]);
 
   useEffect(() => {
+    if (selectedMenuId) getOptionListsBySelectedMenu();
+    else console.log("getOptionListsBySelectedMenu : 메뉴 선택 시 진행 예정");
+  }, [optionListAdded, selectedMenuId]);
+
+  useEffect(() => {
     if (selectedOptionListId && selectedOptionListId !== "other") {
       getOptionByList();
     }
@@ -349,6 +380,7 @@ const Menu = ({ store }) => {
     }
   };
 
+
   const handleSave = () => {
     if (showOptionListInput) {
       createOptionListAndOptions(selectedMenuId, optionListName, newOptions);
@@ -357,54 +389,149 @@ const Menu = ({ store }) => {
     }
   };
 
-  return (
-      <div className='store-container'>
-        <h1 className='store-title'>🥑 메뉴 등록</h1>
 
-        <h2 className='store-item'>메뉴 카테고리 추가</h2>
+  // 사진 업로드
+
+  // 사진이랑 이미지 업로드 눌렀을 때 사진 넣을 수 있는 창 뜸
+  const handleFileClick = () => {
+    inputRef.current.click();
+  };
+
+  // 이미지 열기해서 사진을 넣었을 때 변화 체크
+  // 이미지 업로드에서 미리보기 할 수 있게
+  const handleFileChange = (e) => {
+    setMenuFile(e.target.files[0]);
+    setMenuImage(URL.createObjectURL(e.target.files[0]));
+  };
+
+  // 기본 이미지로 업로드 -> menu DB 에 저장될 때 image column 에 빈값이 들어오게
+  const handleDefaultImage = () => {
+    setMenuImage(menuImagePng);
+    setMenuFile("");
+    // setMenuImageUuid("");
+  };
+
+  // 새로운 파일 업로드
+  const uploadFile = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post(
+        `http://192.168.0.17:8081/api/v1/photo/menu`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      // setMenuImage(
+      //   "https://storage.googleapis.com/wgwg_bucket/" + response.data
+      // );
+      return response.data;
+    } catch (error) {
+      console.error("Error upload file", error);
+    }
+  };
+
+  return (
+    <>
+      <div className="store-container">
+        <h1 className="store-title">🥑 메뉴 등록</h1>
+        <h2 className="store-item">메뉴 카테고리 추가</h2>
         <div>
-          <input id="menu-category" className='store-input' placeholder='메뉴 카테고리를 입력해주세요' />
+          <input
+            id="menu-category"
+            className="store-input"
+            placeholder="메뉴 카테고리를 입력해주세요"
+          />
         </div>
         <div>
-          <button className='menu-save-button' onClick={createMenuCategory} disabled={loading}>
-            {loading ? '저장 중...' : '저장'}
+          <button className="menu-save-button" onClick={createMenuCategroy}>
+            저장
           </button>
         </div>
         <hr />
-
-        <h2 className='store-item'>메뉴 추가</h2>
-        <div className='store-input'>
-          <input id="image" type='file' />
+        <h2 className="store-item">메뉴 추가</h2>
+        <img
+          src={menuImage}
+          style={{
+            width: "150px",
+            height: "150px",
+            alignSelf: "center",
+            marginBottom: "20px",
+          }}
+          onClick={handleFileClick}
+        ></img>
+        <input
+          id="image"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          ref={inputRef}
+          style={{ display: "none" }}
+        />
+        <div className="menu-image-button-container">
+          <div className="menu-image-button" onClick={handleFileClick}>
+            이미지 업로드
+          </div>
+          <div className="menu-image-button" onClick={handleDefaultImage}>
+            기본 이미지로 설정
+          </div>
         </div>
-        <h3 className='store-item'>메뉴 카테고리</h3>
+        <h3 className="store-item">메뉴 카테고리</h3>
         <div>
-          <select className='store-input' id="menu-category-select">
-            <option disabled value="default">메뉴 카테고리 선택</option>
-            {menuCategories && menuCategories.length > 0 && menuCategories.map((el) => (
-                <option key={el.menuCategoryId} value={el.menuCategoryId}>{el.menuCategoryName}</option>
-            ))}
+          <select className="store-input" id="menu-category-select">
+            <option disabled selected hidden value="default">
+              메뉴 카테고리 선택
+            </option>
+            {menuCategories &&
+              menuCategories.length > 0 &&
+              menuCategories.map((el, i) => {
+                return (
+                  <option
+                    key={el.menuCategoryId + el.menuCategoryName}
+                    value={el.menuCategoryId}
+                  >
+                    {el.menuCategoryName}
+                  </option>
+                );
+              })}
           </select>
         </div>
-        <h3 className='store-item'>메뉴 이름</h3>
+        <h3 className="store-item">메뉴 이름</h3>
         <div>
-          <input id="menu-name" className='store-input' placeholder='메뉴 이름을 입력해주세요' />
+          <input
+            id="menu-name"
+            className="store-input"
+            placeholder="메뉴 이름을 입력해주세요"
+          />
+
         </div>
-        <h3 className='store-item'>메뉴 소개</h3>
+        <h3 className="store-item">메뉴 소개</h3>
         <div>
-          <textarea id="menu-introduction" className='store-input' placeholder='메뉴를 소개해주세요' rows={4} />
+          <textarea
+            id="menu-introduction"
+            className="store-input"
+            placeholder="메뉴를 소개해주세요"
+            rows={4}
+          />
         </div>
-        <h3 className='store-item'>메뉴 금액</h3>
+        <h3 className="store-item">메뉴 금액</h3>
         <div>
-          <input id="menu-price" className='store-input' placeholder='메뉴 금액을 입력해주세요' />
+          <input
+            id="menu-price"
+            className="store-input"
+            placeholder="메뉴 금액을 입력해주세요"
+          />
         </div>
         <div>
-          <button className='menu-save-button' onClick={saveMenuInfo} disabled={loading}>
-            {loading ? '저장 중...' : '저장'}
+          <button className="menu-save-button" onClick={saveMenuInfo}>
+            저장
           </button>
         </div>
         <hr />
-
-        {/* 1번 */}
         <h2 className='store-item'>옵션 카테고리 추가</h2>
         <div>
           <h3 className='store-item'>메뉴 선택</h3>
@@ -524,5 +651,4 @@ const OptionDisplay = ({ options }) => (
       )}
     </div>
 );
-
 export default Menu;

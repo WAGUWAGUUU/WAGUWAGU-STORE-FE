@@ -4,13 +4,14 @@ import Menu from "../components/Menu";
 import "./MyStore.css";
 import { useEffect, useState } from "react";
 import { getStoreByOwnerId } from "../api/Store";
+import { getStoreByOwnerIdQL } from "../config/storeGraphQL";
 
 const MyStore = () => {
   const [store, setStore] = useState(null);
 
   const getStore = async () => {
     const ownerId = localStorage.getItem("ownerId");
-    const res = await getStoreByOwnerId(ownerId);
+    const res = await getStoreByOwnerIdQL({ ownerId: ownerId });
     // const res = await getStoreByOwnerId(1);
     setStore(res);
   };

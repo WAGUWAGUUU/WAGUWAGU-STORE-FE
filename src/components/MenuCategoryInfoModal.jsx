@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { updateMenuCategoryName } from "../config/storeApi";
 import "./MenuModal.css";
+import { updateMenuCategoryNameQL } from "../config/storeGraphQL";
 
 const MenuCategoryInfoModal = (props) => {
   const menuCategoryId = props.menuCategoryId;
@@ -14,8 +14,12 @@ const MenuCategoryInfoModal = (props) => {
 
   const updateMenuCategoryNameApi = async (menuCategoryId) => {
     try {
-      updateMenuCategoryName(menuCategoryId, { value: menuCategoryName });
+      updateMenuCategoryNameQL({
+        menuCategoryId: menuCategoryId,
+        input: { value: menuCategoryName },
+      });
       alert("메뉴 카테고리 변경 성공");
+      // window.location.reload();
     } catch {
       console.log("error in updateMenuCategoryNameApi");
     }

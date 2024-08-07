@@ -1,8 +1,24 @@
+import { useEffect, useRef, useState } from "react";
 import { getAddressDetail } from "../api/Address";
-import { deleteStoreById, saveStore, updateStoreById } from "../api/Store";
+import {
+  blockStoreIsOpenedQL,
+  checkBlockStoreIsOpenedQL,
+  deleteStoreByIdQL,
+  saveStoreQL,
+  updateStoreByIdQL,
+} from "../config/storeGraphQL";
 import "./Store.css";
+import axios from "axios";
+import storeImagePng from "./../assets/food icon.png";
 
 const Store = ({ store, setStore }) => {
+  const [blockStoreIsOpened, setBlockStoreIsOpened] = useState(false);
+
+  const inputRef = useRef(null);
+  const [storeImage, setStoreImage] = useState(storeImagePng);
+  const [storeFile, setStoreFile] = useState("");
+  const [storeImageUuid, setStoreImageUuid] = useState("");
+
   const saveStoreInfo = async () => {
     const storeName = document.getElementById("store-name").value;
     const storeAddress = document.getElementById("store-address").value;
@@ -33,6 +49,12 @@ const Store = ({ store, setStore }) => {
       const latitude = res.documents[0].y;
       const longitude = res.documents[0].x;
 
+      let imageUrl = "";
+      if (storeFile) {
+        imageUrl = await uploadFile(storeFile);
+      }
+      console.log("Abc" + imageUrl);
+
       // back에 저장
       const storeInfo = {
         storeName: storeName,
@@ -46,8 +68,9 @@ const Store = ({ store, setStore }) => {
         storeIntroduction: storeIntroduction,
         storeCategory: storeCategory,
         ownerId: localStorage.getItem("ownerId"),
+        storeImage: imageUrl,
       };
-      await saveStore(storeInfo);
+      await saveStoreQL({ input: storeInfo });
       alert("저장이 완료되었습니다");
     } else {
       alert("빈 칸을 채워주세요");
@@ -56,10 +79,10 @@ const Store = ({ store, setStore }) => {
 
   const deleteStoreInfo = async () => {
     if (store) {
-      await deleteStoreById(store.storeId);
-      alert("삭제가 완료되었습니다")
-    } 
-  }
+      await deleteStoreByIdQL({ storeId: store.storeId });
+      alert("삭제가 완료되었습니다");
+    }
+  };
 
   const updateStoreInfo = async () => {
     const storeName = document.getElementById("store-name").value;
@@ -74,7 +97,7 @@ const Store = ({ store, setStore }) => {
     ).value;
     const storePhoneNumber =
       document.getElementById("store-phone-number").value;
-    
+
     console.log(storeCategory, "업데이트");
 
     // input 값에 빈 칸이 있는지 검증
@@ -93,35 +116,155 @@ const Store = ({ store, setStore }) => {
       const latitude = res.documents[0].y;
       const longitude = res.documents[0].x;
 
+      let imageUrl = storeImageUuid;
+      if (storeFile) {
+        imageUrl = await uploadFile(storeFile);
+      }
+      console.log("Abc" + imageUrl);
+
       // back에 저장
-      const udpateInfo = {
+      const updateInfo = {
         storeName: storeName,
         storeAddress: storeAddress,
-        storeLongitude: longitude,
-        storeLatitude: latitude,
         storeOpenAt: storeOpenAt,
         storeCloseAt: storeCloseAt,
         storePhone: storePhoneNumber,
-        storeMinimumOrderAmount: minOrderAmount,
+        storeMinimumOrderAmount: parseInt(minOrderAmount),
         storeIntroduction: storeIntroduction,
         storeCategory: storeCategory,
+        storeLongitude: parseFloat(longitude),
+        storeLatitude: parseFloat(latitude),
+        storeImage: imageUrl,
       };
-      
-      await updateStoreById(store.storeId, udpateInfo);
+
+      await updateStoreByIdQL({
+        storeId: store.storeId,
+        input: updateInfo,
+      });
       alert("수정이 완료되었습니다");
     } else {
       alert("빈 칸을 채워주세요");
     }
-  }
+  };
 
-  
+  const changeBlockStoreIsOpened = async () => {
+    await blockStoreIsOpenedQL({ storeId: store.storeId });
+    setBlockStoreIsOpened(!blockStoreIsOpened);
+  };
+
+  useEffect(() => {
+    const checkBlockStoreIsOpened = async () => {
+      if (store) {
+        const result = await checkBlockStoreIsOpenedQL({
+          storeId: store.storeId,
+        });
+        setBlockStoreIsOpened(result);
+      }
+    };
+    checkBlockStoreIsOpened();
+
+    fetchUserProfileImage();
+  }, [store]);
+
+  // 사진 업로드
+
+  // 사진이랑 이미지 업로드 눌렀을 때 사진 넣을 수 있는 창 뜸
+  const handleFileClick = () => {
+    inputRef.current.click();
+  };
+
+  // 이미지 열기해서 사진을 넣었을 때 변화 체크
+  // 이미지 업로드에서 미리보기 할 수 있게
+  const handleFileChange = (e) => {
+    setStoreFile(e.target.files[0]);
+    setStoreImage(URL.createObjectURL(e.target.files[0]));
+  };
+
+  // 기본 이미지로 업로드 -> store DB 에 저장될 때 image column 에 값이 안 들어오게
+  const handleDefaultImage = () => {
+    setStoreImage(storeImagePng);
+    setStoreFile("");
+    setStoreImageUuid("");
+  };
+
+  // 새로운 파일 업로드
+  const uploadFile = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post(
+        `http://192.168.0.17:8081/api/v1/photo/store`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setStoreImage(
+        "https://storage.googleapis.com/wgwg_bucket/" + response.data
+      );
+      setStoreImageUuid(response.data);
+      console.log(")))))12345)))))))" + response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error upload file", error);
+    }
+  };
+
+  // 맨 처음에 가지고 있는 이미지 가져오기
+  // 빈 값으로 들어오면 미리 정해놓은 이미지로 보여주기
+  const fetchUserProfileImage = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.0.17:8080/api/v1/store/${store.storeId}/photo`
+      );
+      console.log(response.data);
+      setStoreImageUuid(response.data);
+      if (!response.data) {
+        setStoreImage(storeImagePng);
+      } else {
+        setStoreImage(
+          "https://storage.googleapis.com/wgwg_bucket/" + response.data
+        );
+      }
+    } catch (error) {
+      setStoreImage(storeImagePng);
+    }
+  };
+
   return (
     <>
       <div className="store-container">
         <h1 className="store-title">🏡 가게 정보</h1>
-        <div className="store-input">
-          <input id="image" type="file" />
+        <img
+          src={storeImage}
+          style={{
+            width: "150px",
+            height: "150px",
+            alignSelf: "center",
+            marginBottom: "20px",
+          }}
+          onClick={handleFileClick}
+        ></img>
+        <input
+          id="image"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          ref={inputRef}
+          style={{ display: "none" }}
+        />
+        <div className="store-image-button-container">
+          <div className="store-image-button" onClick={handleFileClick}>
+            이미지 업로드
+          </div>
+          <div className="store-image-button" onClick={handleDefaultImage}>
+            기본 이미지로 설정
+          </div>
         </div>
+
         <h3 className="store-item">가게명</h3>
         <div>
           <input
@@ -142,15 +285,30 @@ const Store = ({ store, setStore }) => {
         </div>
         <h3 className="store-item">가게 카테고리</h3>
         <div>
-          <select
-            id="store-category"
-            className="store-input"
-          >
+          <select id="store-category" className="store-input">
             <option disabled hidden selected={!store} value="default">
               가게 카테고리 선택
             </option>
-            {["피자", "중식", "치킨", "디저트", "양식", "한식", "일식", "회", "기타"].map((el, i) => {
-              return <option value={el} key={i} selected={store && store.storeCategory === el}>{el}</option>
+            {[
+              "피자",
+              "중식",
+              "치킨",
+              "디저트",
+              "양식",
+              "한식",
+              "일식",
+              "회",
+              "기타",
+            ].map((el, i) => {
+              return (
+                <option
+                  value={el}
+                  key={i}
+                  selected={store && store.storeCategory === el}
+                >
+                  {el}
+                </option>
+              );
             })}
           </select>
         </div>
@@ -200,18 +358,45 @@ const Store = ({ store, setStore }) => {
             defaultValue={store && store.storePhone}
           />
         </div>
+
+        <h3 className="store-item"> 영업 멈춤 수동 설정</h3>
+        <p
+          className="store-item"
+          style={{ color: "#757575", marginLeft: "10px" }}
+        >
+          *영업 시간 중 영업 멈춤 설정이 가능합니다.*
+        </p>
+        <div>
+          <button
+            className="store-save-button"
+            style={{
+              backgroundColor: "white",
+              borderColor: "#94D35C",
+              borderWidth: "3px",
+              marginTop: "0px",
+            }}
+            onClick={() => changeBlockStoreIsOpened()}
+          >
+            {blockStoreIsOpened ? "영업 중 막기 취소" : "영업 중 막기"}
+          </button>
+        </div>
+
         <div className="store-button-container">
           <div>
-            <button className="store-save-button" onClick={store ? updateStoreInfo : saveStoreInfo}>
+            <button
+              className="store-save-button"
+              onClick={store ? updateStoreInfo : saveStoreInfo}
+            >
               {store ? "수정" : "저장"}
             </button>
           </div>
-          {store && 
-          <div>
-            <button className="store-delete-button" onClick={deleteStoreInfo}>
-              삭제
-            </button>
-          </div>}
+          {store && (
+            <div>
+              <button className="store-delete-button" onClick={deleteStoreInfo}>
+                삭제
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -14,7 +14,7 @@ const SignupPage = () => {
 
     const navigate = useNavigate();
 
-    const KAKAO_API_KEY = 'f8609808f0ad80f284bc679eb3d80315';
+    const REST_API_KEY = import.meta.env.VITE_REST_API_KEY;
 
     useEffect(() => {
         const fetchOwnerInfo = async () => {
@@ -67,7 +67,7 @@ const SignupPage = () => {
                     query: ownerAddress,
                 },
                 headers: {
-                    Authorization: `KakaoAK ${KAKAO_API_KEY}`,
+                    Authorization: `KakaoAK ${REST_API_KEY}`,
                 },
             });
 

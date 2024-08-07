@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { getAddressDetail } from "../api/Address";
-import { deleteStoreById, saveStore, updateStoreById } from "../api/Store";
 import {
   blockStoreIsOpenedQL,
   checkBlockStoreIsOpenedQL,
@@ -16,7 +15,9 @@ const Store = ({ store, setStore }) => {
   const [blockStoreIsOpened, setBlockStoreIsOpened] = useState(false);
 
   const inputRef = useRef(null);
-  const [storeImage, setStoreImage] = useState("");
+  const [storeImage, setStoreImage] = useState(storeImagePng);
+  const [storeFile, setStoreFile] = useState("");
+  const [storeImageUuid, setStoreImageUuid] = useState("");
 
   const saveStoreInfo = async () => {
     const storeName = document.getElementById("store-name").value;
@@ -48,6 +49,12 @@ const Store = ({ store, setStore }) => {
       const latitude = res.documents[0].y;
       const longitude = res.documents[0].x;
 
+      let imageUrl = "";
+      if (storeFile) {
+        imageUrl = await uploadFile(storeFile);
+      }
+      console.log("Abc" + imageUrl);
+
       // back에 저장
       const storeInfo = {
         storeName: storeName,
@@ -61,6 +68,7 @@ const Store = ({ store, setStore }) => {
         storeIntroduction: storeIntroduction,
         storeCategory: storeCategory,
         ownerId: localStorage.getItem("ownerId"),
+        storeImage: imageUrl,
       };
       await saveStoreQL({ input: storeInfo });
       alert("저장이 완료되었습니다");
@@ -108,6 +116,12 @@ const Store = ({ store, setStore }) => {
       const latitude = res.documents[0].y;
       const longitude = res.documents[0].x;
 
+      let imageUrl = storeImageUuid;
+      if (storeFile) {
+        imageUrl = await uploadFile(storeFile);
+      }
+      console.log("Abc" + imageUrl);
+
       // back에 저장
       const updateInfo = {
         storeName: storeName,
@@ -120,6 +134,7 @@ const Store = ({ store, setStore }) => {
         storeCategory: storeCategory,
         storeLongitude: parseFloat(longitude),
         storeLatitude: parseFloat(latitude),
+        storeImage: imageUrl,
       };
 
       await updateStoreByIdQL({
@@ -143,34 +158,42 @@ const Store = ({ store, setStore }) => {
         const result = await checkBlockStoreIsOpenedQL({
           storeId: store.storeId,
         });
-        console.log("result**" + result);
         setBlockStoreIsOpened(result);
       }
     };
     checkBlockStoreIsOpened();
+
     fetchUserProfileImage();
   }, [store]);
 
   // 사진 업로드
+
+  // 사진이랑 이미지 업로드 눌렀을 때 사진 넣을 수 있는 창 뜸
   const handleFileClick = () => {
     inputRef.current.click();
   };
 
+  // 이미지 열기해서 사진을 넣었을 때 변화 체크
+  // 이미지 업로드에서 미리보기 할 수 있게
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      uploadFile(file);
-    } else {
-      uploadFile(storeImagePng);
-    }
+    setStoreFile(e.target.files[0]);
+    setStoreImage(URL.createObjectURL(e.target.files[0]));
   };
 
+  // 기본 이미지로 업로드 -> store DB 에 저장될 때 image column 에 값이 안 들어오게
+  const handleDefaultImage = () => {
+    setStoreImage(storeImagePng);
+    setStoreFile("");
+    setStoreImageUuid("");
+  };
+
+  // 새로운 파일 업로드
   const uploadFile = async (file) => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      await axios.post(
-        `http://192.168.0.17:8080/api/v1/store/${store.storeId}/photo`,
+      const response = await axios.post(
+        `http://192.168.0.17:8081/api/v1/photo/store`,
         formData,
         {
           headers: {
@@ -178,23 +201,37 @@ const Store = ({ store, setStore }) => {
           },
         }
       );
-      fetchUserProfileImage();
+
+      setStoreImage(
+        "https://storage.googleapis.com/wgwg_bucket/" + response.data
+      );
+      setStoreImageUuid(response.data);
+      console.log(")))))12345)))))))" + response.data);
+      return response.data;
     } catch (error) {
       console.error("Error upload file", error);
     }
   };
 
+  // 맨 처음에 가지고 있는 이미지 가져오기
+  // 빈 값으로 들어오면 미리 정해놓은 이미지로 보여주기
   const fetchUserProfileImage = async () => {
     try {
       const response = await axios.get(
         `http://192.168.0.17:8080/api/v1/store/${store.storeId}/photo`
       );
       console.log(response.data);
-      setStoreImage(response.data);
+      setStoreImageUuid(response.data);
+      if (!response.data) {
+        setStoreImage(storeImagePng);
+      } else {
+        setStoreImage(
+          "https://storage.googleapis.com/wgwg_bucket/" + response.data
+        );
+      }
     } catch (error) {
       setStoreImage(storeImagePng);
     }
-    console.log("12345      " + storeImage);
   };
 
   return (
@@ -207,22 +244,25 @@ const Store = ({ store, setStore }) => {
             width: "150px",
             height: "150px",
             alignSelf: "center",
-            marginBottom: "50px",
+            marginBottom: "20px",
           }}
           onClick={handleFileClick}
         ></img>
-        <div className="store-input">
-          <input
-            id="image"
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            ref={inputRef}
-            style={{ display: "none" }}
-          />
-        </div>
-        <div className="store-save-button" onClick={handleFileClick}>
-          이미지 업로드
+        <input
+          id="image"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          ref={inputRef}
+          style={{ display: "none" }}
+        />
+        <div className="store-image-button-container">
+          <div className="store-image-button" onClick={handleFileClick}>
+            이미지 업로드
+          </div>
+          <div className="store-image-button" onClick={handleDefaultImage}>
+            기본 이미지로 설정
+          </div>
         </div>
 
         <h3 className="store-item">가게명</h3>

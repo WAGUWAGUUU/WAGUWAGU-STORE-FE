@@ -13,8 +13,14 @@ import {
   getMenuByMenuCategoryQL,
   getMenuCategoryByStoreQL,
 } from "../config/storeGraphQL";
+import menuImagePng from "./../assets/menu.png";
 
-const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
+const ShowMenuList = ({
+  store,
+  setMenu,
+  onMenuInfoModal,
+  menuDetailChange,
+}) => {
   const [categories, setCategories] = useState([]);
   const [menus, setMenus] = useState([]);
   const [selectedId, setSelectedId] = useState("");
@@ -72,6 +78,12 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
       getMenuCategoryByStoreApi();
     }
   }, [onMenuInfoModal]);
+
+  useEffect(() => {
+    if (store && menuDetailChange) {
+      getMenuCategoryByStoreApi();
+    }
+  }, [menuDetailChange]);
 
   useEffect(() => {
     if (store && !onMenuCategoryInfoModal) {
@@ -163,7 +175,12 @@ const ShowMenuList = ({ store, setMenu, onMenuInfoModal }) => {
                           width="80px"
                           height="80px"
                           style={{ margin: "0px" }}
-                          src={tteokbokki}
+                          src={
+                            menu.menuImage
+                              ? "https://storage.googleapis.com/wgwg_bucket/" +
+                                menu.menuImage
+                              : menuImagePng
+                          }
                         />
                       </div>
                     </div>

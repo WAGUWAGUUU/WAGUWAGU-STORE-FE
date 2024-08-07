@@ -80,6 +80,7 @@ export const getMenuByMenuCategoryQL = async (variables) => {
               menuIntroduction
               menuPrice
               menuPossible
+              menuImage
             }
           }
         `,
@@ -138,6 +139,7 @@ export const getMenuByMenuIdQL = async (variables) => {
               menuIntroduction
               menuPrice
               menuPossible
+              menuImage
             }
           }
         `,

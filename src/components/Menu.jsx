@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getMenuCategoriesByStoreId,
   saveMenuCategory,
@@ -13,6 +13,8 @@ import {
   saveMenuCategoryQL,
   saveMenuQL,
 } from "../config/storeGraphQL";
+import menuImagePng from "./../assets/menu.png";
+import axios from "axios";
 
 const Menu = ({ store, setStore }) => {
   const [menuCategories, setMenuCategories] = useState([]);
@@ -22,6 +24,11 @@ const Menu = ({ store, setStore }) => {
   const [optionListAdded, setOptionListAdded] = useState(null);
   const [optionLists, setOptionLists] = useState([]);
   const [selectedMenuId, setSelectedMenuId] = useState();
+
+  const inputRef = useRef(null);
+  const [menuImage, setMenuImage] = useState(menuImagePng);
+  const [menuFile, setMenuFile] = useState("");
+  const [menuImageUuid, setMenuImageUuid] = useState("");
 
   const createMenuCategroy = async () => {
     const menuCategory = document.getElementById("menu-category").value;
@@ -56,6 +63,12 @@ const Menu = ({ store, setStore }) => {
     const menuIntroduction = document.getElementById("menu-introduction").value;
     const menuPrice = document.getElementById("menu-price").value;
 
+    let imageUrl = "";
+    if (menuFile) {
+      imageUrl = await uploadFile(menuFile);
+    }
+    console.log("Abc" + imageUrl);
+
     if (
       menuCategoryId !== "default" &&
       menuName !== "" &&
@@ -67,6 +80,7 @@ const Menu = ({ store, setStore }) => {
         menuIntroduction: menuIntroduction,
         menuPrice: parseInt(menuPrice),
         menuCategoryId: menuCategoryId,
+        menuImage: imageUrl,
       };
       try {
         console.log("savemenu 들어옴" + typeof menuPrice);
@@ -171,6 +185,51 @@ const Menu = ({ store, setStore }) => {
     else console.log("getOptionListsBySelectedMenu : 메뉴 선택 시 진행 예정");
   }, [optionListAdded, selectedMenuId]);
 
+  // 사진 업로드
+
+  // 사진이랑 이미지 업로드 눌렀을 때 사진 넣을 수 있는 창 뜸
+  const handleFileClick = () => {
+    inputRef.current.click();
+  };
+
+  // 이미지 열기해서 사진을 넣었을 때 변화 체크
+  // 이미지 업로드에서 미리보기 할 수 있게
+  const handleFileChange = (e) => {
+    setMenuFile(e.target.files[0]);
+    setMenuImage(URL.createObjectURL(e.target.files[0]));
+  };
+
+  // 기본 이미지로 업로드 -> menu DB 에 저장될 때 image column 에 빈값이 들어오게
+  const handleDefaultImage = () => {
+    setMenuImage(menuImagePng);
+    setMenuFile("");
+    // setMenuImageUuid("");
+  };
+
+  // 새로운 파일 업로드
+  const uploadFile = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post(
+        `http://192.168.0.17:8081/api/v1/photo/menu`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      // setMenuImage(
+      //   "https://storage.googleapis.com/wgwg_bucket/" + response.data
+      // );
+      return response.data;
+    } catch (error) {
+      console.error("Error upload file", error);
+    }
+  };
+
   return (
     <>
       <div className="store-container">
@@ -190,8 +249,31 @@ const Menu = ({ store, setStore }) => {
         </div>
         <hr />
         <h2 className="store-item">메뉴 추가</h2>
-        <div className="store-input">
-          <input id="image" type="file" />
+        <img
+          src={menuImage}
+          style={{
+            width: "150px",
+            height: "150px",
+            alignSelf: "center",
+            marginBottom: "20px",
+          }}
+          onClick={handleFileClick}
+        ></img>
+        <input
+          id="image"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          ref={inputRef}
+          style={{ display: "none" }}
+        />
+        <div className="menu-image-button-container">
+          <div className="menu-image-button" onClick={handleFileClick}>
+            이미지 업로드
+          </div>
+          <div className="menu-image-button" onClick={handleDefaultImage}>
+            기본 이미지로 설정
+          </div>
         </div>
         <h3 className="store-item">메뉴 카테고리</h3>
         <div>

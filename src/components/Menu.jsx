@@ -107,7 +107,7 @@ const Menu = ({ store }) => {
         console.log("savemenu 들어옴" + typeof menuPrice);
         await saveMenuQL({ input: saveInfo });
         alert("저장이 완료되었습니다");
-        setMenuAdded({});
+        // setMenuAdded({});
       } catch (e) {
         alert("해당 메뉴는 이미 존재합니다");
       }

@@ -22,6 +22,7 @@ import {
 import { getOptions, saveOption } from '../api/Option';
 import './Menu.css';
 import NewOptionInput from './NewOptionInput';
+import OptionDisplay from "./OptionListDisplay.jsx";
 
 const Menu = ({ store }) => {
   const [menuCategories, setMenuCategories] = useState([]);
@@ -30,6 +31,7 @@ const Menu = ({ store }) => {
   const [optionLists, setOptionLists] = useState([]);
   const [optionListsOfMenu, setOptionListsOfMenu] = useState([]);
   const [selectedMenuId, setSelectedMenuId] = useState('');
+  const [optionMenuId, setOptionMenuId] = useState(''); // 추가된 부분
   const [selectedOptionListId, setSelectedOptionListId] = useState('');
   const [selectedOptionListIdForOptions, setSelectedOptionListIdForOptions] = useState(''); // For 2nd part
   const [optionListName, setOptionListName] = useState('');
@@ -147,9 +149,8 @@ const Menu = ({ store }) => {
   };
 
   const createOptionList = async () => {
-    const menuId = document.getElementById("menu-select-option-list").value;
-    if (menuId !== "default" && optionListName !== "") {
-      const optionListRequest = { menuId, listName: optionListName };
+    if (optionMenuId !== "default" && optionListName !== "") {
+      const optionListRequest = { menuId: optionMenuId, listName: optionListName };
       try {
         setLoading(true);
         const res = await saveOptionList(optionListRequest);
@@ -170,7 +171,7 @@ const Menu = ({ store }) => {
     }
   };
 
-  const createOptionListAndOptions = async (menuId, optionListName, options) => {
+  const createOptionListAndOptions = async (menuId, optionListName, options = [], listId = null) => {
     if (menuId !== "default" && optionListName !== "" && options.length > 0) {
       for (const option of options) {
         if (!option.optionTitle || !option.optionPrice) {
@@ -179,22 +180,34 @@ const Menu = ({ store }) => {
         }
       }
 
+      // 기본 요청 객체 생성
       const optionListRequest = {
         menuId,
         listName: optionListName,
         options: options
       };
 
+      // listId가 null이 아닌 경우에만 추가
+      if (listId !== null) {
+        optionListRequest.listId = listId;
+      }
+      console.log(optionListRequest);
+      debugger
       try {
         setLoading(true);
-        const response = await saveOptionListAndOptions(optionListRequest);
+        const res = await saveOptionListAndOptions(optionListRequest);
 
-        // Log the response data
-        console.log("API Response:", response);
+        if (res.status === 201) {
+          // Log the response data
+          console.log("API Response:", res);
 
-        // Handle the response based on the expected result
-        alert("옵션 카테고리와 옵션이 추가되었습니다");
-        setStoreOptionList(prev => [...prev, optionListRequest]);
+          // Handle the response based on the expected result
+          alert("옵션 카테고리와 옵션이 추가되었습니다");
+          setStoreOptionList(prev => [...prev, optionListRequest]);
+        }
+        else if(res.status===400){
+          console.error(res);
+        }
       } catch (e) {
         console.error("Error during API call:", e.message);
         handleError("해당 옵션 카테고리 또는 옵션은 이미 존재합니다");
@@ -205,6 +218,7 @@ const Menu = ({ store }) => {
       handleError("빈 칸을 채워주세요 또는 옵션을 추가해주세요");
     }
   };
+
 
   const getOptionListsBySelectedMenu = async () => {
     if (selectedMenuId) {
@@ -261,6 +275,7 @@ const Menu = ({ store }) => {
 
       const optionListRequest = {
         menuId: selectedMenuId,
+        listId: selectedOptionListIdForOptions, // Ensure this is included in the request
         listName: optionListNameForOptions,
         options: newOptionsForOptions
       };
@@ -360,7 +375,7 @@ const Menu = ({ store }) => {
   const handleOptionListChange = (e) => {
     const value = e.target.value;
     setSelectedOptionListId(value);
-    if (value === 'other') {
+    if (value === 'other' || value === 'none') {
       setShowOptionListInput(true);
     } else {
       setShowOptionListInput(false);
@@ -383,10 +398,10 @@ const Menu = ({ store }) => {
   };
 
   const handleSave = () => {
-    if (showOptionListInput) {
-      createOptionListAndOptions(selectedMenuId, optionListName, newOptions);
+    if (selectedOptionListId === 'none' || selectedOptionListId === 'other') {
+      createOptionListAndOptions(optionMenuId, optionListName, newOptions);
     } else {
-      createOptionListAndOptions(selectedMenuId, optionListName, options); // 기존 옵션리스트에 추가
+      createOptionListAndOptions(optionMenuId, optionListName, options, selectedOptionListId); // 기존 옵션리스트에 추가
     }
   };
 
@@ -535,7 +550,7 @@ const Menu = ({ store }) => {
           <h2 className='store-item'>옵션 카테고리 추가</h2>
           <div>
             <h3 className='store-item'>메뉴 선택</h3>
-            <select className='store-input' id="menu-select-option-list">
+            <select className='store-input' id="menu-select-option-list" onChange={e => setOptionMenuId(e.target.value)}>
               <option disabled value="default">메뉴 선택</option>
               {menus && menus.length > 0 && menus.map((el) => (
                   <option key={el.menuId} value={el.menuId}>{el.menuName}</option>
@@ -549,6 +564,7 @@ const Menu = ({ store }) => {
               {storeOptionList && storeOptionList.length > 0 && storeOptionList.map((el) => (
                   <option key={el.listId} value={el.listId}>{el.listName}</option>
               ))}
+              <option value="none">없음</option>
               <option value="other">기타</option>
             </select>
           </div>
@@ -632,25 +648,5 @@ const Menu = ({ store }) => {
       </>
   );
 };
-
-const OptionDisplay = ({ options }) => (
-    <div style={{
-      backgroundColor: '#94D35C', // 배경색
-      borderRadius: '10px', // 모서리 둥글기
-      padding: '20px', // 내부 여백
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // 그림자
-      margin: '10px 0' // 외부 여백
-    }}>
-      {options && options.length > 0 ? (
-          options.map((option) => (
-              <div key={option.optionId}>
-                <span>{option.optionTitle}</span> - <span>{option.optionPrice}원</span>
-              </div>
-          ))
-      ) : (
-          <p>옵션이 없습니다</p>
-      )}
-    </div>
-);
 
 export default Menu;

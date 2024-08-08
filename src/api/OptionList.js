@@ -5,19 +5,8 @@ export const saveOptionList = async (optionListRequest) => {
 }
 
 export const saveOptionListAndOptions = async (data) => {
-    try {
-        const response = await api("/api/v1/option-lists", "post", data);
-
-        if (response.status === 201) {
-            return response.data;
-        } else {
-            console.error("예상치 못한 응답 상태:", response.status);
-            throw new Error("예상치 못한 응답 상태");
-        }
-    } catch (error) {
-        console.error("saveOptionListAndOptions 에러:", error.message);
-        throw error;
-    }
+    const res = await api("/api/v1/option-lists", "post", data);
+    return res;
 };
 
 export const  getOptionListByMenuId = async (menuId) => {

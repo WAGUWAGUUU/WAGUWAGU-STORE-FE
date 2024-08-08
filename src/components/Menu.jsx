@@ -11,7 +11,6 @@ import {
   saveMenuCategoryQL,
   saveMenuQL,
 } from "../config/storeGraphQL";
-import menuImagePng from "./../assets/menu.png";
 import axios from "axios";
 import {
   getOptionListByMenuId,
@@ -22,6 +21,7 @@ import {
 import { getOptions, saveOption } from '../api/Option';
 import './Menu.css';
 import NewOptionInput from './NewOptionInput';
+import menuImagePng from "./../assets/menu.png";
 
 const Menu = ({ store }) => {
   const [menuCategories, setMenuCategories] = useState([]);
@@ -43,10 +43,12 @@ const Menu = ({ store }) => {
   const [options, setOptions] = useState([]);
   const [optionsOfMenu, setOptionsOfMenu] = useState([]); // For 2nd part
 
+  const [optionListAdded, setOptionListAdded] = useState("");
+
+
   const inputRef = useRef(null);
   const [menuImage, setMenuImage] = useState(menuImagePng);
   const [menuFile, setMenuFile] = useState("");
-  const [menuImageUuid, setMenuImageUuid] = useState("");
 
   const createMenuCategroy = async () => {
     const menuCategory = document.getElementById("menu-category").value;
@@ -57,8 +59,9 @@ const Menu = ({ store }) => {
       };
       try {
         await saveMenuCategoryQL({ input: menuCategoryInfo });
+        
+        // setMenuCategoriesAdded({}); //
         alert("저장이 완료되었습니다");
-        setMenuCategoriesAdded({}); //
       } catch (e) {
         alert("해당 메뉴 카테고리는 이미 존재합니다");
       }
@@ -115,12 +118,16 @@ const Menu = ({ store }) => {
 
   const getMenus = async () => {
     const arr = [];
-    for (let category of menuCategories) {
-      const res = await getMenuByMenuCategoryQL({
-        menuCategoryId: category.menuCategoryId,
-      });
-      for (let menu of res) {
-        arr.push(menu);
+    for (const category of menuCategories) {
+      try {
+        const res = await getMenuByMenuCategoryQL({
+          menuCategoryId: category.menuCategoryId,
+        });
+        for (let menu of res) {
+          arr.push(menu);
+        }
+      } catch {
+        handleError("메뉴 불러오기에 실패했습니다");
       }
     }
     setMenus(arr);
@@ -159,6 +166,7 @@ const Menu = ({ store }) => {
           alert("해당 옵션 카테고리는 이미 존재합니다");
         }
       } catch (e) {
+        
         alert("해당 옵션 카테고리는 이미 존재합니다");
       } finally {
         setLoading(false);
@@ -480,8 +488,13 @@ const Menu = ({ store }) => {
             기본 이미지로 설정
           </div>
         </div>
-        <h3 className="store-item">메뉴 카테고리</h3>
+        <h3 className='store-item'>메뉴 카테고리</h3>
         <div>
+          {/* <select className='store-input' id="menu-category-select">
+            <option disabled value="default">메뉴 카테고리 선택</option>
+            {menuCategories && menuCategories.length > 0 && menuCategories.map((el) => (
+                <option key={el.menuCategoryId} value={el.menuCategoryId}>{el.menuCategoryName}</option>
+            ))} */}
           <select className="store-input" id="menu-category-select">
             <option disabled selected hidden value="default">
               메뉴 카테고리 선택
@@ -500,7 +513,7 @@ const Menu = ({ store }) => {
               })}
           </select>
         </div>
-        <h3 className="store-item">메뉴 이름</h3>
+        <h3 className='store-item'>메뉴 이름</h3>
         <div>
           <input
             id="menu-name"
@@ -509,7 +522,7 @@ const Menu = ({ store }) => {
           />
 
         </div>
-        <h3 className="store-item">메뉴 소개</h3>
+        <h3 className='store-item'>메뉴 소개</h3>
         <div>
           <textarea
             id="menu-introduction"
@@ -518,7 +531,7 @@ const Menu = ({ store }) => {
             rows={4}
           />
         </div>
-        <h3 className="store-item">메뉴 금액</h3>
+        <h3 className='store-item'>메뉴 금액</h3>
         <div>
           <input
             id="menu-price"
@@ -629,6 +642,7 @@ const Menu = ({ store }) => {
           </button>
         </div>
       </div>
+      </>
   );
 };
 
@@ -651,4 +665,5 @@ const OptionDisplay = ({ options }) => (
       )}
     </div>
 );
+
 export default Menu;

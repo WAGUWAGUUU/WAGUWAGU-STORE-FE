@@ -411,7 +411,7 @@ export const getDeliveryInfoQL = async (variables) => {
 
 export const saveMenuCategoryQL = async (variables) => {
   try {
-    await axios.post(
+    const res = await axios.post(
       endpoint,
       {
         query: `
@@ -427,6 +427,8 @@ export const saveMenuCategoryQL = async (variables) => {
         },
       }
     );
+    console.log(res)
+    
   } catch (error) {
     return error;
   }

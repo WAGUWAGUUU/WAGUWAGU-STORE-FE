@@ -259,7 +259,7 @@ export const updateMenuQL = async (variables) => {
 
 export const saveStoreQL = async (variables) => {
   try {
-    await axios.post(
+    const response = await axios.post(
       endpoint,
       {
         query: `
@@ -275,8 +275,16 @@ export const saveStoreQL = async (variables) => {
         },
       }
     );
+    console.log(response)
+    if (response.data.errors && response.data.errors.length > 0) {
+      throw new Error(response.data.errors[0].message);
+    }
   } catch (error) {
-    return error;
+    if (error.response && error.response.status === 409) {
+      throw new Error("해당 메뉴 카테고리는 이미 존재합니다");
+    } else {
+      throw new Error("메뉴 카테고리를 저장하는 중에 오류가 발생했습니다");
+    }
   }
 };
 
@@ -411,7 +419,7 @@ export const getDeliveryInfoQL = async (variables) => {
 
 export const saveMenuCategoryQL = async (variables) => {
   try {
-    const res = await axios.post(
+    const response = await axios.post(
       endpoint,
       {
         query: `
@@ -427,16 +435,23 @@ export const saveMenuCategoryQL = async (variables) => {
         },
       }
     );
-    console.log(res)
-    
+    console.log(response)
+    if (response.data.errors && response.data.errors.length > 0) {
+      throw new Error(response.data.errors[0].message);
+    }
   } catch (error) {
-    return error;
+    if (error.response && error.response.status === 409) {
+      throw new Error("해당 메뉴 카테고리는 이미 존재합니다");
+    } else {
+      throw new Error("메뉴 카테고리를 저장하는 중에 오류가 발생했습니다");
+    }
   }
 };
+  
 
 export const saveMenuQL = async (variables) => {
   try {
-    await axios.post(
+    const response = await axios.post(
       endpoint,
       {
         query: `
@@ -452,8 +467,16 @@ export const saveMenuQL = async (variables) => {
         },
       }
     );
+    console.log(response)
+    if (response.data.errors && response.data.errors.length > 0) {
+      throw new Error(response.data.errors[0].message);
+    }
   } catch (error) {
-    return error;
+    if (error.response && error.response.status === 409) {
+      throw new Error("해당 메뉴 카테고리는 이미 존재합니다");
+    } else {
+      throw new Error("메뉴 카테고리를 저장하는 중에 오류가 발생했습니다");
+    }
   }
 };
 

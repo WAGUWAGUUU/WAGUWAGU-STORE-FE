@@ -11,17 +11,18 @@ import {
   saveMenuCategoryQL,
   saveMenuQL,
 } from "../config/storeGraphQL";
+import menuImagePng from "./../assets/menu.png";
 import axios from "axios";
 import {
   getOptionListByMenuId,
   getOptionListsByStoreId,
   saveOptionList,
-  saveOptionListAndOptions
+  saveOptionListAndOptions,
 } from '../api/OptionList';
 import { getOptions, saveOption } from '../api/Option';
 import './Menu.css';
 import NewOptionInput from './NewOptionInput';
-import menuImagePng from "./../assets/menu.png";
+import OptionDisplay from "./OptionListDisplay.jsx";
 
 const Menu = ({ store }) => {
   const [menuCategories, setMenuCategories] = useState([]);
@@ -30,6 +31,7 @@ const Menu = ({ store }) => {
   const [optionLists, setOptionLists] = useState([]);
   const [optionListsOfMenu, setOptionListsOfMenu] = useState([]);
   const [selectedMenuId, setSelectedMenuId] = useState('');
+  const [optionMenuId, setOptionMenuId] = useState(''); // 추가된 부분
   const [selectedOptionListId, setSelectedOptionListId] = useState('');
   const [selectedOptionListIdForOptions, setSelectedOptionListIdForOptions] = useState(''); // For 2nd part
   const [optionListName, setOptionListName] = useState('');
@@ -42,13 +44,13 @@ const Menu = ({ store }) => {
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([]);
   const [optionsOfMenu, setOptionsOfMenu] = useState([]); // For 2nd part
-
-  const [optionListAdded, setOptionListAdded] = useState("");
-
+  const [menuAdded, setMenuAdded] = useState({});
+  const [optionListAdded, setOptionListAdded] = useState({}); // 추가된 부분
 
   const inputRef = useRef(null);
   const [menuImage, setMenuImage] = useState(menuImagePng);
   const [menuFile, setMenuFile] = useState("");
+  const [menuImageUuid, setMenuImageUuid] = useState("");
 
   const createMenuCategroy = async () => {
     const menuCategory = document.getElementById("menu-category").value;
@@ -59,9 +61,8 @@ const Menu = ({ store }) => {
       };
       try {
         await saveMenuCategoryQL({ input: menuCategoryInfo });
-        
-        // setMenuCategoriesAdded({}); //
         alert("저장이 완료되었습니다");
+        setMenuCategoriesAdded({}); //
       } catch (e) {
         alert("해당 메뉴 카테고리는 이미 존재합니다");
       }
@@ -78,7 +79,7 @@ const Menu = ({ store }) => {
 
   const saveMenuInfo = async () => {
     const menuCategoryId = document.getElementById(
-      "menu-category-select"
+        "menu-category-select"
     ).value;
     const menuName = document.getElementById("menu-name").value;
     const menuIntroduction = document.getElementById("menu-introduction").value;
@@ -91,10 +92,10 @@ const Menu = ({ store }) => {
     console.log("Abc" + imageUrl);
 
     if (
-      menuCategoryId !== "default" &&
-      menuName !== "" &&
-      menuIntroduction !== "" &&
-      menuPrice !== ""
+        menuCategoryId !== "default" &&
+        menuName !== "" &&
+        menuIntroduction !== "" &&
+        menuPrice !== ""
     ) {
       const saveInfo = {
         menuName: menuName,
@@ -118,16 +119,12 @@ const Menu = ({ store }) => {
 
   const getMenus = async () => {
     const arr = [];
-    for (const category of menuCategories) {
-      try {
-        const res = await getMenuByMenuCategoryQL({
-          menuCategoryId: category.menuCategoryId,
-        });
-        for (let menu of res) {
-          arr.push(menu);
-        }
-      } catch {
-        handleError("메뉴 불러오기에 실패했습니다");
+    for (let category of menuCategories) {
+      const res = await getMenuByMenuCategoryQL({
+        menuCategoryId: category.menuCategoryId,
+      });
+      for (let menu of res) {
+        arr.push(menu);
       }
     }
     setMenus(arr);
@@ -152,9 +149,8 @@ const Menu = ({ store }) => {
   };
 
   const createOptionList = async () => {
-    const menuId = document.getElementById("menu-select-option-list").value;
-    if (menuId !== "default" && optionListName !== "") {
-      const optionListRequest = { menuId, listName: optionListName };
+    if (optionMenuId !== "default" && optionListName !== "") {
+      const optionListRequest = { menuId: optionMenuId, listName: optionListName };
       try {
         setLoading(true);
         const res = await saveOptionList(optionListRequest);
@@ -166,7 +162,6 @@ const Menu = ({ store }) => {
           alert("해당 옵션 카테고리는 이미 존재합니다");
         }
       } catch (e) {
-        
         alert("해당 옵션 카테고리는 이미 존재합니다");
       } finally {
         setLoading(false);
@@ -176,7 +171,7 @@ const Menu = ({ store }) => {
     }
   };
 
-  const createOptionListAndOptions = async (menuId, optionListName, options) => {
+  const createOptionListAndOptions = async (menuId, optionListName, options = [], listId = null) => {
     if (menuId !== "default" && optionListName !== "" && options.length > 0) {
       for (const option of options) {
         if (!option.optionTitle || !option.optionPrice) {
@@ -185,22 +180,34 @@ const Menu = ({ store }) => {
         }
       }
 
+      // 기본 요청 객체 생성
       const optionListRequest = {
         menuId,
         listName: optionListName,
         options: options
       };
 
+      // listId가 null이 아닌 경우에만 추가
+      if (listId !== null) {
+        optionListRequest.listId = listId;
+      }
+      console.log(optionListRequest);
+      debugger
       try {
         setLoading(true);
-        const response = await saveOptionListAndOptions(optionListRequest);
+        const res = await saveOptionListAndOptions(optionListRequest);
 
-        // Log the response data
-        console.log("API Response:", response);
+        if (res.status === 201) {
+          // Log the response data
+          console.log("API Response:", res);
 
-        // Handle the response based on the expected result
-        alert("옵션 카테고리와 옵션이 추가되었습니다");
-        setStoreOptionList(prev => [...prev, optionListRequest]);
+          // Handle the response based on the expected result
+          alert("옵션 카테고리와 옵션이 추가되었습니다");
+          setStoreOptionList(prev => [...prev, optionListRequest]);
+        }
+        else if(res.status===400){
+          console.error(res);
+        }
       } catch (e) {
         console.error("Error during API call:", e.message);
         handleError("해당 옵션 카테고리 또는 옵션은 이미 존재합니다");
@@ -211,6 +218,7 @@ const Menu = ({ store }) => {
       handleError("빈 칸을 채워주세요 또는 옵션을 추가해주세요");
     }
   };
+
 
   const getOptionListsBySelectedMenu = async () => {
     if (selectedMenuId) {
@@ -267,6 +275,7 @@ const Menu = ({ store }) => {
 
       const optionListRequest = {
         menuId: selectedMenuId,
+        listId: selectedOptionListIdForOptions, // Ensure this is included in the request
         listName: optionListNameForOptions,
         options: newOptionsForOptions
       };
@@ -366,7 +375,7 @@ const Menu = ({ store }) => {
   const handleOptionListChange = (e) => {
     const value = e.target.value;
     setSelectedOptionListId(value);
-    if (value === 'other') {
+    if (value === 'other' || value === 'none') {
       setShowOptionListInput(true);
     } else {
       setShowOptionListInput(false);
@@ -388,15 +397,13 @@ const Menu = ({ store }) => {
     }
   };
 
-
   const handleSave = () => {
-    if (showOptionListInput) {
-      createOptionListAndOptions(selectedMenuId, optionListName, newOptions);
+    if (selectedOptionListId === 'none' || selectedOptionListId === 'other') {
+      createOptionListAndOptions(optionMenuId, optionListName, newOptions);
     } else {
-      createOptionListAndOptions(selectedMenuId, optionListName, options); // 기존 옵션리스트에 추가
+      createOptionListAndOptions(optionMenuId, optionListName, options, selectedOptionListId); // 기존 옵션리스트에 추가
     }
   };
-
 
   // 사진 업로드
 
@@ -425,13 +432,13 @@ const Menu = ({ store }) => {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `http://192.168.0.17:8081/api/v1/photo/menu`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+          `http://192.168.0.17:8081/api/v1/photo/menu`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
       );
 
       // setMenuImage(
@@ -444,226 +451,202 @@ const Menu = ({ store }) => {
   };
 
   return (
-    <>
-      <div className="store-container">
-        <h1 className="store-title">🥑 메뉴 등록</h1>
-        <h2 className="store-item">메뉴 카테고리 추가</h2>
-        <div>
-          <input
-            id="menu-category"
-            className="store-input"
-            placeholder="메뉴 카테고리를 입력해주세요"
-          />
-        </div>
-        <div>
-          <button className="menu-save-button" onClick={createMenuCategroy}>
-            저장
-          </button>
-        </div>
-        <hr />
-        <h2 className="store-item">메뉴 추가</h2>
-        <img
-          src={menuImage}
-          style={{
-            width: "150px",
-            height: "150px",
-            alignSelf: "center",
-            marginBottom: "20px",
-          }}
-          onClick={handleFileClick}
-        ></img>
-        <input
-          id="image"
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          ref={inputRef}
-          style={{ display: "none" }}
-        />
-        <div className="menu-image-button-container">
-          <div className="menu-image-button" onClick={handleFileClick}>
-            이미지 업로드
+      <>
+        <div className="store-container">
+          <h1 className="store-title">🥑 메뉴 등록</h1>
+          <h2 className="store-item">메뉴 카테고리 추가</h2>
+          <div>
+            <input
+                id="menu-category"
+                className="store-input"
+                placeholder="메뉴 카테고리를 입력해주세요"
+            />
           </div>
-          <div className="menu-image-button" onClick={handleDefaultImage}>
-            기본 이미지로 설정
+          <div>
+            <button className="menu-save-button" onClick={createMenuCategroy}>
+              저장
+            </button>
           </div>
-        </div>
-        <h3 className='store-item'>메뉴 카테고리</h3>
-        <div>
-          {/* <select className='store-input' id="menu-category-select">
-            <option disabled value="default">메뉴 카테고리 선택</option>
-            {menuCategories && menuCategories.length > 0 && menuCategories.map((el) => (
-                <option key={el.menuCategoryId} value={el.menuCategoryId}>{el.menuCategoryName}</option>
-            ))} */}
-          <select className="store-input" id="menu-category-select">
-            <option disabled selected hidden value="default">
-              메뉴 카테고리 선택
-            </option>
-            {menuCategories &&
-              menuCategories.length > 0 &&
-              menuCategories.map((el, i) => {
-                return (
-                  <option
-                    key={el.menuCategoryId + el.menuCategoryName}
-                    value={el.menuCategoryId}
-                  >
-                    {el.menuCategoryName}
-                  </option>
-                );
-              })}
-          </select>
-        </div>
-        <h3 className='store-item'>메뉴 이름</h3>
-        <div>
+          <hr />
+          <h2 className="store-item">메뉴 추가</h2>
+          <img
+              src={menuImage}
+              style={{
+                width: "150px",
+                height: "150px",
+                alignSelf: "center",
+                marginBottom: "20px",
+              }}
+              onClick={handleFileClick}
+          ></img>
           <input
-            id="menu-name"
-            className="store-input"
-            placeholder="메뉴 이름을 입력해주세요"
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              ref={inputRef}
+              style={{ display: "none" }}
           />
+          <div className="menu-image-button-container">
+            <div className="menu-image-button" onClick={handleFileClick}>
+              이미지 업로드
+            </div>
+            <div className="menu-image-button" onClick={handleDefaultImage}>
+              기본 이미지로 설정
+            </div>
+          </div>
+          <h3 className="store-item">메뉴 카테고리</h3>
+          <div>
+            <select className="store-input" id="menu-category-select">
+              <option disabled selected hidden value="default">
+                메뉴 카테고리 선택
+              </option>
+              {menuCategories &&
+                  menuCategories.length > 0 &&
+                  menuCategories.map((el, i) => {
+                    return (
+                        <option
+                            key={el.menuCategoryId + el.menuCategoryName}
+                            value={el.menuCategoryId}
+                        >
+                          {el.menuCategoryName}
+                        </option>
+                    );
+                  })}
+            </select>
+          </div>
+          <h3 className="store-item">메뉴 이름</h3>
+          <div>
+            <input
+                id="menu-name"
+                className="store-input"
+                placeholder="메뉴 이름을 입력해주세요"
+            />
 
-        </div>
-        <h3 className='store-item'>메뉴 소개</h3>
-        <div>
+          </div>
+          <h3 className="store-item">메뉴 소개</h3>
+          <div>
           <textarea
-            id="menu-introduction"
-            className="store-input"
-            placeholder="메뉴를 소개해주세요"
-            rows={4}
+              id="menu-introduction"
+              className="store-input"
+              placeholder="메뉴를 소개해주세요"
+              rows={4}
           />
-        </div>
-        <h3 className='store-item'>메뉴 금액</h3>
-        <div>
-          <input
-            id="menu-price"
-            className="store-input"
-            placeholder="메뉴 금액을 입력해주세요"
-          />
-        </div>
-        <div>
-          <button className="menu-save-button" onClick={saveMenuInfo}>
-            저장
-          </button>
-        </div>
-        <hr />
-        <h2 className='store-item'>옵션 카테고리 추가</h2>
-        <div>
-          <h3 className='store-item'>메뉴 선택</h3>
-          <select className='store-input' id="menu-select-option-list">
-            <option disabled value="default">메뉴 선택</option>
-            {menus && menus.length > 0 && menus.map((el) => (
-                <option key={el.menuId} value={el.menuId}>{el.menuName}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <h3 className='store-item'>사용 가능한 옵션 카테고리</h3>
-          <select className='store-input' id="store-option-list-select" onChange={handleOptionListChange}>
-            <option disabled value="default">옵션 카테고리 선택</option>
-            {storeOptionList && storeOptionList.length > 0 && storeOptionList.map((el) => (
-                <option key={el.listId} value={el.listId}>{el.listName}</option>
-            ))}
-            <option value="other">기타</option>
-          </select>
-        </div>
-        {!showOptionListInput && (
-            <div>
-              <h3 className='store-item'>{optionListName}의 옵션</h3>
-              <OptionDisplay options={options} />
-            </div>
-        )}
-        {showOptionListInput && (
-            <div>
-              <h3>옵션리스트 추가하기</h3>
-              <input
-                  id="option-list-name"
-                  className='store-input'
-                  placeholder='옵션 카테고리 이름'
-                  value={optionListName}
-                  onChange={e => setOptionListName(e.target.value)}
-              />
-              <NewOptionInput
-                  newOptions={newOptions}
-                  handleNewOptionChange={handleNewOptionChange}
-                  handleAddNewOption={handleAddNewOption}
-                  handleRemoveOption={handleRemoveOption}
-                  loading={loading}
-              />
-            </div>
-        )}
-        <div>
-          <button className='menu-save-button'
-                  onClick={handleSave}
-                  disabled={loading}>
-            {loading ? '저장 중...' : '저장'}
-          </button>
-        </div>
-        <hr />
-
-        {/* 2번 */}
-        <h2 className='store-item'>옵션 추가</h2>
-        <div className='option-select-container'>
-          <div className='option-select-item'>
-            <select className='store-input' id="menu-select-option" onChange={e => setSelectedMenuId(e.target.value)}
-                    value={selectedMenuId}>
+          </div>
+          <h3 className="store-item">메뉴 금액</h3>
+          <div>
+            <input
+                id="menu-price"
+                className="store-input"
+                placeholder="메뉴 금액을 입력해주세요"
+            />
+          </div>
+          <div>
+            <button className="menu-save-button" onClick={saveMenuInfo}>
+              저장
+            </button>
+          </div>
+          <hr />
+          <h2 className='store-item'>옵션 카테고리 추가</h2>
+          <div>
+            <h3 className='store-item'>메뉴 선택</h3>
+            <select className='store-input' id="menu-select-option-list" onChange={e => setOptionMenuId(e.target.value)}>
               <option disabled value="default">메뉴 선택</option>
               {menus && menus.length > 0 && menus.map((el) => (
                   <option key={el.menuId} value={el.menuId}>{el.menuName}</option>
               ))}
             </select>
           </div>
-          <div className='option-select-item'>
-            <select id="option-list-select" className='store-input'
-                    onChange={handleOptionListChangeForOptions} value={selectedOptionListIdForOptions}>
+          <div>
+            <h3 className='store-item'>사용 가능한 옵션 카테고리</h3>
+            <select className='store-input' id="store-option-list-select" onChange={handleOptionListChange}>
               <option disabled value="default">옵션 카테고리 선택</option>
-              {optionListsOfMenu && optionListsOfMenu.length > 0 ? (
-                  optionListsOfMenu.map((el) => (
-                      <option key={el.optionListId} value={el.optionListId}>{el.listName}</option>
-                  ))
-              ) : (
-                  <option disabled value="default">옵션 카테고리를 먼저 추가해주세요</option>
-              )}
+              {storeOptionList && storeOptionList.length > 0 && storeOptionList.map((el) => (
+                  <option key={el.listId} value={el.listId}>{el.listName}</option>
+              ))}
+              <option value="none">없음</option>
+              <option value="other">기타</option>
             </select>
           </div>
+          {!showOptionListInput && (
+              <div>
+                <h3 className='store-item'>{optionListName}의 옵션</h3>
+                <OptionDisplay options={options} />
+              </div>
+          )}
+          {showOptionListInput && (
+              <div>
+                <h3>옵션리스트 추가하기</h3>
+                <input
+                    id="option-list-name"
+                    className='store-input'
+                    placeholder='옵션 카테고리 이름'
+                    value={optionListName}
+                    onChange={e => setOptionListName(e.target.value)}
+                />
+                <NewOptionInput
+                    newOptions={newOptions}
+                    handleNewOptionChange={handleNewOptionChange}
+                    handleAddNewOption={handleAddNewOption}
+                    handleRemoveOption={handleRemoveOption}
+                    loading={loading}
+                />
+              </div>
+          )}
+          <div>
+            <button className='menu-save-button'
+                    onClick={handleSave}
+                    disabled={loading}>
+              {loading ? '저장 중...' : '저장'}
+            </button>
+          </div>
+          <hr />
+
+          {/* 2번 */}
+          <h2 className='store-item'>옵션 추가</h2>
+          <div className='option-select-container'>
+            <div className='option-select-item'>
+              <select className='store-input' id="menu-select-option" onChange={e => setSelectedMenuId(e.target.value)}
+                      value={selectedMenuId}>
+                <option disabled value="default">메뉴 선택</option>
+                {menus && menus.length > 0 && menus.map((el) => (
+                    <option key={el.menuId} value={el.menuId}>{el.menuName}</option>
+                ))}
+              </select>
+            </div>
+            <div className='option-select-item'>
+              <select id="option-list-select" className='store-input'
+                      onChange={handleOptionListChangeForOptions} value={selectedOptionListIdForOptions}>
+                <option disabled value="default">옵션 카테고리 선택</option>
+                {optionListsOfMenu && optionListsOfMenu.length > 0 ? (
+                    optionListsOfMenu.map((el) => (
+                        <option key={el.optionListId} value={el.optionListId}>{el.listName}</option>
+                    ))
+                ) : (
+                    <option disabled value="default">옵션 카테고리를 먼저 추가해주세요</option>
+                )}
+              </select>
+            </div>
+          </div>
+          <div>
+            <h3 className='store-item'>{optionListNameForOptions}의 옵션</h3>
+            <OptionDisplay options={optionsOfMenu} />
+          </div>
+          <NewOptionInput
+              newOptions={newOptionsForOptions}
+              handleNewOptionChange={handleNewOptionChangeForOptions}
+              handleAddNewOption={handleAddNewOptionForOptions}
+              handleRemoveOption={handleRemoveOptionForOptions}
+              loading={loading}
+          />
+          <div>
+            <button className='menu-save-button' onClick={createOption} disabled={loading}>
+              {loading ? '저장 중...' : '저장'}
+            </button>
+          </div>
         </div>
-        <div>
-          <h3 className='store-item'>{optionListNameForOptions}의 옵션</h3>
-          <OptionDisplay options={optionsOfMenu} />
-        </div>
-        <NewOptionInput
-            newOptions={newOptionsForOptions}
-            handleNewOptionChange={handleNewOptionChangeForOptions}
-            handleAddNewOption={handleAddNewOptionForOptions}
-            handleRemoveOption={handleRemoveOptionForOptions}
-            loading={loading}
-        />
-        <div>
-          <button className='menu-save-button' onClick={createOption} disabled={loading}>
-            {loading ? '저장 중...' : '저장'}
-          </button>
-        </div>
-      </div>
       </>
   );
 };
-
-const OptionDisplay = ({ options }) => (
-    <div style={{
-      backgroundColor: '#94D35C', // 배경색
-      borderRadius: '10px', // 모서리 둥글기
-      padding: '20px', // 내부 여백
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // 그림자
-      margin: '10px 0' // 외부 여백
-    }}>
-      {options && options.length > 0 ? (
-          options.map((option) => (
-              <div key={option.optionId}>
-                <span>{option.optionTitle}</span> - <span>{option.optionPrice}원</span>
-              </div>
-          ))
-      ) : (
-          <p>옵션이 없습니다</p>
-      )}
-    </div>
-);
 
 export default Menu;

@@ -14,11 +14,23 @@ export const selectByOwner = async (storeId) => {
     throw error;
   }
 };
-  
-export const selectByDate = async (requestId, startDate, endDate, pageNumber) => {
+
+// export const UserInformation = async () => {
+//   try {
+//     const res = await orderApi('api/v1/order/userInformation', 'get');
+//     return res.data;
+//   } catch (error) {
+//     console.error('Error in UserInformation ', error);
+//     throw error;
+//   }
+// };
+
+
+
+export const selectByStoreDate = async (storeId, startDate, endDate, pageNumber) => {
 
   try {
-    const url = `/${requestId}/history`;
+    const url = `/${storeId}/history`;
     const method = 'GET';
     const params = {
       startDate,
@@ -33,7 +45,7 @@ export const selectByDate = async (requestId, startDate, endDate, pageNumber) =>
     console.log(data);
     return data;
   } catch (error) {
-    console.error('Error in selectByDate:', error);
+    console.error('Error in selectByStoreDate:', error);
     throw error;
   }
 };

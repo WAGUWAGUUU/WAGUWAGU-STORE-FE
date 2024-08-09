@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './HistoryInquiry.css';
 import StatusBox from '../components/StatusBox';
-import { selectByDate } from '../config/orderApi';
+import { selectByStoreDate } from '../config/orderApi';
 
 const HistoryInquiry = () => {
   const [histories, setHistories] = useState([]);
   const [selectedFirstDate, setSelectedFirstDate] = useState('');
   const [selectedSecondDate, setSelectedSecondDate] = useState('');
-  const [requestId, setRequestId] = useState(''); // State for requestId
+  const [requestId, setRequestId] = useState('');
   const [showDateInput, setShowDateInput] = useState(false);
   const [pageNumber, setPageNumber] = useState(0);
 
@@ -32,10 +32,19 @@ const HistoryInquiry = () => {
     setShowDateInput((prevShowDateInput) => !prevShowDateInput);
   };
 
+  const formatDateForTimestamp = (date) => {
+    if (!date) return '';
+    return `${date} 00:00:00`;
+  };
+
   const handleInquiry = async () => {
     try {
       setPageNumber(0);
-      const data = await selectByDate(requestId, selectedFirstDate, selectedSecondDate, 0);
+
+      const formattedFirstDate = formatDateForTimestamp(selectedFirstDate);
+      const formattedSecondDate = formatDateForTimestamp(selectedSecondDate);
+
+      const data = await selectByStoreDate(requestId, formattedFirstDate, formattedSecondDate, 0);
       setHistories(data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -45,7 +54,11 @@ const HistoryInquiry = () => {
   const loadMoreHistories = async () => {
     try {
       const newPageNumber = pageNumber + 1;
-      const data = await selectByDate(requestId, selectedFirstDate, selectedSecondDate, newPageNumber);
+
+      const formattedFirstDate = formatDateForTimestamp(selectedFirstDate);
+      const formattedSecondDate = formatDateForTimestamp(selectedSecondDate);
+
+      const data = await selectByStoreDate(requestId, formattedFirstDate, formattedSecondDate, newPageNumber);
       setHistories((prevHistories) => [...prevHistories, ...data]);
       setPageNumber(newPageNumber);
     } catch (error) {

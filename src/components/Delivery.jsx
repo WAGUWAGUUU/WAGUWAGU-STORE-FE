@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import "./Delivery.css";
-import { getDeliveryInfo, saveDeliveryInfo, updateDeliveryInfo } from "../api/Delivery";
+import {
+  getDeliveryInfo,
+  saveDeliveryInfo,
+  updateDeliveryInfo,
+} from "../api/Delivery";
+import {
+  getDeliveryInfoQL,
+  saveDeliveryInfoQL,
+  updateDeliveryInfoQL,
+} from "../config/storeGraphQL";
 
 const Delivery = ({ store, setStore }) => {
   const [secondInitRange, setSecondInitRange] = useState("미정");
@@ -23,6 +32,9 @@ const Delivery = ({ store, setStore }) => {
         break;
       case 3:
         setFifthInitRange(value);
+        break;
+      default:
+        break;
     }
   };
 
@@ -38,13 +50,19 @@ const Delivery = ({ store, setStore }) => {
         return fourthInitRange;
       case 4:
         return fifthInitRange;
+      default:
+        return "미정";
     }
   };
 
-  // store id를 가져와야 한다.
   const saveDeliveryFee = async () => {
-    const initRange = [0, secondInitRange, thirdInitRange, fourthInitRange, fifthInitRange];
-    // 빈 칸이 있는지 검증
+    const initRange = [
+      0,
+      secondInitRange,
+      thirdInitRange,
+      fourthInitRange,
+      fifthInitRange,
+    ];
     for (let i = 1; i <= 5; i++) {
       const deliveryEndRange = document.getElementById(
         `delivery-range${i}`
@@ -53,14 +71,12 @@ const Delivery = ({ store, setStore }) => {
       if (deliveryEndRange === "" || deliveryFee === "") {
         alert("빈 칸을 채워주세요");
         return;
-      } else if(deliveryEndRange <= initRange[i-1]) {
+      } else if (deliveryEndRange <= initRange[i - 1]) {
         alert("구간 입력값은 시작값보다 커야 합니다");
         return;
-      };
-    };
-    
+      }
+    }
 
-    // 빈 칸이 다 채워졌다면 저장 진행
     if (store) {
       for (let i = 1; i <= 5; i++) {
         const rangeNumber = i;
@@ -69,11 +85,14 @@ const Delivery = ({ store, setStore }) => {
         ).value;
         const deliveryFee = document.getElementById(`delivery-fee${i}`).value;
         const deliveryFeeInfo = {
-          storeDeliveryInfoState: rangeNumber,
-          storeDeliveryInfoFee: deliveryFee,
-          storeDeliveryInfoDistanceEnd: deliveryEndRange,
+          storeDeliveryInfoState: parseInt(rangeNumber),
+          storeDeliveryInfoFee: parseInt(deliveryFee),
+          storeDeliveryInfoDistanceEnd: parseFloat(deliveryEndRange),
         };
-        await saveDeliveryInfo(store.storeId, deliveryFeeInfo);
+        await saveDeliveryInfoQL({
+          storeId: store.storeId,
+          input: deliveryFeeInfo,
+        });
       }
       alert("저장이 완료되었습니다");
       setDeliveryInfoAdded({});
@@ -83,8 +102,13 @@ const Delivery = ({ store, setStore }) => {
   };
 
   const updateDeliveryFee = async () => {
-    const initRange = [0, secondInitRange, thirdInitRange, fourthInitRange, fifthInitRange];
-    // 빈 칸이 있는지 검증
+    const initRange = [
+      0,
+      secondInitRange,
+      thirdInitRange,
+      fourthInitRange,
+      fifthInitRange,
+    ];
     for (let i = 1; i <= 5; i++) {
       const deliveryEndRange = document.getElementById(
         `delivery-range${i}`
@@ -93,14 +117,12 @@ const Delivery = ({ store, setStore }) => {
       if (deliveryEndRange === "" || deliveryFee === "") {
         alert("빈 칸을 채워주세요");
         return;
-      } else if(deliveryEndRange <= initRange[i-1]) {
+      } else if (deliveryEndRange <= initRange[i - 1]) {
         alert("구간 입력값은 시작값보다 커야 합니다");
         return;
-      };
-    };
-    
+      }
+    }
 
-    // 빈 칸이 다 채워졌다면 저장 진행
     if (store) {
       for (let i = 1; i <= 5; i++) {
         const rangeNumber = i;
@@ -109,11 +131,14 @@ const Delivery = ({ store, setStore }) => {
         ).value;
         const deliveryFee = document.getElementById(`delivery-fee${i}`).value;
         const deliveryFeeInfo = {
-          storeDeliveryInfoState: rangeNumber,
-          storeDeliveryInfoFee: deliveryFee,
-          storeDeliveryInfoDistanceEnd: deliveryEndRange,
+          storeDeliveryInfoState: parseInt(rangeNumber),
+          storeDeliveryInfoFee: parseInt(deliveryFee),
+          storeDeliveryInfoDistanceEnd: parseFloat(deliveryEndRange),
         };
-        await updateDeliveryInfo(store.storeId, deliveryFeeInfo);
+        await updateDeliveryInfoQL({
+          storeId: store.storeId,
+          input: deliveryFeeInfo,
+        });
       }
       alert("수정이 완료되었습니다");
       setDeliveryInfoAdded({});
@@ -123,17 +148,15 @@ const Delivery = ({ store, setStore }) => {
   };
 
   const getDeliveryInfoByStoreId = async () => {
-    const res = await getDeliveryInfo(store.storeId);
+    const res = await getDeliveryInfoQL({ storeId: store.storeId });
     setDeliveryInfo(res);
-    if (res.length > 0) {
-      setSecondInitRange(res[0].storeDeliveryInfoDistanceEnd);
-      setThirdInitRange(res[1].storeDeliveryInfoDistanceEnd);
-      setFourthInitRange(res[2].storeDeliveryInfoDistanceEnd);
-      setFifthInitRange(res[3].storeDeliveryInfoDistanceEnd);
+    if (res && res.length > 0) {
+      setSecondInitRange(res[0]?.storeDeliveryInfoDistanceEnd ?? "미정");
+      setThirdInitRange(res[1]?.storeDeliveryInfoDistanceEnd ?? "미정");
+      setFourthInitRange(res[2]?.storeDeliveryInfoDistanceEnd ?? "미정");
+      setFifthInitRange(res[3]?.storeDeliveryInfoDistanceEnd ?? "미정");
     }
-    
-  }
-  
+  };
 
   useEffect(() => {
     if (store) {
@@ -157,7 +180,13 @@ const Delivery = ({ store, setStore }) => {
                   className="delivery-range-input"
                   type="text"
                   onChange={(e) => setInitRange(e.target.value, i)}
-                  defaultValue={deliveryInfo && deliveryInfo.length > 0 && deliveryInfo[i].storeDeliveryInfoDistanceEnd}
+                  defaultValue={
+                    deliveryInfo &&
+                    deliveryInfo.length > i &&
+                    deliveryInfo[i]?.storeDeliveryInfoDistanceEnd
+                      ? deliveryInfo[i].storeDeliveryInfoDistanceEnd
+                      : ""
+                  }
                 />{" "}
                 km
               </div>
@@ -167,14 +196,27 @@ const Delivery = ({ store, setStore }) => {
                   className="store-input"
                   type="text"
                   placeholder="배달비를 입력해주세요"
-                  defaultValue={deliveryInfo && deliveryInfo.length > 0 && deliveryInfo[i].storeDeliveryInfoFee}
+                  defaultValue={
+                    deliveryInfo &&
+                    deliveryInfo.length > i &&
+                    deliveryInfo[i]?.storeDeliveryInfoFee
+                      ? deliveryInfo[i].storeDeliveryInfoFee
+                      : ""
+                  }
                 />
               </div>
             </div>
           );
         })}
         <div>
-          <button className="store-save-button" onClick={deliveryInfo ? updateDeliveryFee : saveDeliveryFee}>
+          <button
+            className="store-save-button"
+            onClick={
+              deliveryInfo && deliveryInfo.length > 0
+                ? updateDeliveryFee
+                : saveDeliveryFee
+            }
+          >
             {deliveryInfo ? "수정" : "저장"}
           </button>
         </div>

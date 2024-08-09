@@ -1,19 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./ShowMenuDetail.css";
 import { useNavigate } from "react-router-dom";
 import {
-  changeMenuPossible,
-  deleteMenu,
   deleteOption,
   deleteOptionList,
-  getMenuByMenuId,
   getOptionListsByMenuId,
 } from "../config/storeApi";
-import tteokbokki from "./../assets/tteokbokki.png";
 import MenuInfoModal from "./MenuInfoModal";
 import OptionInfoModal from "./OptionInfoModal";
 import OptionListInfoModal from "./OptionListInfoModal";
-const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
+import {
+  changeMenuPossibleQL,
+  deleteMenuQL,
+  getMenuByMenuIdQL,
+  updateMenuQL,
+} from "../config/storeGraphQL";
+import menuImagePng from "./../assets/menu.png";
+import axios from "axios";
+
+const ShowMenuDetail = ({
+  menu,
+  onMenuInfoModal,
+  setOnMenuInfoModal,
+  menuDetailChange,
+  setMenuDetailChange,
+}) => {
   const [menuInfo, setMenuInfo] = useState({});
   const [optionLists, setOptionLists] = useState([]);
   const [onOptionInfoModal, setOnOptionInfoModal] = useState(false);
@@ -22,10 +33,14 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
   const [onOptionListDeleted, setOnOptionListDeleted] = useState(false);
   const navigator = useNavigate();
 
+  const inputRef = useRef(null);
+
   const getMenuByMenuIdApi = async () => {
     try {
-      const response = await getMenuByMenuId(menu);
+      console.log("hihhihiih" + menu);
+      const response = await getMenuByMenuIdQL({ menuId: menu });
       setMenuInfo(response);
+      console.log("getMenu" + response);
     } catch {
       console.log("error in getMenuByMenuIdApi");
     }
@@ -43,7 +58,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
 
   const changeMenuPossibleApi = async () => {
     try {
-      await changeMenuPossible(menu);
+      await changeMenuPossibleQL({ menuId: menu });
       window.location.reload();
     } catch {
       console.log("error in changeMenuPossibleApi");
@@ -54,7 +69,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
     try {
       const result = confirm("진짜 삭제하시겠습니까?");
       if (result) {
-        await deleteMenu(menu);
+        await deleteMenuQL({ menuId: menu });
         window.location.reload();
       }
     } catch {
@@ -93,7 +108,7 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
       setOnMenuInfoModal(false);
     }
     console.log(menuInfo);
-  }, [menu]);
+  }, [menu, menuDetailChange]);
 
   useEffect(() => {
     if (menu && !onMenuInfoModal) {
@@ -132,6 +147,68 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
     }
   }, [onOptionListDeleted]);
 
+  // 사진 업로드
+
+  // 사진이랑 이미지 업로드 눌렀을 때 사진 넣을 수 있는 창 뜸
+  const handleFileClick = () => {
+    inputRef.current.click();
+  };
+
+  // 이미지 열기해서 사진을 넣었을 때 변화 체크
+  // 이미지 업로드에서 미리보기 할 수 있게
+  const handleFileChange = async (e) => {
+    // setMenuDetailFile(e.target.files[0]);
+    // setMenuDetailImage(URL.createObjectURL(e.target.files[0]));
+    let image = await uploadFile(e.target.files[0]);
+    await updateMenuImageApi(image);
+  };
+
+  // 기본 이미지로 업로드 -> store DB 에 저장될 때 image column 에 빈 값이 들어오게
+  const handleDefaultImage = async () => {
+    // setMenuDetailImage(menuImagePng);
+    // setMenuDetailFile("");
+    // setMenuDetailImageUuid("");
+    await updateMenuImageApi("");
+  };
+
+  // 새로운 파일 업로드
+  const uploadFile = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post(
+        `http://192.168.0.17:8081/api/v1/photo/store`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      // setMenuDetailImage(
+      //   "https://storage.googleapis.com/wgwg_bucket/" + response.data
+      // );
+      // setMenuDetailImageUuid(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error upload file", error);
+    }
+  };
+
+  const updateMenuImageApi = async (menuDetailImageUuid) => {
+    try {
+      await updateMenuQL({
+        menuId: menu,
+        input: { type: "image", value: menuDetailImageUuid },
+      });
+      alert("이미지 변경 성공");
+      setMenuDetailChange(true);
+    } catch {
+      console.log("error in updateMenuImageApi");
+    }
+  };
+
   return menu !== null ? (
     <div
       className="my-menu-detail-container"
@@ -141,14 +218,47 @@ const ShowMenuDetail = ({ menu, onMenuInfoModal, setOnMenuInfoModal }) => {
         <div>
           <div className="my-menu-detail-menuInfo-container">
             <div className="my-menu-detail-menuInfo-container2">
-              <img
-                width={window.innerWidth / 3}
-                height="200px"
-                src={tteokbokki}
+              {menuInfo.menuImage ? (
+                <img
+                  width={window.innerWidth / 3}
+                  height="200px"
+                  src={
+                    "https://storage.googleapis.com/wgwg_bucket/" +
+                    menuInfo.menuImage
+                  }
+                  onClick={handleFileClick}
+                />
+              ) : (
+                <img
+                  width={window.innerWidth / 3}
+                  height="200px"
+                  src={menuImagePng}
+                  onClick={handleFileClick}
+                />
+              )}
+              <input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                ref={inputRef}
+                style={{ display: "none" }}
               />
-              <button className="my-menu-detail-modify-button">
-                사진 수정
-              </button>
+
+              <div className="show-menu-detail-image-button-container">
+                <div
+                  className="show-menu-detail-image-button"
+                  onClick={handleFileClick}
+                >
+                  이미지 업로드
+                </div>
+                <div
+                  className="show-menu-detail-image-button"
+                  onClick={handleDefaultImage}
+                >
+                  기본 이미지로 설정
+                </div>
+              </div>
             </div>
             <div className="my-menu-detail-menuInfo-container2">
               <div

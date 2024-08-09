@@ -1,23 +1,38 @@
 .option-select-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
 }
 
 .menu-save-button {
-    margin-top: 20px;
-    margin-bottom: 40px;
-    padding: 10px 30px;
-    border-radius: 13px;
-    background-color: #94D35C;
-    font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  padding: 10px 30px;
+  border-radius: 13px;
+  background-color: #94d35c;
+  font-weight: 600;
 }
 
 hr {
-    margin-bottom: 40px;
-    border-bottom-color: #60ce31;
+  margin-bottom: 40px;
+  border-bottom-color: #60ce31;
 }
 
 .option-select-item {
-    flex: 1;
+  flex: 1;
+}
+
+.menu-image-button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.menu-image-button {
+  margin-top: 5px;
+  margin-bottom: 30px;
+  margin-left: 10px;
+  padding: 5px 10px;
+  border-radius: 13px;
+  background-color: #94d35c;
+  font-weight: 600;
 }

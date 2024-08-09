@@ -3,10 +3,9 @@ import kakao_login_medium_wide from '../assets/kakao_login_medium_wide.png';
 
 const LoginPage = () => {
     const kakaoLogin = () => {
-        const baseUrl = "https://kauth.kakao.com/oauth/authorize";
-        const REST_API_KEY = "f8609808f0ad80f284bc679eb3d80315";
-        // const REDIRECT_URI = "http://192.168.0.15:5173/owners/callback";
-        const REDIRECT_URI = "http://localhost:5173/owners/callback";
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const REST_API_KEY = import.meta.env.VITE_REST_API_KEY;
+        const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
 
         // Construct the Kakao authorization URL
         const loginUrl = `${baseUrl}?response_type=code&client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}`;

@@ -1,0 +1,12 @@
+.select-years-box {
+  border-color: #94d35c;
+  border-width: 3px;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+  border-end-end-radius: 50px;
+  padding: 10px;
+  margin: 20px;
+  margin-left: 50px;
+  outline: none;
+  font-size: 17px;
+}

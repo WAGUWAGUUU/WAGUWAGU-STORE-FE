@@ -1,5 +1,5 @@
 import axios from "axios";
-const endpoint = "http://192.168.0.17:8080/graphql";
+const endpoint = "http://34.69.39.99/graphql";
 
 export const getStoreByOwnerIdQL = async (variables) => {
   try {
@@ -281,9 +281,9 @@ export const saveStoreQL = async (variables) => {
     }
   } catch (error) {
     if (error.response && error.response.status === 409) {
-      throw new Error("해당 메뉴 카테고리는 이미 존재합니다");
+      throw new Error("해당 가게는 이미 존재합니다");
     } else {
-      throw new Error("메뉴 카테고리를 저장하는 중에 오류가 발생했습니다");
+      throw new Error("가게를 저장하는 중에 오류가 발생했습니다");
     }
   }
 };

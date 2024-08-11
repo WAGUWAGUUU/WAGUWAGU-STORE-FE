@@ -177,7 +177,7 @@ const ShowMenuDetail = ({
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `http://192.168.0.17:8081/api/v1/photo/store`,
+        `http://172.29.33.172:8081/api/v1/photo/store`,
         formData,
         {
           headers: {

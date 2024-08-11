@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SalesBarChart from "../components/SalesBarChart";
 import SelectYears from "../components/SelectYears";
+import SalesPerDay from "../components/SalesPerDay";
 const data = [{ name: "Page A", uv: 400 }];
 
 const MySalesPage = () => {
@@ -26,6 +27,7 @@ const MySalesPage = () => {
         setSelectYear={setSelectYear}
       />
       <SalesBarChart store={store} selectYear={selectYear} />
+      <SalesPerDay store={store} year={selectYear} setYear={setSelectYear} />
     </div>
   );
 };

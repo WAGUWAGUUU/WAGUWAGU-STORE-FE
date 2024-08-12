@@ -1,6 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import axios from "axios";
 import "./SelectYears.css";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import styled from "styled-components";
+import { selectByDate } from "../config/orderApi";
 
 const SalesPerDay = ({ store }) => {
   const currentDate = new Date();
@@ -15,12 +23,12 @@ const SalesPerDay = ({ store }) => {
   const [showYears, setShowYears] = useState([]);
   const showMonths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const [data, setData] = useState([]);
+  const [showDailySalesData, setShowDailySalesData] = useState([]);
 
   const setYearsData = () => {
     const year = new Date().getFullYear();
     const years = [year, year - 1, year - 2, year - 3, year - 4];
     setShowYears(years);
-    console.log(years);
   };
 
   const handleSelectYear = (e) => {
@@ -36,11 +44,49 @@ const SalesPerDay = ({ store }) => {
       const response = await axios.get(
         `http://localhost:8083/api/v1/sales-day/store/${store.storeId}/${year}/${month}`
       );
-      console.log(response.data);
       setData(response.data);
     } catch (error) {
       console.error("Error in getData", error);
     }
+  };
+
+  // react-table
+  const columnHelper = createColumnHelper();
+  const columns = [
+    columnHelper.accessor("date", { header: "날짜" }),
+    columnHelper.accessor("sales", { header: "하루 총 매출" }),
+  ];
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  const { getHeaderGroups, getRowModel } = table;
+
+  const isNoData = getRowModel().rows.length === 0;
+
+  function dateFormat(date) {
+    let dateFormat2 =
+      date.getFullYear() +
+      "-" +
+      (date.getMonth() + 1 < 9
+        ? "0" + (date.getMonth() + 1)
+        : date.getMonth() + 1) +
+      "-" +
+      (date.getDate() < 9 ? "0" + date.getDate() : date.getDate());
+    return dateFormat2;
+  }
+
+  const showDailySales = async (date) => {
+    const selectedDate = new Date(date);
+    const date2 = dateFormat(selectedDate);
+    console.log("Datadata2" + typeof date2 + date2);
+    const date3 = selectedDate.getTime();
+    console.log("Datadata2" + typeof date3 + date3);
+    const data = await selectByDate(store.storeId, date3, date3, 0);
+    setShowDailySalesData(data);
   };
 
   useEffect(() => {
@@ -57,13 +103,11 @@ const SalesPerDay = ({ store }) => {
         onChange={handleSelectYear}
         value={year}
       >
-        {showYears.map((item) => {
-          return (
-            <option value={item} key={item}>
-              {item}년
-            </option>
-          );
-        })}
+        {showYears.map((item) => (
+          <option value={item} key={item}>
+            {item}년
+          </option>
+        ))}
       </select>
 
       <select
@@ -71,28 +115,113 @@ const SalesPerDay = ({ store }) => {
         onChange={handleSelectMonth}
         value={month}
       >
-        {showMonths.map((item) => {
-          return (
-            <option value={item} key={item}>
-              {item}월
-            </option>
-          );
-        })}
+        {showMonths.map((item) => (
+          <option value={item} key={item}>
+            {item}월
+          </option>
+        ))}
       </select>
-      {data && data.length > 0 ? (
-        data.map((item) => {
-          return (
-            <div value={item.date} key={item.date}>
-              {item.date}
-              <br />
-              {item.sales}
+
+      <TableContainer>
+        {getHeaderGroups().map((headerGroup) => (
+          <TableHeader className="row" key={headerGroup.id}>
+            {headerGroup.headers.map((header) =>
+              header.isPlaceholder ? null : (
+                <TableCell key={header.id} width={header.column.getSize()}>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+                </TableCell>
+              )
+            )}
+          </TableHeader>
+        ))}
+        <TableBody useMinHeight={isNoData ? 1 : 0}>
+          {isNoData ? (
+            <div style={{ fontSize: "50px" }}>텅!</div>
+          ) : (
+            getRowModel().rows.map((row) => (
+              <Fragment key={row.id}>
+                <TableRow className="row">
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      width={cell.column.getSize()}
+                      onClick={() => showDailySales(cell.row.original.date)} // 수정된 부분
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </Fragment>
+            ))
+          )}
+        </TableBody>
+      </TableContainer>
+
+      {showDailySalesData && (
+        <div>
+          {showDailySalesData.map((history) => (
+            <div key={history.id}>
+              <div>{history.status}</div>
+              <div>주문아이디: {history.id}</div>
+              <div>상태: {history.orderState.join(", ")}</div>{" "}
+              {/* Display orderState array */}
+              <div>고객아이디: {history.customerId}</div>
+              <div>메뉴: {history.menu}</div>
+              <div>옵션: {history.options}</div>
+              <div>고객요청: {history.request}</div>
+              <div>고객주소: {history.address}</div>
             </div>
-          );
-        })
-      ) : (
-        <div>매출이 없습니다.</div>
+          ))}
+        </div>
       )}
     </div>
   );
 };
+
 export default SalesPerDay;
+
+// Styled Components
+const TableContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+
+  .row {
+    width: 100%;
+    display: flex;
+    border-bottom: 1px solid rgba(224, 224, 224, 1);
+  }
+`;
+
+const TableCell = styled.div`
+  width: ${({ width }) => width}px;
+  padding: 16px;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  align-items: center;
+  word-break: break-all;
+`;
+
+const TableRow = styled.div`
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+`;
+
+const TableHeader = styled.div`
+  font-weight: 500;
+`;
+
+const TableBody = styled.div`
+  min-height: ${({ useMinHeight }) => (useMinHeight ? "560px" : "auto")};
+  display: flex;
+  flex-direction: column;
+`;

@@ -446,7 +446,7 @@ const Menu = ({ store }) => {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `http://192.168.0.17:8081/api/v1/photo/menu`,
+        `http://192.168.0.17:8089/api/v1/photo/menu`,
         formData,
         {
           headers: {

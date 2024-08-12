@@ -35,7 +35,10 @@ const CSVGenerate = ({ store, selectYear }) => {
 
   return (
     <div style={{ marginRight: "20px" }}>
-      <CSVLink data={cSVData} filename={"waguwagu-monthly-sales.csv"}>
+      <CSVLink
+        data={cSVData}
+        filename={`waguwagu-monthly-sales-${selectYear}.csv`}
+      >
         <button
           className="select-years-box"
           style={{

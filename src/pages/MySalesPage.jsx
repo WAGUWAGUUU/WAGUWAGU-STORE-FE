@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import SalesBarChart from "../components/SalesBarChart";
 import SelectYears from "../components/SelectYears";
 import SalesPerDay from "../components/SalesPerDay";
-const data = [{ name: "Page A", uv: 400 }];
+import CSVGenerate from "../components/CSVGenerate";
 
 const MySalesPage = () => {
   const [store, setStore] = useState(null);
@@ -21,12 +21,19 @@ const MySalesPage = () => {
 
   return (
     <div>
-      <SelectYears
-        store={store}
-        selectYear={selectYear}
-        setSelectYear={setSelectYear}
-      />
-      <SalesBarChart store={store} selectYear={selectYear} />
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <SelectYears
+          store={store}
+          selectYear={selectYear}
+          setSelectYear={setSelectYear}
+        />
+        <CSVGenerate store={store} selectYear={selectYear} />
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <SalesBarChart store={store} selectYear={selectYear} />
+      </div>
+
       <SalesPerDay store={store} year={selectYear} setYear={setSelectYear} />
     </div>
   );

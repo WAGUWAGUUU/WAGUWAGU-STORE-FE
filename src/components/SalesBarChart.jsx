@@ -25,7 +25,7 @@ const SalesBarChart = ({ store, selectYear }) => {
 
   return (
     <div>
-      <BarChart width={600} height={300} data={chartData}>
+      <BarChart width={window.innerWidth / 1.2} height={300} data={chartData}>
         <XAxis dataKey="month" stroke="#8884d8" />
         <YAxis />
         {/* <Tooltip /> */}
@@ -35,7 +35,7 @@ const SalesBarChart = ({ store, selectYear }) => {
         />
 
         <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-        <Bar dataKey="sales" fill="#8884d8" barSize={30} fillOpacity={0.7} />
+        <Bar dataKey="sales" fill="#fba138" barSize={30} fillOpacity={0.8} />
       </BarChart>
     </div>
   );

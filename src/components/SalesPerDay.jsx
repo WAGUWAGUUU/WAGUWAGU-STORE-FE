@@ -3,13 +3,20 @@ import axios from "axios";
 import "./SelectYears.css";
 
 const SalesPerDay = ({ store }) => {
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const currentDate = new Date();
+  const [year, setYear] = useState(
+    currentDate.getMonth() === 0
+      ? currentDate.getFullYear() - 1
+      : currentDate.getFullYear()
+  );
+  const [month, setMonth] = useState(
+    currentDate.getMonth() === 0 ? 12 : currentDate.getMonth()
+  );
   const [showYears, setShowYears] = useState([]);
   const showMonths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const [data, setData] = useState([]);
 
-  const setYears = () => {
+  const setYearsData = () => {
     const year = new Date().getFullYear();
     const years = [year, year - 1, year - 2, year - 3, year - 4];
     setShowYears(years);
@@ -38,7 +45,7 @@ const SalesPerDay = ({ store }) => {
 
   useEffect(() => {
     if (store) {
-      setYears();
+      setYearsData();
       getData();
     }
   }, [store, year, month]);

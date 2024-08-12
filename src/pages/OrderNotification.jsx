@@ -14,7 +14,7 @@ const OrderNotification = () => {
   const [error, setError] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-  const [minutes, setMinutes] = useState(0);
+  const [minutes, setMinutes] = useState('');
   const [showDueTimeInput, setShowDueTimeInput] = useState(false);
   const [dueTimeInputPosition, setDueTimeInputPosition] = useState({ top: 0, left: 0 });
   const dropdownRef = useRef(null);
@@ -63,12 +63,12 @@ const OrderNotification = () => {
     fetchOrders(ownerId);
   };
 
-  const handleStatusChange = async (orderId, newStatus) => {
-    const now = moment().tz('Asia/Seoul');
-    let dueTime = null;
+  const handleStatusChange = async (orderId, newStatus, customDueTime = null) => {
+    let dueTime = customDueTime;
 
-    if (newStatus === '배달 요청') {
-      dueTime = now.clone().add(minutes, 'minutes').tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss.SSS'); // LocalDateTime format without offset
+    if (!dueTime && newStatus === '배달 요청') {
+      const now = moment().tz('Asia/Seoul');
+      dueTime = now.clone().add(parseInt(minutes, 10), 'minutes').tz('Asia/Seoul').valueOf(); 
     }
 
     const updateRequest = {
@@ -98,19 +98,17 @@ const OrderNotification = () => {
 
   const handleOrderClick = (event, status, orderId) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    const dropdownWidth = 150; // Assuming a fixed width for the dropdown
-    const dropdownHeight = 200; // Assuming a fixed height for the dropdown
+    const dropdownWidth = 150; 
+    const dropdownHeight = 200; 
     let top = rect.bottom + window.scrollY;
     let left = rect.left + window.scrollX;
 
-    // Check if the dropdown would go off the right edge of the viewport
     if (left + dropdownWidth > window.innerWidth) {
-      left = window.innerWidth - dropdownWidth - 10; // Add some margin from the right edge
+      left = window.innerWidth - dropdownWidth - 10; 
     }
 
-    // Check if the dropdown would go off the bottom edge of the viewport
     if (top + dropdownHeight > window.innerHeight) {
-      top = rect.top + window.scrollY - dropdownHeight; // Position above the element
+      top = rect.top + window.scrollY - dropdownHeight; 
     }
 
     setDropdownPosition({ top, left });
@@ -165,11 +163,27 @@ const OrderNotification = () => {
   const handleStatusOptionClick = (event, status) => {
     if (status === '배달 요청') {
       setDueTimeInputPosition({ top: event.clientY + window.scrollY, left: event.clientX + window.scrollX });
+      setMinutes(''); 
       setShowDueTimeInput(true);
     } else {
       setShowDueTimeInput(false);
       handleStatusChange(selectedOrder, status);
     }
+  };
+
+  const handleDueTimeSet = () => {
+    const dueTime = moment().tz('Asia/Seoul').add(parseInt(minutes, 10), 'minutes').valueOf();
+    handleStatusChange(selectedOrder, '배달 요청', dueTime);
+  };
+
+  const handleMinutesChange = (e) => {
+    let value = e.target.value;
+
+    if (value.length > 3) {
+      value = value.slice(0, 3);
+    }
+
+    setMinutes(value);
   };
 
   return (
@@ -210,8 +224,8 @@ const OrderNotification = () => {
               customerRequests={order.customerRequests}
               customerAddress={order.customerAddress}
               estimatedTime={order.estimatedTime}
-              dau={order.due}  // Pass the 'due' value as 'dau'
-              onStatusClick={handleOrderClick}  // Pass the click handler for the status
+              dau={order.due}  
+              onStatusClick={handleOrderClick}  
               backgroundColor={getStatusColor(order.status)}
             />
           ))
@@ -239,12 +253,12 @@ const OrderNotification = () => {
       {showDueTimeInput && (
         <div className="due-time-input" style={{ top: dueTimeInputPosition.top, left: dueTimeInputPosition.left }}>
           <input 
-            type="number"
+            type="text"
             value={minutes}
-            onChange={(e) => setMinutes(parseInt(e.target.value))}
+            onChange={handleMinutesChange}
             placeholder="Enter minutes"
           />
-          <button onClick={() => handleStatusChange(selectedOrder, '배달 요청')}>
+          <button onClick={handleDueTimeSet}>
             배달 시간 설정
           </button>
         </div>

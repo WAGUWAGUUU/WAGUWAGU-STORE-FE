@@ -27,18 +27,20 @@ export const selectByOwner = async (storeId) => {
 
 
 
-export const selectByStoreDate = async (storeId, startDate, endDate, pageNumber) => {
-
+export const selectByStoreDate = async (storeId, startDate, endDate, offset) => {
+    console.log(storeId);
+    console.log(startDate);
+    console.log(endDate);
+    console.log(offset);
+    
   try {
-    const url = `/${storeId}/history`;
-    const method = 'GET';
-    const params = {
+
+
+    const data = await orderApi(`/${storeId}/history`, 'GET', null, {
       startDate,
       endDate,
-      pageNumber,
-    };
-
-    const data = await orderApi(url, method, null, params, {
+      offset,
+    }, {
       'Content-Type': 'application/json',
     });
 

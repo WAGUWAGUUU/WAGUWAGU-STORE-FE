@@ -32,19 +32,20 @@ const HistoryInquiry = () => {
     setShowDateInput((prevShowDateInput) => !prevShowDateInput);
   };
 
+  // 날짜를 타임스탬프 값으로 변환하는 함수
   const formatDateForTimestamp = (date) => {
     if (!date) return '';
-    return `${date} 00:00:00`;
+    return new Date(`${date}T00:00:00`).getTime(); // 밀리초 단위의 타임스탬프
   };
 
   const handleInquiry = async () => {
     try {
       setPageNumber(0);
 
-      const formattedFirstDate = formatDateForTimestamp(selectedFirstDate);
-      const formattedSecondDate = formatDateForTimestamp(selectedSecondDate);
+      const firstDateTimestamp = formatDateForTimestamp(selectedFirstDate);
+      const secondDateTimestamp = formatDateForTimestamp(selectedSecondDate);
 
-      const data = await selectByStoreDate(requestId, formattedFirstDate, formattedSecondDate, 0);
+      const data = await selectByStoreDate(requestId, firstDateTimestamp, secondDateTimestamp, 0);
       setHistories(data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -55,10 +56,10 @@ const HistoryInquiry = () => {
     try {
       const newPageNumber = pageNumber + 1;
 
-      const formattedFirstDate = formatDateForTimestamp(selectedFirstDate);
-      const formattedSecondDate = formatDateForTimestamp(selectedSecondDate);
+      const firstDateTimestamp = formatDateForTimestamp(selectedFirstDate);
+      const secondDateTimestamp = formatDateForTimestamp(selectedSecondDate);
 
-      const data = await selectByStoreDate(requestId, formattedFirstDate, formattedSecondDate, newPageNumber);
+      const data = await selectByStoreDate(requestId, firstDateTimestamp, secondDateTimestamp, newPageNumber);
       setHistories((prevHistories) => [...prevHistories, ...data]);
       setPageNumber(newPageNumber);
     } catch (error) {

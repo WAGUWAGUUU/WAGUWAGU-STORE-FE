@@ -161,9 +161,11 @@ const Store = ({ store, setStore }) => {
         setBlockStoreIsOpened(result);
       }
     };
-    checkBlockStoreIsOpened();
+    if (store) {
+      checkBlockStoreIsOpened();
 
-    fetchUserProfileImage();
+      fetchUserProfileImage();
+    }
   }, [store]);
 
   // 사진 업로드
@@ -193,7 +195,7 @@ const Store = ({ store, setStore }) => {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `http://192.168.0.17:8081/api/v1/photo/store`,
+        `http://192.168.0.17:8089/api/v1/photo/store`,
         formData,
         {
           headers: {
@@ -218,7 +220,7 @@ const Store = ({ store, setStore }) => {
   const fetchUserProfileImage = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.0.17:8080/api/v1/store/${store.storeId}/photo`
+        `http://34.69.39.99/api/v1/store/${store.storeId}/photo`
       );
       console.log(response.data);
       setStoreImageUuid(response.data);

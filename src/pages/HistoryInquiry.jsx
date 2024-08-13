@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './HistoryInquiry.css';
 import StatusBox from '../components/StatusBox';
-import { selectByDate } from '../config/orderApi';
+import { selectByStoreDate } from '../config/orderApi';
 
 const HistoryInquiry = () => {
   const [histories, setHistories] = useState([]);
   const [selectedFirstDate, setSelectedFirstDate] = useState('');
   const [selectedSecondDate, setSelectedSecondDate] = useState('');
-  const [requestId, setRequestId] = useState(''); // State for requestId
+  const [requestId, setRequestId] = useState('');
   const [showDateInput, setShowDateInput] = useState(false);
   const [pageNumber, setPageNumber] = useState(0);
 
@@ -32,10 +32,20 @@ const HistoryInquiry = () => {
     setShowDateInput((prevShowDateInput) => !prevShowDateInput);
   };
 
+  // 날짜를 타임스탬프 값으로 변환하는 함수
+  const formatDateForTimestamp = (date) => {
+    if (!date) return '';
+    return new Date(`${date}T00:00:00`).getTime(); // 밀리초 단위의 타임스탬프
+  };
+
   const handleInquiry = async () => {
     try {
       setPageNumber(0);
-      const data = await selectByDate(requestId, selectedFirstDate, selectedSecondDate, 0);
+
+      const firstDateTimestamp = formatDateForTimestamp(selectedFirstDate);
+      const secondDateTimestamp = formatDateForTimestamp(selectedSecondDate);
+
+      const data = await selectByStoreDate(requestId, firstDateTimestamp, secondDateTimestamp, 0);
       setHistories(data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -45,7 +55,11 @@ const HistoryInquiry = () => {
   const loadMoreHistories = async () => {
     try {
       const newPageNumber = pageNumber + 1;
-      const data = await selectByDate(requestId, selectedFirstDate, selectedSecondDate, newPageNumber);
+
+      const firstDateTimestamp = formatDateForTimestamp(selectedFirstDate);
+      const secondDateTimestamp = formatDateForTimestamp(selectedSecondDate);
+
+      const data = await selectByStoreDate(requestId, firstDateTimestamp, secondDateTimestamp, newPageNumber);
       setHistories((prevHistories) => [...prevHistories, ...data]);
       setPageNumber(newPageNumber);
     } catch (error) {

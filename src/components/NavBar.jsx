@@ -50,6 +50,15 @@ const NavBar = () => {
           가게 내역
         </Link>
       </nav>
+      <nav className="nav-item">
+        <Link
+          to="/my-sales"
+          style={{ textDecoration: "none" }}
+          className="nav-button"
+        >
+          가게 매출
+        </Link>
+      </nav>
     </div>
   );
 };

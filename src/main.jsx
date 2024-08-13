@@ -13,9 +13,10 @@ import CallbackPage from "./pages/CallbackPage.jsx";
 import MyPage from "./pages/MyPage.jsx";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import MySalesPage from "./pages/MySalesPage.jsx";
 
 export const client = new ApolloClient({
-  uri: "http://192.168.0.17:8080/graphql",
+  uri: "http://34.69.39.99/graphql",
   cache: new InMemoryCache(),
 });
 
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
       { path: "/mypage", element: <MyPage /> },
       // { path: "/board", element: <Boards /> },
       { path: "/my-menu", element: <MyMenuPage /> },
+      { path: "/my-sales", element: <MySalesPage /> },
     ],
   },
 ]);

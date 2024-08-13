@@ -65,37 +65,41 @@ const SignupPage = () => {
             }
         };
     }, []);
-
     const connectWebSocket = (ownerId) => {
         let reconnectInterval = 5000; // 5초 후 재연결 시도
-        try {
-            const ws = new WebSocket(`ws://192.168.0.15:8000/ws/store/${ownerId}`);
 
-            ws.onopen = () => {
-                console.log("WebSocket 연결되었습니다");
-                reconnectInterval = 5000; // 연결에 성공하면 재연결 시도를 초기화
-            };
+        const establishConnection = () => {
+            try {
+                const ws = new WebSocket(`ws://192.168.0.15:8000/ws/store/${ownerId}`);
 
-            ws.onmessage = (event) => {
-                console.log("Message from server:", event.data);
-                setMessages((prevMessages) => [...prevMessages, event.data]);
-            };
+                ws.onopen = () => {
+                    console.log("WebSocket 연결되었습니다");
+                    reconnectInterval = 5000; // 연결에 성공하면 재연결 시도를 초기화
+                };
 
-            ws.onclose = () => {
-                console.log("WebSocket 연결 해제되었습니다");
-                setTimeout(connectWebSocket, reconnectInterval);
-            };
+                ws.onmessage = (event) => {
+                    console.log("Message from server:", event.data);
+                    setMessages((prevMessages) => [...prevMessages, event.data]);
+                };
 
-            ws.onerror = (error) => {
-                console.error("WebSocket error:", error);
-                ws.close(); // 오류가 발생하면 연결을 종료하고 재시도
-            };
+                ws.onclose = () => {
+                    console.log("WebSocket 연결 해제되었습니다");
+                    setTimeout(() => establishConnection(ownerId), reconnectInterval);
+                };
 
-            setWebSocket(ws);
-        } catch (error) {
-            console.error("Failed to connect to WebSocket:", error);
-            setTimeout(connectWebSocket, reconnectInterval);
-        }
+                ws.onerror = (error) => {
+                    console.error("WebSocket error:", error);
+                    ws.close(); // 오류가 발생하면 연결을 종료하고 재시도
+                };
+
+                setWebSocket(ws);
+            } catch (error) {
+                console.error("Failed to connect to WebSocket:", error);
+                setTimeout(() => establishConnection(ownerId), reconnectInterval);
+            }
+        };
+
+        establishConnection(); // 초기 연결 시도
     };
 
     const handleAddressChange = async () => {
@@ -148,7 +152,7 @@ const SignupPage = () => {
                 localStorage.setItem('ownerLongitude', ownerLongitude);
                 localStorage.setItem('ownerBusinessNumber', ownerBusinessNumber);
                 navigate('/');
-                connectWebSocket(localStorage.getItem('ownerId'));
+                connectWebSocket(localStorage.getItem('storeId'));
             } else {
                 alert('가입 실패');
             }

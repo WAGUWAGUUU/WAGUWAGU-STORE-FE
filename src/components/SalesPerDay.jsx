@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import styled from "styled-components";
-import { selectByDate } from "../config/orderApi";
+import { selectByStoreDate } from "../config/orderApi";
 
 const SalesPerDay = ({ store }) => {
   const currentDate = new Date();
@@ -67,25 +67,55 @@ const SalesPerDay = ({ store }) => {
 
   const isNoData = getRowModel().rows.length === 0;
 
-  function dateFormat(date) {
-    let dateFormat2 =
-      date.getFullYear() +
-      "-" +
-      (date.getMonth() + 1 < 9
-        ? "0" + (date.getMonth() + 1)
-        : date.getMonth() + 1) +
-      "-" +
-      (date.getDate() < 9 ? "0" + date.getDate() : date.getDate());
-    return dateFormat2;
-  }
+  // function dateFormat(date) {
+  //   let dateFormat2 =
+  //     date.getFullYear() +
+  //     "-" +
+  //     (date.getMonth() + 1 < 9
+  //       ? "0" + (date.getMonth() + 1)
+  //       : date.getMonth() + 1) +
+  //     "-" +
+  //     (date.getDate() < 9 ? "0" + date.getDate() : date.getDate());
+  //   return dateFormat2;
+  // }
+
+  // 날짜를 타임스탬프 값으로 변환하는 함수
+  // const formatDateForTimestamp = (date) => {
+  //   if (!date) return "";
+  //   return new Date(`${date}T00:00:00`).getTime(); // 밀리초 단위의 타임스탬프
+  // };
+
+  const formatDateForTimestamp = (date) => {
+    if (!date) return "";
+
+    // date가 이미 Date 객체인 경우
+    if (date instanceof Date) {
+      return date.setHours(0, 0, 0, 0);
+    }
+
+    // date가 문자열인 경우
+    if (typeof date === "string") {
+      // YYYY-MM-DD 형식인지 확인
+      const parts = date.split("-");
+      if (parts.length === 3) {
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        return d.setHours(0, 0, 0, 0);
+      }
+    }
+
+    // 그 외의 경우, 현재 날짜의 시작을 반환
+    return new Date().setHours(0, 0, 0, 0);
+  };
 
   const showDailySales = async (date) => {
-    const selectedDate = new Date(date);
-    const date2 = dateFormat(selectedDate);
-    console.log("Datadata2" + typeof date2 + date2);
-    const date3 = selectedDate.getTime();
-    console.log("Datadata2" + typeof date3 + date3);
-    const data = await selectByDate(store.storeId, date3, date3, 0);
+    // const selectedDate = new Date(date);
+    const timestamp = formatDateForTimestamp(date);
+    const data = await selectByStoreDate(
+      store.storeId,
+      timestamp,
+      timestamp,
+      0
+    );
     setShowDailySalesData(data);
   };
 

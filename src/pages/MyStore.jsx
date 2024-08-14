@@ -46,7 +46,6 @@ const MyStore = () => {
             // Handle specific message types
             if (event.data === "주문이 도착했습니다.") {
               alert("주문이 도착했습니다.");
-              notifyAndPlayAudio();
               // Additional handling (e.g., UI updates, audio notifications) can be added here
             }
           } else {
@@ -74,61 +73,6 @@ const MyStore = () => {
 
     establishConnection();
   }, []);
-
-  const notifyAndPlayAudio = async () => {
-    try {
-      const response = await fetch("http://192.168.0.15:8000/notify/order-arrived", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const arrayBuffer = await blobToArrayBuffer(blob);
-        const base64String = arrayBufferToBase64(arrayBuffer);
-
-        // Create a blob URL for the audio file
-        const audioUrl = `data:audio/mp3;base64,${base64String}`;
-
-        // Create a new Audio object and play it
-        const audio = new Audio(audioUrl);
-        audio.play();
-
-        // Optional: Add an event listener to clean up after the audio is played
-        audio.onended = () => {
-          URL.revokeObjectURL(audioUrl);  // Release the object URL
-          console.log('Audio playback finished');
-        };
-      } else {
-        console.error("Failed to notify:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Failed to fetch and play audio:", error);
-    }
-  };
-
-// Helper function to convert Blob to ArrayBuffer
-  const blobToArrayBuffer = (blob) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(new Error('Failed to read blob as array buffer.'));
-      reader.readAsArrayBuffer(blob);
-    });
-  };
-
-// Helper function to convert ArrayBuffer to Base64
-  const arrayBufferToBase64 = (arrayBuffer) => {
-    let binary = '';
-    const bytes = new Uint8Array(arrayBuffer);
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);  // Convert binary string to base64
-  };
 
   useEffect(() => {
     if (store && store.storeId && !websocket) {

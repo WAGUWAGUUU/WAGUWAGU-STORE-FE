@@ -18,7 +18,7 @@ const OrderAlarmBox = ({
     <div className="aram-box" style={{ backgroundColor }}>
       <div className="header">Order <span className="number">{orderNumber}</span></div>
       <div className="content">
-        <div className="status" onClick={(event) => onStatusClick(event, status, orderNumber)}>주문상태: {status}</div>
+        <div className="status" onClick={(event) => onStatusClick(event, status, orderNumber)}>주문상태<br/>{status}</div>
         <div>고객아이디: {customerId}</div>
         <div className="customerAddress">고객주소: {customerAddress}</div>
         <div className="customerRequests">가게요청: {customerRequests}</div>

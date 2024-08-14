@@ -68,7 +68,7 @@ const OrderNotification = () => {
 
     if (!dueTime && newStatus === '배달 요청') {
       const now = moment().tz('Asia/Seoul');
-      dueTime = now.clone().add(parseInt(minutes, 10), 'minutes').tz('Asia/Seoul').valueOf(); 
+      dueTime = now.clone().add(parseInt(minutes, 10), 'minutes').tz('Asia/Seoul').valueOf();
     }
 
     const updateRequest = {
@@ -98,17 +98,17 @@ const OrderNotification = () => {
 
   const handleOrderClick = (event, status, orderId) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    const dropdownWidth = 150; 
-    const dropdownHeight = 200; 
+    const dropdownWidth = 150;
+    const dropdownHeight = 200;
     let top = rect.bottom + window.scrollY;
     let left = rect.left + window.scrollX;
 
     if (left + dropdownWidth > window.innerWidth) {
-      left = window.innerWidth - dropdownWidth - 10; 
+      left = window.innerWidth - dropdownWidth - 10;
     }
 
     if (top + dropdownHeight > window.innerHeight) {
-      top = rect.top + window.scrollY - dropdownHeight; 
+      top = rect.top + window.scrollY - dropdownHeight;
     }
 
     setDropdownPosition({ top, left });
@@ -163,9 +163,22 @@ const OrderNotification = () => {
   const handleStatusOptionClick = (event, status) => {
     if (status === '배달 요청') {
       setDueTimeInputPosition({ top: event.clientY + window.scrollY, left: event.clientX + window.scrollX });
-      setMinutes(''); 
+      setMinutes('');
       setShowDueTimeInput(true);
-    } else {
+    }
+    else if(status === '조리중'){
+      handleStatusChange(selectedOrder, status);
+      notifyAndPlayAudio('order-received');
+    }
+    else if(status === '배달 수락'){
+      handleStatusChange(selectedOrder, status);
+      notifyAndPlayAudio('dispatch-completed');
+    }
+    else if(status === '배달 완료'){
+      handleStatusChange(selectedOrder, status);
+      notifyAndPlayAudio('delivery-completed');
+    }
+    else {
       setShowDueTimeInput(false);
       handleStatusChange(selectedOrder, status);
     }
@@ -186,14 +199,68 @@ const OrderNotification = () => {
     setMinutes(value);
   };
 
+
+  const notifyAndPlayAudio = async (orderStatus) => {
+    try {
+      const response = await fetch(`http://192.168.0.15:8000/notify/order-status?order_status=${orderStatus}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const arrayBuffer = await blobToArrayBuffer(blob);
+        const base64String = arrayBufferToBase64(arrayBuffer);
+
+        // Create a blob URL for the audio file
+        const audioUrl = `data:audio/mp3;base64,${base64String}`;
+        const audio = new Audio(audioUrl);
+        audio.play();
+
+        // Optional: Add an event listener to clean up after the audio is played
+        audio.onended = () => {
+          URL.revokeObjectURL(audioUrl);  // Release the object URL
+          console.log('Audio playback finished');
+        };
+      } else {
+        console.error("Failed to notify:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Failed to fetch and play audio:", error);
+    }
+  };
+
+  // Helper function to convert Blob to ArrayBuffer
+  const blobToArrayBuffer = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Failed to read blob as array buffer.'));
+      reader.readAsArrayBuffer(blob);
+    });
+  };
+
+  // Helper function to convert ArrayBuffer to Base64
+  const arrayBufferToBase64 = (arrayBuffer) => {
+    let binary = '';
+    const bytes = new Uint8Array(arrayBuffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);  // Convert binary string to base64
+  };
+
   return (
     <div className="order-notification">
       <div className="input-box">
-        <input 
+        <input
           type="number"
-          value={ownerId} 
-          onChange={handleOwnerIdChange} 
-          placeholder="Enter owner ID" 
+          value={ownerId}
+          onChange={handleOwnerIdChange}
+          placeholder="Enter owner ID"
         />
         <button onClick={handleFetchOrders}>조회하기</button>
       </div>
@@ -224,8 +291,8 @@ const OrderNotification = () => {
               customerRequests={order.customerRequests}
               customerAddress={order.customerAddress}
               estimatedTime={order.estimatedTime}
-              dau={order.due}  
-              onStatusClick={handleOrderClick}  
+              dau={order.due}
+              onStatusClick={handleOrderClick}
               backgroundColor={getStatusColor(order.status)}
             />
           ))
@@ -234,13 +301,13 @@ const OrderNotification = () => {
         )}
       </div>
       {selectedOrder && (
-        <div 
-          className="status-dropdown" 
+        <div
+          className="status-dropdown"
           style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
           ref={dropdownRef}
         >
           {statusOptions.map(status => (
-            <div 
+            <div
               key={status}
               className="status-option"
               onClick={(event) => handleStatusOptionClick(event, status)}
@@ -252,7 +319,7 @@ const OrderNotification = () => {
       )}
       {showDueTimeInput && (
         <div className="due-time-input" style={{ top: dueTimeInputPosition.top, left: dueTimeInputPosition.left }}>
-          <input 
+          <input
             type="text"
             value={minutes}
             onChange={handleMinutesChange}

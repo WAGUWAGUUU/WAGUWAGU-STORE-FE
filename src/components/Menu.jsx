@@ -199,6 +199,7 @@ const Menu = ({ store }) => {
         optionListRequest.listId = listId;
       }
       console.log(optionListRequest);
+      debugger;
       try {
         const res = await saveOptionListAndOptions(optionListRequest);
 
@@ -348,7 +349,7 @@ const Menu = ({ store }) => {
   useEffect(() => {
     if (menuCategories && menuCategories.length > 0) {
       getMenus();
-      getMenuCategories();
+      // getMenuCategories();
       getOptionListsByStore();
     }
   }, [menuCategories]);

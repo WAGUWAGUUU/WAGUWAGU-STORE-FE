@@ -453,7 +453,7 @@ const Menu = ({ store }) => {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `http://192.168.0.17:8089/api/v1/photo/menu`,
+        `http://34.69.39.99/api/v1/photo/menu`,
         formData,
         {
           headers: {
@@ -465,6 +465,7 @@ const Menu = ({ store }) => {
       // setMenuImage(
       //   "https://storage.googleapis.com/wgwg_bucket/" + response.data
       // );
+      console.log("!!!!!upload!!!!" + response.data);
       return response.data;
     } catch (error) {
       console.error("Error upload file", error);

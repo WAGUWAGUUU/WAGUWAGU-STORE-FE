@@ -42,7 +42,7 @@ const SalesPerDay = ({ store }) => {
   const getData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8083/api/v1/sales-day/store/${store.storeId}/${year}/${month}`
+        `http://34.69.39.99/api/v1/sales/sales-day/store/${store.storeId}/${year}/${month}`
       );
       setData(response.data);
     } catch (error) {

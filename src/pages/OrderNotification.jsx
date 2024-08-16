@@ -202,7 +202,7 @@ const OrderNotification = () => {
 
   const notifyAndPlayAudio = async (orderStatus) => {
     try {
-      const response = await fetch(`http://192.168.0.15:8000/alarm/notify/order-status?order_status=${orderStatus}`, {
+      const response = await fetch(`http://34.72.222.47/alarm/notify/order-status?order_status=${orderStatus}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

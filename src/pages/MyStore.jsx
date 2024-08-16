@@ -30,7 +30,7 @@ const MyStore = () => {
     const establishConnection = () => {
       try {
         console.log("Establishing WebSocket connection...");
-        const ws = new WebSocket(`ws://192.168.0.18:8000/alarm/ws/store/${storeId}`);
+        const ws = new WebSocket(`ws://34.72.222.47/alarm/ws/store/${storeId}`);
 
         ws.onopen = () => {
           console.log("WebSocket connected");

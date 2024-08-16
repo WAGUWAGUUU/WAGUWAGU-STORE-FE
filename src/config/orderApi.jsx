@@ -25,13 +25,28 @@ export const selectByOwner = async (storeId) => {
 //   }
 // };
 
+export const selectByStoreDateAll = async (storeId, startDate, endDate) => {
+    
+  try {
 
+
+    const data = await orderApi(`/${storeId}/history/all`, 'GET', null, {
+      startDate,
+      endDate,
+      offset,
+    }, {
+      'Content-Type': 'application/json',
+    });
+
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error in selectByStoreDate:', error);
+    throw error;
+  }
+};
 
 export const selectByStoreDate = async (storeId, startDate, endDate, offset) => {
-    console.log(storeId);
-    console.log(startDate);
-    console.log(endDate);
-    console.log(offset);
     
   try {
 
@@ -52,11 +67,8 @@ export const selectByStoreDate = async (storeId, startDate, endDate, offset) => 
   }
 };
 
-
-
 export const updateState = async (orderId, data) => {
-  console.log('서버 전달하는 orderId : ' + orderId);
-  console.log('Update request payload:', data);
+
   try {
     const response = await orderApi(`/request/${orderId}`, "POST", data);
     return response;

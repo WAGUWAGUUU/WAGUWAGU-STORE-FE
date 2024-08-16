@@ -32,10 +32,9 @@ const HistoryInquiry = () => {
     setShowDateInput((prevShowDateInput) => !prevShowDateInput);
   };
 
-  // 날짜를 타임스탬프 값으로 변환하는 함수
   const formatDateForTimestamp = (date) => {
     if (!date) return '';
-    return new Date(`${date}T00:00:00`).getTime(); // 밀리초 단위의 타임스탬프
+    return new Date(`${date}T00:00:00`).getTime();
   };
 
   const handleInquiry = async () => {

@@ -199,6 +199,7 @@ const Menu = ({ store }) => {
         optionListRequest.listId = listId;
       }
       console.log(optionListRequest);
+      debugger;
       try {
         const res = await saveOptionListAndOptions(optionListRequest);
 

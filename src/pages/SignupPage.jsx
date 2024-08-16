@@ -11,8 +11,7 @@ const SignupPage = () => {
     const [ownerLatitude, setOwnerLatitude] = useState('');
     const [ownerLongitude, setOwnerLongitude] = useState('');
     const [error, setError] = useState(null);
-    const [websocket, setWebSocket] = useState(null);
-    const [messages, setMessages] = useState([]);
+
 
     const navigate = useNavigate();
 
@@ -38,7 +37,7 @@ const SignupPage = () => {
                         setOwnerName(ownerName);
                         localStorage.setItem('ownerId', ownerId);
                     } else {
-                        navigate("/signup");
+                        navigate("/mystore");
                         localStorage.setItem('ownerId', ownerId);
                         localStorage.setItem('ownerName', ownerName);
                         localStorage.setItem('ownerEmail', ownerEmail);
@@ -46,8 +45,6 @@ const SignupPage = () => {
                         localStorage.setItem('ownerLatitude', ownerLatitude);
                         localStorage.setItem('ownerLongitude', ownerLongitude);
                         localStorage.setItem('ownerBusinessNumber', ownerBusinessNumber);
-
-                        connectWebSocket(ownerId);
                     }
                 }
             } catch (error) {
@@ -57,46 +54,7 @@ const SignupPage = () => {
         };
 
         fetchOwnerInfo();
-
-        // Clean up WebSocket on component unmount
-        return () => {
-            if (websocket) {
-                websocket.close();
-            }
-        };
     }, []);
-
-    const connectWebSocket = (ownerId) => {
-        let reconnectInterval = 5000; // 5초 후 재연결 시도
-        try {
-            const ws = new WebSocket(`ws://192.168.0.15:8000/ws/store/${ownerId}`);
-
-            ws.onopen = () => {
-                console.log("WebSocket 연결되었습니다");
-                reconnectInterval = 5000; // 연결에 성공하면 재연결 시도를 초기화
-            };
-
-            ws.onmessage = (event) => {
-                console.log("Message from server:", event.data);
-                setMessages((prevMessages) => [...prevMessages, event.data]);
-            };
-
-            ws.onclose = () => {
-                console.log("WebSocket 연결 해제되었습니다");
-                setTimeout(connectWebSocket, reconnectInterval);
-            };
-
-            ws.onerror = (error) => {
-                console.error("WebSocket error:", error);
-                ws.close(); // 오류가 발생하면 연결을 종료하고 재시도
-            };
-
-            setWebSocket(ws);
-        } catch (error) {
-            console.error("Failed to connect to WebSocket:", error);
-            setTimeout(connectWebSocket, reconnectInterval);
-        }
-    };
 
     const handleAddressChange = async () => {
         if (!ownerAddress.trim()) {
@@ -147,8 +105,7 @@ const SignupPage = () => {
                 localStorage.setItem('ownerLatitude', ownerLatitude);
                 localStorage.setItem('ownerLongitude', ownerLongitude);
                 localStorage.setItem('ownerBusinessNumber', ownerBusinessNumber);
-                navigate('/');
-                connectWebSocket(localStorage.getItem('ownerId'));
+                navigate('/mystore');
             } else {
                 alert('가입 실패');
             }

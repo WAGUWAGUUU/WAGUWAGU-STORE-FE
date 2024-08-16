@@ -25,7 +25,26 @@ export const selectByOwner = async (storeId) => {
 //   }
 // };
 
+export const selectByStoreDateAll = async (storeId, startDate, endDate) => {
+    
+  try {
 
+
+    const data = await orderApi(`/${storeId}/history/all`, 'GET', null, {
+      startDate,
+      endDate,
+      offset,
+    }, {
+      'Content-Type': 'application/json',
+    });
+
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error('Error in selectByStoreDate:', error);
+    throw error;
+  }
+};
 
 export const selectByStoreDate = async (storeId, startDate, endDate, offset) => {
     

@@ -1,14 +1,14 @@
 .nav-container {
-    display: flex;
-    background-color: #94D35C;
-    justify-content: space-evenly;
-    width: 100vw;
-    padding: 10px;
+  display: flex;
+  background-color: #eecad5;
+  justify-content: space-evenly;
+  width: 100vw;
+  padding: 10px;
 }
 
 .nav-button {
-    background-color: #94D35C;
-    font-weight: 600;
-    font-size: 1.2rem;
-    color: black;   
+  background-color: #eecad5;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: rgb(41, 39, 39);
 }

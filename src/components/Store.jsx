@@ -373,7 +373,7 @@ const Store = ({ store, setStore }) => {
             className="store-save-button"
             style={{
               backgroundColor: "white",
-              borderColor: "#94D35C",
+              borderColor: "#EECAD5",
               borderWidth: "3px",
               marginTop: "0px",
             }}

@@ -2,7 +2,7 @@
   margin: 3%;
   padding: 3%;
   border-radius: 50px;
-  background-color: #e2ebde;
+  background-color: #eaf7e4;
   display: flex;
   flex-direction: column;
 }
@@ -15,7 +15,7 @@
 
 .my-menu-list-modify-button {
   border-style: solid;
-  border-color: #94d35c;
+  border-color: #eecad5;
   padding: 0px 7px;
   margin-left: 20px;
   border-width: 3;
@@ -26,7 +26,7 @@
 
 .my-menu-list-menuInfo-box {
   display: flex;
-  border-color: #94d35c;
+  border-color: #eecad5;
   border-width: 5;
   border-style: dotted;
   border-top-left-radius: 50px;

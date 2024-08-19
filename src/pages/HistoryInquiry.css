@@ -40,6 +40,16 @@
   cursor: pointer;
 }
 
+.go-sales-button {
+  width: 150px;
+  height: 40px;
+  background-color: hsl(32, 90%, 73%);
+  border: none;
+  font-size: 18px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
 .date-input-container {
   margin-top: 20px;
   display: flex;
@@ -116,4 +126,4 @@
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 20px;
-  }
+}

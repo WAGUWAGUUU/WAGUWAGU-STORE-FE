@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import './NavBar.css'
+import { Link } from "react-router-dom";
+import "./NavBar.css";
 
 const NavBar = () => {
   return (
@@ -23,23 +23,23 @@ const NavBar = () => {
         </Link>
       </nav>
       <nav className="nav-item">
-          <Link
-              to="/mystore"
-              style={{ textDecoration: "none" }}
-              className="nav-button"
-          >
-              마이 스토어 설정
-          </Link>
+        <Link
+          to="/mystore"
+          style={{ textDecoration: "none" }}
+          className="nav-button"
+        >
+          마이 스토어 설정
+        </Link>
       </nav>
       <nav className="nav-item">
         {/*<button className="nav-button">내 계정 정보</button>*/}
-          <Link
-              to="/mypage"
-              style={{ textDecoration: "none" }}
-              className="nav-button"
-          >
-              마이페이지
-          </Link>
+        <Link
+          to="/mypage"
+          style={{ textDecoration: "none" }}
+          className="nav-button"
+        >
+          마이페이지
+        </Link>
       </nav>
       <nav className="nav-item">
         <Link
@@ -50,7 +50,7 @@ const NavBar = () => {
           가게 내역
         </Link>
       </nav>
-      <nav className="nav-item">
+      {/* <nav className="nav-item">
         <Link
           to="/my-sales"
           style={{ textDecoration: "none" }}
@@ -58,7 +58,7 @@ const NavBar = () => {
         >
           가게 매출
         </Link>
-      </nav>
+      </nav> */}
     </div>
   );
 };

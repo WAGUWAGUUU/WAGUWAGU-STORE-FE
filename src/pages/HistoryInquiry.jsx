@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import './HistoryInquiry.css';
-import StatusBox from '../components/StatusBox';
-import { selectByStoreDate } from '../config/orderApi';
+import React, { useState, useEffect } from "react";
+import "./HistoryInquiry.css";
+import StatusBox from "../components/StatusBox";
+import { selectByStoreDate } from "../config/orderApi";
+import { useNavigate } from "react-router-dom";
 
 const HistoryInquiry = () => {
   const [histories, setHistories] = useState([]);
-  const [selectedFirstDate, setSelectedFirstDate] = useState('');
-  const [selectedSecondDate, setSelectedSecondDate] = useState('');
-  const [requestId, setRequestId] = useState('');
+  const [selectedFirstDate, setSelectedFirstDate] = useState("");
+  const [selectedSecondDate, setSelectedSecondDate] = useState("");
+  const [requestId, setRequestId] = useState("");
   const [showDateInput, setShowDateInput] = useState(false);
   const [pageNumber, setPageNumber] = useState(0);
+  const navigator = useNavigate();
 
   const statusCounts = histories.reduce((counts, history) => {
     counts[history.status] = (counts[history.status] || 0) + 1;
@@ -33,7 +35,7 @@ const HistoryInquiry = () => {
   };
 
   const formatDateForTimestamp = (date) => {
-    if (!date) return '';
+    if (!date) return "";
     return new Date(`${date}T00:00:00`).getTime();
   };
 
@@ -44,10 +46,15 @@ const HistoryInquiry = () => {
       const firstDateTimestamp = formatDateForTimestamp(selectedFirstDate);
       const secondDateTimestamp = formatDateForTimestamp(selectedSecondDate);
 
-      const data = await selectByStoreDate(requestId, firstDateTimestamp, secondDateTimestamp, 0);
+      const data = await selectByStoreDate(
+        requestId,
+        firstDateTimestamp,
+        secondDateTimestamp,
+        0
+      );
       setHistories(data);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -58,29 +65,38 @@ const HistoryInquiry = () => {
       const firstDateTimestamp = formatDateForTimestamp(selectedFirstDate);
       const secondDateTimestamp = formatDateForTimestamp(selectedSecondDate);
 
-      const data = await selectByStoreDate(requestId, firstDateTimestamp, secondDateTimestamp, newPageNumber);
+      const data = await selectByStoreDate(
+        requestId,
+        firstDateTimestamp,
+        secondDateTimestamp,
+        newPageNumber
+      );
       setHistories((prevHistories) => [...prevHistories, ...data]);
       setPageNumber(newPageNumber);
     } catch (error) {
-      console.error('Error fetching more data:', error);
+      console.error("Error fetching more data:", error);
     }
   };
 
   const handleScroll = () => {
-    if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) return;
+    if (
+      window.innerHeight + document.documentElement.scrollTop !==
+      document.documentElement.offsetHeight
+    )
+      return;
     loadMoreHistories();
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [selectedFirstDate, selectedSecondDate, pageNumber, requestId]);
 
   const formatDate = (date) => {
-    if (!date) return { year: '', month: '', day: '' };
-    const [year, month, day] = date.split('-');
+    if (!date) return { year: "", month: "", day: "" };
+    const [year, month, day] = date.split("-");
     return { year, month, day };
   };
 
@@ -89,16 +105,30 @@ const HistoryInquiry = () => {
 
   return (
     <div className="history-inquiry">
-      <div className="date-range">
-        <div className="date-box">{firstDate.year}</div>
-        <div className="date-box">{firstDate.month}</div>
-        <div className="date-box">{firstDate.day}</div>
-        <div className="date-separator">-</div>
-        <div className="date-box">{secondDate.year}</div>
-        <div className="date-box">{secondDate.month}</div>
-        <div className="date-box">{secondDate.day}</div>
-        <button className="inquiry-button" onClick={handleInquiry}>조회</button>
-        <button className="inquiry-button" onClick={toggleDateInput}>날짜설정</button>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div className="date-range">
+          <div className="date-box">{firstDate.year}</div>
+          <div className="date-box">{firstDate.month}</div>
+          <div className="date-box">{firstDate.day}</div>
+          <div className="date-separator">-</div>
+          <div className="date-box">{secondDate.year}</div>
+          <div className="date-box">{secondDate.month}</div>
+          <div className="date-box">{secondDate.day}</div>
+          <button className="inquiry-button" onClick={handleInquiry}>
+            조회
+          </button>
+          <button className="inquiry-button" onClick={toggleDateInput}>
+            날짜설정
+          </button>
+        </div>
+        <button
+          className="go-sales-button"
+          onClick={() => {
+            navigator(`/my-sales`);
+          }}
+        >
+          총 매출 확인
+        </button>
       </div>
 
       {showDateInput && (
@@ -128,23 +158,23 @@ const HistoryInquiry = () => {
       <div className="order-summary">
         <StatusBox
           status="배달 완료건"
-          count={`${statusCounts['배달 완료'] || 0}`}
+          count={`${statusCounts["배달 완료"] || 0}`}
         />
         <StatusBox
           status="주문 취소건"
-          count={`${statusCounts['주문 취소'] || 0}`}
+          count={`${statusCounts["주문 취소"] || 0}`}
         />
         <StatusBox
           status="금액 통계"
-          count={`${statusCounts['금액 통계'] || 0}`}
+          count={`${statusCounts["금액 통계"] || 0}`}
         />
         <StatusBox
           status="배달 수수료"
-          count={`${statusCounts['배달 수수료'] || 0}`}
+          count={`${statusCounts["배달 수수료"] || 0}`}
         />
         <StatusBox
           status="기타 등등"
-          count={`${statusCounts['기타 등등'] || 0}`}
+          count={`${statusCounts["기타 등등"] || 0}`}
         />
       </div>
 
@@ -153,7 +183,8 @@ const HistoryInquiry = () => {
           <div key={history.id} className="history-box">
             <div className="history-status">{history.status}</div>
             <div>주문아이디: {history.id}</div>
-            <div>상태: {history.orderState.join(', ')}</div> {/* Display orderState array */}
+            <div>상태: {history.orderState.join(", ")}</div>{" "}
+            {/* Display orderState array */}
             <div>고객아이디: {history.customerId}</div>
             <div>메뉴: {history.menu}</div>
             <div>옵션: {history.options}</div>

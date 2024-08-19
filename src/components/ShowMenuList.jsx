@@ -136,7 +136,7 @@ const ShowMenuList = ({
               {menus[category.menuCategoryId] ? (
                 menus[category.menuCategoryId].map((menu) => {
                   const color =
-                    menu.menuId === selectedId ? "#FBA138" : "#94D35C";
+                    menu.menuId === selectedId ? "#FBA138" : "#EECAD5";
                   return (
                     <div
                       key={menu.menuId}

@@ -72,6 +72,7 @@ const Store = ({ store, setStore }) => {
       };
       await saveStoreQL({ input: storeInfo });
       alert("저장이 완료되었습니다");
+      window.location.reload();
     } else {
       alert("빈 칸을 채워주세요");
     }
@@ -81,6 +82,7 @@ const Store = ({ store, setStore }) => {
     if (store) {
       await deleteStoreByIdQL({ storeId: store.storeId });
       alert("삭제가 완료되었습니다");
+      window.location.reload();
     }
   };
 

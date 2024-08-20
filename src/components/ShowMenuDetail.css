@@ -2,7 +2,7 @@
   margin: 3%;
   padding: 2%;
   border-radius: 50px;
-  background-color: #e2ebde;
+  background-color: #eaf7e4;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -22,7 +22,7 @@
 
 .my-menu-detail-modify-button {
   border-style: solid;
-  border-color: #94d35c;
+  border-color: #eecad5;
   padding: 0px 7px;
   border-width: 3;
   margin-top: 10px;
@@ -31,7 +31,7 @@
 
 .my-menu-detail-menuInfo-box {
   display: flex;
-  border-color: #94d35c;
+  border-color: #eecad5;
   border-width: 5;
   border-style: dotted;
   border-top-left-radius: 50px;
@@ -56,7 +56,7 @@
 
 .my-menu-detail-optionList-modify-button {
   border-style: solid;
-  border-color: #94d35c;
+  border-color: #eecad5;
   padding: 0px 7px;
   margin-left: 20px;
   border-width: 3;
@@ -87,6 +87,6 @@
   margin-left: 10px;
   padding: 5px 10px;
   border-radius: 13px;
-  background-color: #94d35c;
+  background-color: #eecad5;
   font-weight: 600;
 }

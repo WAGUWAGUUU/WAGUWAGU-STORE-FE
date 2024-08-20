@@ -24,11 +24,10 @@ import NewOptionInput from "./NewOptionInput";
 import OptionDisplay from "./OptionListDisplay.jsx";
 import menuImagePng from "./../assets/menu.png";
 
-const Menu = ({ store }) => {
+const Menu = ({ store, setStore }) => {
   const [menuCategories, setMenuCategories] = useState([]);
   const [menus, setMenus] = useState([]);
   const [storeOptionList, setStoreOptionList] = useState([]);
-  const [optionLists, setOptionLists] = useState([]);
   const [optionListsOfMenu, setOptionListsOfMenu] = useState([]);
   const [selectedMenuId, setSelectedMenuId] = useState("");
   const [optionMenuId, setOptionMenuId] = useState(""); // 추가된 부분
@@ -37,8 +36,6 @@ const Menu = ({ store }) => {
       useState(""); // For 2nd part
   const [optionListName, setOptionListName] = useState("");
   const [optionListNameForOptions, setOptionListNameForOptions] = useState(""); // For 2nd part
-  const [optionTitle, setOptionTitle] = useState("");
-  const [optionPrice, setOptionPrice] = useState("");
   const [newOptions, setNewOptions] = useState([
     { optionTitle: "", optionPrice: "" },
   ]);
@@ -48,9 +45,10 @@ const Menu = ({ store }) => {
   const [showOptionListInput, setShowOptionListInput] = useState(false);
   const [showExistingOptions, setShowExistingOptions] = useState(false); // 추가된 부분
   const [options, setOptions] = useState([]);
+  const [menuCategoriesAdded, setMenuCategoriesAdded] = useState(null);
   const [optionsOfMenu, setOptionsOfMenu] = useState([]); // For 2nd part
-  const [menuAdded, setMenuAdded] = useState({});
-  const [optionListAdded, setOptionListAdded] = useState({}); // 추가된 부분
+  const [menuAdded, setMenuAdded] = useState(null);
+  const [optionListAdded, setOptionListAdded] = useState(null); // 추가된 부분
 
   const inputRef = useRef(null);
   const [menuImage, setMenuImage] = useState(menuImagePng);
@@ -67,6 +65,7 @@ const Menu = ({ store }) => {
       try {
         await saveMenuCategoryQL({ input: menuCategoryInfo });
         alert("저장이 완료되었습니다");
+        setMenuCategoriesAdded({})
       } catch (e) {
         alert("해당 메뉴 카테고리는 이미 존재합니다");
       }
@@ -112,7 +111,7 @@ const Menu = ({ store }) => {
         console.log("savemenu 들어옴" + typeof menuPrice);
         await saveMenuQL({ input: saveInfo });
         alert("저장이 완료되었습니다");
-        // setMenuAdded({});
+        setMenuAdded({});
       } catch (e) {
         alert("해당 메뉴는 이미 존재합니다");
       }
@@ -209,6 +208,7 @@ const Menu = ({ store }) => {
 
           // Handle the response based on the expected result
           alert("옵션 카테고리와 옵션이 추가되었습니다");
+          setOptionListAdded({})
           setStoreOptionList((prev) => [...prev, optionListRequest]);
         } else if (res.status === 400) {
           console.error(res);
@@ -344,7 +344,7 @@ const Menu = ({ store }) => {
     if (store) {
       getMenuCategories();
     }
-  }, [store]);
+  }, [menuCategoriesAdded, store]);
 
   useEffect(() => {
     if (menuCategories && menuCategories.length > 0) {
@@ -352,7 +352,7 @@ const Menu = ({ store }) => {
       // getMenuCategories();
       getOptionListsByStore();
     }
-  }, [menuCategories]);
+  }, [menuAdded, menuCategories]);
 
   useEffect(() => {
     if (selectedMenuId) {

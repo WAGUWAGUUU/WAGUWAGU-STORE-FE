@@ -6,6 +6,7 @@ import "./OrderNotification.css";
 import StatusBox from "../components/StatusBox";
 import OrderAlarmBox from "../components/OrderAlarmBox";
 import { updateState, selectByOwner } from "../config/orderApi";
+import { getStoreByOwnerIdQL } from "../config/storeGraphQL";
 
 const OrderNotification = () => {
   const [ownerId, setOwnerId] = useState("");
@@ -26,6 +27,17 @@ const OrderNotification = () => {
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
   const day = String(currentDate.getDate()).padStart(2, "0");
+  const [store, setStore] = useState([]);
+
+  const getStore = async () => {
+    const ownerId = localStorage.getItem("ownerId");
+    try {
+      const res = await getStoreByOwnerIdQL({ ownerId });
+      setStore(res);
+    } catch (error) {
+      console.error("Failed to fetch store:", error);
+    }
+  };
 
   const fetchOrders = async (ownerId) => {
     if (!ownerId) {
@@ -58,12 +70,12 @@ const OrderNotification = () => {
     }
   };
 
-  const handleOwnerIdChange = (e) => {
-    setOwnerId(e.target.value);
-  };
+  // const handleOwnerIdChange = (e) => {
+  //   setOwnerId(e.target.value);
+  // };
 
   const handleFetchOrders = () => {
-    fetchOrders(ownerId);
+    fetchOrders(store.storeId);
   };
 
   const handleStatusChange = async (
@@ -134,6 +146,7 @@ const OrderNotification = () => {
 
   useEffect(() => {
     console.log("Selected order has been updated:", selectedOrder);
+    getStore();
   }, [selectedOrder]);
 
   if (loading) {
@@ -281,12 +294,12 @@ const OrderNotification = () => {
   return (
     <div className="order-notification">
       <div className="input-box">
-        <input
+        {/* <input
           type="number"
           value={ownerId}
           onChange={handleOwnerIdChange}
           placeholder="Enter owner ID"
-        />
+        /> */}
         <button onClick={handleFetchOrders}>조회하기</button>
       </div>
       <div className="date">

@@ -5,7 +5,7 @@ export const orderApi = async (url, method, body, params, headers = {}) => {
       url,
       method,
       // baseURL: "http://35.223.83.225/api/v1/order",
-      baseURL: "http://35.223.83.225/api/v1/order",
+      baseURL: "http://35.184.212.63/api/v1/orders",
       data: body,
       params: params,
       headers: headers,

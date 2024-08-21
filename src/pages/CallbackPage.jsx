@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { getToken } from "../config/authApi.js";
 import {useNavigate} from "react-router-dom";
 import "./Callback.css"
+import Lottie from "lottie-react";
+import loadingLottie from "../assets/Animation - 1724243583826.json";
+
 const CallbackPage = () => {
     const [token, setToken] = useState(null);
 
@@ -32,7 +35,7 @@ const CallbackPage = () => {
 
     return (
         <div style={{height:"500px"}}>
-            <p>Loading...</p>
+            <Lottie animationData={loadingLottie} style={{ height: "250px" }} />
         </div>
     );
 };

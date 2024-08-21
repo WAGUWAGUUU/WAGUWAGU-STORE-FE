@@ -118,13 +118,13 @@ const SignupPage = () => {
     return (
         <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
             <div className="content-area" style={{
-                backgroundColor: '#e8f5e9',
+                backgroundColor: '#ffe6ed',
                 padding: '30px',
                 borderRadius: '10px',
                 margin: '20px',
                 textAlign: 'center'
             }}>
-                <h2 style={{ fontSize: '2em', color: '#2e7d32', marginBottom: '20px' }}>회원가입</h2>
+                <h2 style={{ fontSize: '2em', color: '#FF8FB1', marginBottom: '20px' }}>회원가입</h2>
                 <form onSubmit={handleSubmit}>
                     <div style={{ marginBottom: '15px' }}>
                         <label htmlFor="email">이메일</label>
@@ -161,7 +161,7 @@ const SignupPage = () => {
                         />
                         <button type="button" onClick={handleAddressChange} style={{
                             marginTop: '10px',
-                            backgroundColor: '#66bb6a',
+                            backgroundColor: '#FF8FB1',
                             color: 'white',
                             padding: '10px 20px',
                             border: 'none',
@@ -186,7 +186,7 @@ const SignupPage = () => {
                     {error && <div style={{ color: 'red', marginBottom: '15px' }}>{error}</div>}
                     <button type="submit" style={{
                         padding: '10px 20px',
-                        backgroundColor: '#66bb6a',
+                        backgroundColor: '#FF8FB1',
                         color: 'white',
                         border: 'none',
                         borderRadius: '5px',

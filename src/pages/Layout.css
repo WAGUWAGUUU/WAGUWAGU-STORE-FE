@@ -1,4 +1,37 @@
-.logo {
-    text-align: center;
+/* Global styles for body */
+body {
+    margin: 0;
+    display: flex;
+    min-width: 320px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    justify-content: space-evenly;
+    flex-direction: column-reverse;
+    align-items: stretch;
+}
+
+/* Additional styling for headers and main */
+header {
+    width: 100%;
+}
+
+main {
+    width: 100%;
+}
+
+/* Styling for the logo container */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 30px 0;
+}
+
+/* Styling for the logo */
+.logo {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-height: 150px; /* Adjust this value based on the desired height */
+    object-fit: contain;
 }

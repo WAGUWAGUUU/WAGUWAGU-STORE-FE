@@ -1,11 +1,40 @@
+ body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif; /* You can change this to match your preferred font */
+  background: linear-gradient(135deg, #f8ccd9, #ffedc3);
+  background-attachment: fixed; /* Keeps the gradient fixed while content scrolls */
+  overflow-y: auto; /* Ensures vertical scrolling */
+}
+
 .store-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: #eaf7e4;
+  background-color: #ffffff; /* White background */
+  border: 5px solid transparent; /* Transparent border to apply gradient */
+  border-radius: 15px; /* Rounded corners */
   padding: 50px;
   margin-bottom: 50px;
+  background-clip: padding-box; /* Ensures the background color doesn't overlap the gradient border */
+  position: relative; /* Needed to contain the absolute positioned pseudo-element */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for better separation */
 }
+
+.store-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  margin: -5px; /* Matches the border size */
+  border-radius: inherit; /* Matches the border-radius of the container */
+  background: linear-gradient(135deg, #f8ccd9, #ffedc3); /* Gradient border */
+}
+
 
 .store-title {
   margin-bottom: 30px;
@@ -20,7 +49,7 @@
   border-radius: 13px;
   padding: 8px;
   width: 100%;
-  border: 1px solid #60ce31;
+  border: 1px solid #fb6a96;
   font-size: 1rem;
 }
 

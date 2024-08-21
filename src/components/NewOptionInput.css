@@ -16,7 +16,7 @@
   flex: 7;
   margin-right: 5px;
   height: 40px; /* Ensure this matches the button height */
-  border: 1px solid #8dc63f; /* Same border color as the input */
+  border: 1px solid #fb6a96; /* Same border color as the input */
   border-radius: 5px; /* Matching border radius */
   padding: 0 10px; /* Add padding for better appearance */
 }

@@ -1,14 +1,60 @@
 .nav-container {
+  position: relative;
+}
+
+.hamburger-button {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 1000;
+}
+
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background-color: #FF8FB1;
+  transition: left 0.3s ease;
+  z-index: 999;
   display: flex;
-  background-color: #eecad5;
-  justify-content: space-evenly;
-  width: 100vw;
-  padding: 10px;
+  flex-direction: column;
+  padding-top: 60px;
+}
+
+.side-menu.visible {
+  left: 0;
+}
+
+.close-button {
+  font-size: 24px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.nav-item {
+  margin: 10px 0;
+  text-align: center;
 }
 
 .nav-button {
-  background-color: #eecad5;
-  font-weight: 600;
-  font-size: 1.2rem;
-  color: rgb(41, 39, 39);
+  color: white;
+  padding: 10px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.nav-button:hover {
+  background-color: #ef5985;
 }

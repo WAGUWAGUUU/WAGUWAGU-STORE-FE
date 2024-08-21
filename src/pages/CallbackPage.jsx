@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { getToken } from "../config/authApi.js";
 import {useNavigate} from "react-router-dom";
-
+import "./Callback.css"
 const CallbackPage = () => {
     const [token, setToken] = useState(null);
 
@@ -31,8 +31,8 @@ const CallbackPage = () => {
     };
 
     return (
-        <div>
-            <div>Loading...</div>
+        <div style={{height:"500px"}}>
+            <p>Loading...</p>
         </div>
     );
 };

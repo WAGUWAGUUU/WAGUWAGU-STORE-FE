@@ -1,0 +1,10 @@
+body {
+    margin: 0;
+    display: flex;
+    min-width: 320px;
+    min-height: 0px;
+    overflow-x: hidden;
+    justify-content: space-evenly;
+    flex-direction: column-reverse;
+    align-items: stretch;
+}

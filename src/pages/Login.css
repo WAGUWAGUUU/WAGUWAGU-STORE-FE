@@ -1,0 +1,114 @@
+@keyframes colorChange-1 {
+    0% { color: #fb6a96; }
+    16% { color: #fb8983; }
+    32% { color: #ffa85f; }
+    48% { color: #fdc935; }
+    64% { color: #ffa85f; }
+    80% { color: #fb8983; }
+    100% { color: #fb6a96; }
+}
+
+@keyframes colorChange-2 {
+    16% { color: #fb6a96; }
+    32% { color: #fb8983; }
+    48% { color: #ffa85f; }
+    64% { color: #fdc935; }
+    80% { color: #ffa85f; }
+    100% { color: #fb8983; }
+    0% { color: #fb6a96; }
+}
+
+@keyframes colorChange-3 {
+    32% { color: #fb6a96; }
+    48% { color: #fb8983; }
+    64% { color: #ffa85f; }
+    80% { color: #fdc935; }
+    100% { color: #ffa85f; }
+    0% { color: #fb8983; }
+    16% { color: #fb6a96; }
+}
+
+@keyframes colorChange-4 {
+    48% { color: #fb6a96; }
+    64% { color: #fb8983; }
+    80% { color: #ffa85f; }
+    100% { color: #fdc935; }
+    0% { color: #ffa85f; }
+    16% { color: #fb8983; }
+    32% { color: #fb6a96; }
+}
+
+.gradient-text-1 {
+    animation: colorChange-1 6s linear infinite;
+    text-align: center;
+}
+.gradient-text-2 {
+    animation: colorChange-2 6s linear infinite;
+    text-align: center;
+}
+.gradient-text-3 {
+    animation: colorChange-3 6s linear infinite;
+    text-align: center;
+}
+.gradient-text-4 {
+    animation: colorChange-4 6s linear infinite;
+    text-align: center;
+}
+
+@keyframes growShrink {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.animated-image {
+    height: 100px;
+    animation: growShrink 3s infinite ease-in-out;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.hover-spin-image {
+    transition: transform 1s ease;
+}
+
+.hover-spin-image:hover {
+    animation: spin 0.5s linear 10;
+}
+
+.store-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #ffffff; /* White background */
+    border: 5px solid transparent; /* Transparent border to apply gradient */
+    border-radius: 15px; /* Rounded corners */
+    padding: 50px;
+    margin-bottom: 50px;
+    background-clip: padding-box; /* Ensures the background color doesn't overlap the gradient border */
+    position: relative; /* Needed to contain the absolute positioned pseudo-element */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for better separation */
+}
+
+.store-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    margin: -5px; /* Matches the border size */
+    border-radius: inherit; /* Matches the border-radius of the container */
+    background: linear-gradient(135deg, #f8ccd9, #ffedc3); /* Gradient border */
+}

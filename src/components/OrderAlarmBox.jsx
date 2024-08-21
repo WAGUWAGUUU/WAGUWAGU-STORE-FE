@@ -27,14 +27,19 @@ const OrderAlarmBox = ({
           <div key={menuIndex}>
             <div className="menuName">{menuItem.menuName}</div>
             {menuItem.selectedOptions && menuItem.selectedOptions.map((option, optionIndex) => (
-              <div key={optionIndex}>
-                <div className="listName">{option.listName}</div>
-                {option.options && option.options.map((opt, optIndex) => (
-                  <div key={optIndex} className="optionTitle">
-                    {opt.optionTitle} (+{opt.optionPrice}원)
-                  </div>
-                ))}
-              </div>
+              // Only render the listName and options if at least one optionTitle exists
+              option.options && option.options.some(opt => opt.optionTitle) && (
+                <div key={optionIndex}>
+                  <div className="listName">{option.listName}</div>
+                  {option.options && option.options.map((opt, optIndex) => (
+                    opt.optionTitle && (
+                      <div key={optIndex} className="optionTitle">
+                        {opt.optionTitle} (+{opt.optionPrice}원)
+                      </div>
+                    )
+                  ))}
+                </div>
+              )
             ))}
           </div>
         ))}
@@ -44,4 +49,3 @@ const OrderAlarmBox = ({
 };
 
 export default OrderAlarmBox;
-

@@ -6,6 +6,7 @@ import "./OrderNotification.css";
 import StatusBox from "../components/StatusBox";
 import OrderAlarmBox from "../components/OrderAlarmBox";
 import { updateState, selectByOwner } from "../config/orderApi";
+import { getStoreByOwnerIdQL } from "../config/storeGraphQL";
 
 const OrderNotification = () => {
   const [ownerId, setOwnerId] = useState("");
@@ -20,12 +21,31 @@ const OrderNotification = () => {
     top: 0,
     left: 0,
   });
+  const [statusCounts, setStatusCounts] = useState({
+    "주문 요청": 0,
+    조리중: 0,
+    "배달 요청": 0,
+    "배달 수락": 0,
+    배달중: 0,
+    "배달 완료": 0,
+  });
   const dropdownRef = useRef(null);
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
   const month = String(currentDate.getMonth() + 1).padStart(2, "0");
   const day = String(currentDate.getDate()).padStart(2, "0");
+  const [store, setStore] = useState([]);
+
+  const getStore = async () => {
+    const ownerId = localStorage.getItem("ownerId");
+    try {
+      const res = await getStoreByOwnerIdQL({ ownerId });
+      setStore(res);
+    } catch (error) {
+      console.error("Failed to fetch store:", error);
+    }
+  };
 
   const fetchOrders = async (ownerId) => {
     if (!ownerId) {
@@ -58,12 +78,8 @@ const OrderNotification = () => {
     }
   };
 
-  const handleOwnerIdChange = (e) => {
-    setOwnerId(e.target.value);
-  };
-
   const handleFetchOrders = () => {
-    fetchOrders(ownerId);
+    fetchOrders(store.storeId);
   };
 
   const handleStatusChange = async (
@@ -134,35 +150,34 @@ const OrderNotification = () => {
 
   useEffect(() => {
     console.log("Selected order has been updated:", selectedOrder);
+    getStore();
   }, [selectedOrder]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    // Calculate the status counts whenever the orders array changes
+    const statuses = orders.map((order) => order.status);
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+    const newStatusCounts = {
+      "주문 요청": statuses.filter((status) => status === "주문 요청").length,
+      조리중: statuses.filter((status) => status === "조리중").length,
+      "배달 요청": statuses.filter((status) => status === "배달 요청").length,
+      "배달 수락": statuses.filter((status) => status === "배달 수락").length,
+      배달중: statuses.filter((status) => status === "배달중").length,
+      "배달 완료": statuses.filter((status) => status === "배달 완료").length,
+    };
 
-  const statusOptions = [
-    "주문 요청",
-    "조리중",
-    "배달 요청",
-    "배달 수락",
-    "배달중",
-    "배달 완료",
-  ];
+    setStatusCounts(newStatusCounts);
+  }, [orders]);
 
-  const statuses = orders.map((order) => order.status);
+  useEffect(() => {
+    // Fetch orders every 5 seconds
+    const intervalId = setInterval(() => {
+      fetchOrders(store.storeId);
+    }, 5000);
 
-  const statusCounts = {
-    "주문 요청": statuses.filter((status) => status === "주문 요청").length,
-    조리중: statuses.filter((status) => status === "조리중").length,
-    "배달 요청": statuses.filter((status) => status === "배달 요청").length,
-    "배달 수락": statuses.filter((status) => status === "배달 수락").length,
-    배달중: statuses.filter((status) => status === "배달중").length,
-    "배달 완료": statuses.filter((status) => status === "배달 완료").length,
-  };
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [store.storeId]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -183,110 +198,17 @@ const OrderNotification = () => {
     }
   };
 
-  const handleStatusOptionClick = (event, status) => {
-    if (status === "배달 요청") {
-      setDueTimeInputPosition({
-        top: event.clientY + window.scrollY,
-        left: event.clientX + window.scrollX,
-      });
-      setMinutes("");
-      setShowDueTimeInput(true);
-    } else if (status === "조리중") {
-      handleStatusChange(selectedOrder, status);
-      notifyAndPlayAudio("order-received");
-    } else if (status === "배달 수락") {
-      handleStatusChange(selectedOrder, status);
-      notifyAndPlayAudio("dispatch-completed");
-    } else if (status === "배달 완료") {
-      handleStatusChange(selectedOrder, status);
-      notifyAndPlayAudio("delivery-completed");
-    } else {
-      setShowDueTimeInput(false);
-      handleStatusChange(selectedOrder, status);
-    }
-  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  const handleDueTimeSet = () => {
-    const dueTime = moment()
-      .tz("Asia/Seoul")
-      .add(parseInt(minutes, 10), "minutes")
-      .valueOf();
-    handleStatusChange(selectedOrder, "배달 요청", dueTime);
-  };
-
-  const handleMinutesChange = (e) => {
-    let value = e.target.value;
-
-    if (value.length > 3) {
-      value = value.slice(0, 3);
-    }
-
-    setMinutes(value);
-  };
-
-  const notifyAndPlayAudio = async (orderStatus) => {
-    try {
-      const response = await fetch(`http://34.41.123.200/alarm/notify/order-status?order_status=${orderStatus}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const arrayBuffer = await blobToArrayBuffer(blob);
-        const base64String = arrayBufferToBase64(arrayBuffer);
-
-        // Create a blob URL for the audio file
-        const audioUrl = `data:audio/mp3;base64,${base64String}`;
-        const audio = new Audio(audioUrl);
-        audio.play();
-
-        // Optional: Add an event listener to clean up after the audio is played
-        audio.onended = () => {
-          URL.revokeObjectURL(audioUrl); // Release the object URL
-          console.log("Audio playback finished");
-        };
-      } else {
-        console.error("Failed to notify:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Failed to fetch and play audio:", error);
-    }
-  };
-
-  // Helper function to convert Blob to ArrayBuffer
-  const blobToArrayBuffer = (blob) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () =>
-        reject(new Error("Failed to read blob as array buffer."));
-      reader.readAsArrayBuffer(blob);
-    });
-  };
-
-  // Helper function to convert ArrayBuffer to Base64
-  const arrayBufferToBase64 = (arrayBuffer) => {
-    let binary = "";
-    const bytes = new Uint8Array(arrayBuffer);
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary); // Convert binary string to base64
-  };
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="order-notification">
       <div className="input-box">
-        <input
-          type="number"
-          value={ownerId}
-          onChange={handleOwnerIdChange}
-          placeholder="Enter owner ID"
-        />
         <button onClick={handleFetchOrders}>조회하기</button>
       </div>
       <div className="date">

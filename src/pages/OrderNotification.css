@@ -33,20 +33,21 @@
 
 
 .input-box {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .date {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .date-box {
+
     background-color: #fb6a96;
     border-radius: 10px;
     padding: 10px 20px;
@@ -55,102 +56,101 @@
 }
 
 .order-summary {
-    display: flex;
-    justify-content: space-around;
-    gap: 10px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .order-details {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
 }
 
 .order-card {
-    flex: 1 1 calc(25% - 20px);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 300px;
-    min-width: 200px;
-    margin: 10px;
+  flex: 1 1 calc(25% - 20px);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 300px;
+  min-width: 200px;
+  margin: 10px;
 }
 
 .aram-box {
-    position: relative;
+  position: relative;
 }
 
 .header {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 5px;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
 .content {
-    font-family: Arial, sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 .pin-icon {
-    position: absolute;
-    top: -10px;
-    right: 10px;
-    font-size: 24px;
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  font-size: 24px;
 }
 
 .status-dropdown {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    max-height: 200px;
-    overflow-y: auto;
-    width: 150px;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 150px;
 }
 
 .status-option {
-    padding: 8px 12px;
-    cursor: pointer;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 
 .status-option:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .due-time-input {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    padding: 8px;
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 8px;
 }
 
-
 .menuName {
-    background-color: #eaf0d1; /* Light blue background */
-    padding: 10px;
-    font-weight: bold;
-    border-radius: 5px;
+  background-color: #eaf0d1; /* Light blue background */
+  padding: 10px;
+  font-weight: bold;
+  border-radius: 5px;
 }
 
 .listName {
-    background-color: #f4ebe7; /* Light gray background */
-    padding: 10px;
-    margin-left: 20px; /* Indentation */
-    font-weight: bold;
-    border-radius: 5px;
+  background-color: #f4ebe7; /* Light gray background */
+  padding: 10px;
+  margin-left: 20px; /* Indentation */
+  font-weight: bold;
+  border-radius: 5px;
 }
 
 .optionTitle {
-    background-color: #f2eac9; /* Lighter gray background */
-    padding: 10px;
-    margin-left: 40px; /* More indentation */
-    border-radius: 5px;
+  background-color: #f2eac9; /* Lighter gray background */
+  padding: 10px;
+  margin-left: 40px; /* More indentation */
+  border-radius: 5px;
 }

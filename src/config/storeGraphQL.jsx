@@ -1,5 +1,5 @@
 import axios from "axios";
-const endpoint = "http://34.69.39.99/graphql";
+const endpoint = "http://34.69.39.99/api/v1/store/graphql";
 
 export const getStoreByOwnerIdQL = async (variables) => {
   try {
@@ -275,7 +275,7 @@ export const saveStoreQL = async (variables) => {
         },
       }
     );
-    console.log(response)
+    console.log(response);
     if (response.data.errors && response.data.errors.length > 0) {
       throw new Error(response.data.errors[0].message);
     }
@@ -435,7 +435,7 @@ export const saveMenuCategoryQL = async (variables) => {
         },
       }
     );
-    console.log(response)
+    console.log(response);
     if (response.data.errors && response.data.errors.length > 0) {
       throw new Error(response.data.errors[0].message);
     }
@@ -447,7 +447,6 @@ export const saveMenuCategoryQL = async (variables) => {
     }
   }
 };
-  
 
 export const saveMenuQL = async (variables) => {
   try {
@@ -467,7 +466,7 @@ export const saveMenuQL = async (variables) => {
         },
       }
     );
-    console.log(response)
+    console.log(response);
     if (response.data.errors && response.data.errors.length > 0) {
       throw new Error(response.data.errors[0].message);
     }

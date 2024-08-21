@@ -3,20 +3,10 @@ import SalesBarChart from "../components/SalesBarChart";
 import SelectYears from "../components/SelectYears";
 import SalesPerDay from "../components/SalesPerDay";
 import CSVGenerate from "../components/CSVGenerate";
-import { selectByStoreDateAll } from "../config/orderApi";
 
 const MySalesPage = () => {
   const [store, setStore] = useState(null);
   const [selectYear, setSelectYear] = useState("");
-  
-  const historiesAll = async () => {
-    try {
-      const data = await selectByStoreDateAll(requestId, firstDateTimestamp, secondDateTimestamp);
-      console.log(data);
-    } catch (error) {
-      console.error('Error fetching more data:', error);
-    }
-  };
 
   const getStore = async () => {
     // const ownerId = localStorage.getItem("ownerId");

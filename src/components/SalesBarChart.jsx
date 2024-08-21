@@ -8,7 +8,7 @@ const SalesBarChart = ({ store, selectYear }) => {
   const getChartData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8083/api/v1/sales-month/store/${store.storeId}/year/${selectYear}`
+        `http://34.69.39.99/api/v1/sales/sales-month/store/${store.storeId}/year/${selectYear}`
       );
       console.log(response.data);
       setChartData(response.data);
@@ -25,7 +25,12 @@ const SalesBarChart = ({ store, selectYear }) => {
 
   return (
     <div>
-      <BarChart width={window.innerWidth / 1.2} height={300} data={chartData}>
+      <BarChart
+        width={window.innerWidth / 1.3}
+        height={300}
+        data={chartData}
+        margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+      >
         <XAxis dataKey="month" stroke="#8884d8" />
         <YAxis />
         {/* <Tooltip /> */}

@@ -9,7 +9,7 @@ const CSVGenerate = ({ store, selectYear }) => {
   const getCSVData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8083/api/v1/sales-month/store/${store.storeId}/year/${selectYear}`
+        `http://34.69.39.99/api/v1/sales/sales-month/store/${store.storeId}/year/${selectYear}`
       );
       console.log("csv" + response.data);
       const modifiedData = changeCSVData(response.data);

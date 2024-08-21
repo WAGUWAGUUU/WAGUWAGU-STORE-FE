@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import styled from "styled-components";
-import { selectByStoreDate } from "../config/orderApi";
+import { selectByStoreDate, selectByStoreDateAll } from "../config/orderApi";
 
 const SalesPerDay = ({ store }) => {
   const currentDate = new Date();
@@ -42,7 +42,7 @@ const SalesPerDay = ({ store }) => {
   const getData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8083/api/v1/sales-day/store/${store.storeId}/${year}/${month}`
+        `http://34.69.39.99/api/v1/sales/sales-day/store/${store.storeId}/${year}/${month}`
       );
       setData(response.data);
     } catch (error) {
@@ -66,24 +66,6 @@ const SalesPerDay = ({ store }) => {
   const { getHeaderGroups, getRowModel } = table;
 
   const isNoData = getRowModel().rows.length === 0;
-
-  // function dateFormat(date) {
-  //   let dateFormat2 =
-  //     date.getFullYear() +
-  //     "-" +
-  //     (date.getMonth() + 1 < 9
-  //       ? "0" + (date.getMonth() + 1)
-  //       : date.getMonth() + 1) +
-  //     "-" +
-  //     (date.getDate() < 9 ? "0" + date.getDate() : date.getDate());
-  //   return dateFormat2;
-  // }
-
-  // 날짜를 타임스탬프 값으로 변환하는 함수
-  // const formatDateForTimestamp = (date) => {
-  //   if (!date) return "";
-  //   return new Date(`${date}T00:00:00`).getTime(); // 밀리초 단위의 타임스탬프
-  // };
 
   const formatDateForTimestamp = (date) => {
     if (!date) return "";
@@ -110,13 +92,17 @@ const SalesPerDay = ({ store }) => {
   const showDailySales = async (date) => {
     // const selectedDate = new Date(date);
     const timestamp = formatDateForTimestamp(date);
-    const data = await selectByStoreDate(
-      store.storeId,
-      timestamp,
-      timestamp,
-      0
-    );
-    setShowDailySalesData(data);
+    try {
+      const data = await selectByStoreDateAll(
+        store.storeId,
+        timestamp,
+        timestamp
+      );
+      console.log(data);
+      setShowDailySalesData(data);
+    } catch (error) {
+      console.error("Error fetching showDailySales data:", error);
+    }
   };
 
   useEffect(() => {

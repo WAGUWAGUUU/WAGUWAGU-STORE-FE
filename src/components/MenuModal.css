@@ -6,7 +6,7 @@
   top: 90%;
   left: 60%;
   background-color: #bdef92;
-  border: 3px solid #94d35c;
+  border: 3px solid #eecad5;
   border-radius: 10px;
 }
 
@@ -18,7 +18,7 @@
   top: 50%;
   left: 20%;
   background-color: #bdef92;
-  border: 3px solid #94d35c;
+  border: 3px solid #eecad5;
   border-radius: 10px;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .menu-modal-textArea {
-  border: 2px solid #94d35c;
+  border: 2px solid #eecad5;
   outline-color: #fba138;
   border-radius: 10px;
   padding: 5px;
@@ -51,7 +51,7 @@
 
 .menu-modal-button {
   border-style: solid;
-  border-color: #94d35c;
+  border-color: #eecad5;
   padding: 0px 7px;
   border-width: 3;
   height: 30px;

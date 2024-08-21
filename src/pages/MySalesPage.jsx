@@ -9,7 +9,6 @@ const MySalesPage = () => {
   const [store, setStore] = useState(null);
   const [selectYear, setSelectYear] = useState("");
   
-//이거야 새현아 !! 
   const historiesAll = async () => {
     try {
       const data = await selectByStoreDateAll(requestId, firstDateTimestamp, secondDateTimestamp);

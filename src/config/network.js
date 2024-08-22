@@ -6,7 +6,7 @@ export const api = async (url, method, body, params, headers) => {
     method,
     // baseURL: "http://192.168.0.17:8080", // baseURL
     // baseURL: "http://192.168.0.15:8090", // baseURL
-    baseURL: "http://34.69.39.99", // baseURL
+    baseURL: "https://waguwagu.shop", // baseURL
     data: body,
     params: params,
     headers: {

@@ -1,10 +1,29 @@
 .my-menu-list-container {
   margin: 3%;
   padding: 3%;
-  border-radius: 50px;
-  background-color: #eaf7e4;
   display: flex;
   flex-direction: column;
+  background-color: #ffffff; /* White background */
+  border: 5px solid transparent; /* Transparent border to apply gradient */
+  border-radius: 15px; /* Rounded corners */
+  padding: 50px;
+  margin-bottom: 50px;
+  background-clip: padding-box; /* Ensures the background color doesn't overlap the gradient border */
+  position: relative; /* Needed to contain the absolute positioned pseudo-element */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for better separation */
+}
+
+.my-menu-list-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  margin: -5px; /* Matches the border size */
+  border-radius: inherit; /* Matches the border-radius of the container */
+  background: linear-gradient(135deg, #f8ccd9, #ffedc3); /* Gradient border */
 }
 
 .my-menu-list-container2 {
@@ -43,7 +62,7 @@
   border-width: 3;
   width: 50px;
   height: 50px;
-  border-radius: 100%;
+  border-radius: 50%;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
 }

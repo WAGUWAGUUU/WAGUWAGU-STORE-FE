@@ -8,7 +8,7 @@ const SalesBarChart = ({ store, selectYear }) => {
   const getChartData = async () => {
     try {
       const response = await axios.get(
-        `https://waguwagu.shop/api/v1/sales/sales-month/store/${store.storeId}/year/${selectYear}`
+        `http://34.41.123.200/api/v1/sales/sales-month/store/${store.storeId}/year/${selectYear}`
       );
       console.log(response.data);
       setChartData(response.data);

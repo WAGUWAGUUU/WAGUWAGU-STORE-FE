@@ -7,6 +7,7 @@ import loadingLottie from "../assets/Animation - 1724243583826.json";
 
 import { useQuery } from "@apollo/client";
 import { GET_STORE_BY_OWNERID } from "../config/storeRoles.jsx";
+import {useNavigate} from "react-router-dom";
 
 const MyMenuPage = () => {
   const [store, setStore] = useState(null);
@@ -16,11 +17,18 @@ const MyMenuPage = () => {
   const { data, loading, error } = useQuery(GET_STORE_BY_OWNERID, {
     variables: { ownerId: localStorage.getItem("ownerId") },
   });
+  const navigate = useNavigate();
 
   if (loading) return (<div style={{height: "500px"}}>
       <Lottie animationData={loadingLottie} style={{height: "250px"}}/>
   </div>);
-    if (error) return <p>Error: {error.message}</p>;
+    if (error) {
+      navigate("/");
+      alert("로그인 후 이용해주세요!");
+      return (
+          <p>Error: {error.message}</p>
+      );
+    }
 
     console.log("Data" + data.getStoreByOwnerId);
 

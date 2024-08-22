@@ -199,7 +199,7 @@ const Store = ({ store, setStore }) => {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `https://waguwagu.shop/api/v1/photo/store`,
+        `http://34.41.123.200/api/v1/photo/store`,
         formData,
         {
           headers: {
@@ -209,7 +209,7 @@ const Store = ({ store, setStore }) => {
       );
 
       setStoreImage(
-        "https://storage.googleapis.com/wgwg_bucket/" + response.data
+        "https://storage.googleapis.com/waguwagu_bucket/" + response.data
       );
       setStoreImageUuid(response.data);
       console.log(")))))12345)))))))" + response.data);
@@ -224,7 +224,7 @@ const Store = ({ store, setStore }) => {
   const fetchUserProfileImage = async () => {
     try {
       const response = await axios.get(
-        `https://waguwagu.shop/api/v1/store/${store.storeId}/photo`
+        `http://34.41.123.200/api/v1/store/${store.storeId}/photo`
       );
       console.log(response.data);
       setStoreImageUuid(response.data);
@@ -232,7 +232,7 @@ const Store = ({ store, setStore }) => {
         setStoreImage(storeImagePng);
       } else {
         setStoreImage(
-          "https://storage.googleapis.com/wgwg_bucket/" + response.data
+          "https://storage.googleapis.com/waguwagu_bucket/" + response.data
         );
       }
     } catch (error) {
@@ -263,12 +263,12 @@ const Store = ({ store, setStore }) => {
           style={{ display: "none" }}
         />
         <div className="store-image-button-container">
-          <div className="store-image-button" onClick={handleFileClick}>
+          <button className="store-image-button" onClick={handleFileClick}>
             이미지 업로드
-          </div>
-          <div className="store-image-button" onClick={handleDefaultImage}>
+          </button>
+          <button className="store-image-button" onClick={handleDefaultImage}>
             기본 이미지로 설정
-          </div>
+          </button>
         </div>
 
         <h3 className="store-item">가게명</h3>

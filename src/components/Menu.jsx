@@ -29,7 +29,7 @@ const Menu = ({ store, setStore }) => {
   const [menus, setMenus] = useState([]);
   const [storeOptionList, setStoreOptionList] = useState([]);
   const [optionListsOfMenu, setOptionListsOfMenu] = useState([]);
-  const [selectedMenuId, setSelectedMenuId] = useState("default");
+  const [selectedMenuId, setSelectedMenuId] = useState("");
   const [optionMenuId, setOptionMenuId] = useState(""); // 추가된 부분
   const [selectedOptionListId, setSelectedOptionListId] = useState("");
   const [selectedOptionListIdForOptions, setSelectedOptionListIdForOptions] =
@@ -356,11 +356,11 @@ const Menu = ({ store, setStore }) => {
   }, [menuAdded, menuCategories]);
 
   useEffect(() => {
-    console.log("hi", selectedMenuId)
+    console.log("hi", selectedMenuId);
     if (selectedMenuId) {
-      console.log("hi2 : ",selectedMenuId)
-       const res = getOptionListsBySelectedMenu();
-      console.log("hi3 : ",res) 
+      console.log("hi2 : ", selectedMenuId);
+      const res = getOptionListsBySelectedMenu();
+      console.log("hi3 : ", res);
     }
   }, [selectedMenuId]);
 
@@ -462,13 +462,13 @@ const Menu = ({ store, setStore }) => {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-          `https://waguwagu.shop/api/v1/photo/menu`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+        `http://34.41.123.200/api/v1/photo/menu`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       // setMenuImage(
@@ -676,7 +676,7 @@ const Menu = ({ store, setStore }) => {
                 onChange={(e) => setSelectedMenuId(e.target.value)}
                 value={selectedMenuId}
               >
-                <option disabled selected hidden value="default">
+                <option disabled selected hidden value="">
                   메뉴 선택
                 </option>
                 {menus &&

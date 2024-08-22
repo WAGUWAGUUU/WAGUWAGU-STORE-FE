@@ -217,7 +217,7 @@ const Delivery = ({ store, setStore }) => {
                 : saveDeliveryFee
             }
           >
-            {deliveryInfo ? "수정" : "저장"}
+            저장
           </button>
         </div>
       </div>

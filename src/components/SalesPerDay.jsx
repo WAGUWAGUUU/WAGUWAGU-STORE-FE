@@ -42,7 +42,7 @@ const SalesPerDay = ({ store }) => {
   const getData = async () => {
     try {
       const response = await axios.get(
-        `https://waguwagu.shop/api/v1/sales/sales-day/store/${store.storeId}/${year}/${month}`
+        `http://34.41.123.200/api/v1/sales/sales-day/store/${store.storeId}/${year}/${month}`
       );
       setData(response.data);
     } catch (error) {

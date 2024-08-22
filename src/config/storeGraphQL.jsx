@@ -1,5 +1,4 @@
 import axios from "axios";
-// const endpoint = "http://34.41.123.200/api/v1/store/graphql";
 const endpoint = "http://34.41.123.200/api/v1/store/graphql";
 
 export const getStoreByOwnerIdQL = async (variables) => {
@@ -59,7 +58,7 @@ export const getMenuCategoryByStoreQL = async (variables) => {
         },
       }
     );
-    console.log("데이터 확인" + data.data.data.getMenuCategoryByStoreId);
+    // console.log("데이터 확인" + data.data.data.getMenuCategoryByStoreId);
     return data.status === 200
       ? data.data.data.getMenuCategoryByStoreId
       : "error";

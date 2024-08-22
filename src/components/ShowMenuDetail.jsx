@@ -177,7 +177,7 @@ const ShowMenuDetail = ({
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `http://34.69.39.99/api/v1/photo/store`,
+        `https://waguwagu.shop/api/v1/photo/store`,
         formData,
         {
           headers: {

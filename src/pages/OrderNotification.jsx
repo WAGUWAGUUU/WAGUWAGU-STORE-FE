@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Outlet } from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import moment from "moment-timezone";
 import "../components/OrderAlarmBox.css";
 import "./OrderNotification.css";
@@ -32,6 +32,7 @@ const OrderNotification = () => {
     "배달 완료": 0,
   });
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
@@ -151,8 +152,14 @@ const OrderNotification = () => {
   };
 
   useEffect(() => {
-    console.log("Selected order has been updated:", selectedOrder);
-    getStore();
+    if(!selectedOrder){
+      navigate("/");
+      alert("로그인 후 이용해주세요!");
+    }
+    else{
+      console.log("Selected order has been updated:", selectedOrder);
+      getStore();
+    }
   }, [selectedOrder]);
 
   useEffect(() => {

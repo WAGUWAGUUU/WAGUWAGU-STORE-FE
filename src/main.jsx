@@ -30,7 +30,7 @@ const router = createBrowserRouter([
       { path: "/OrderNotification", element: <OrderNotification /> },
       { path: "/HistoryInquiry", element: <HistoryInquiry /> },
       { path: "/", element: <LoginPage /> },
-      { path: "/owners/callback", element: <CallbackPage /> },
+      { path: "/callback", element: <CallbackPage /> },
       { path: "/signup", element: <SignupPage /> },
       { path: "/mypage", element: <MyPage /> },
       // { path: "/board", element: <Boards /> },

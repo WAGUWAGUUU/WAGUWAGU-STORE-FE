@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {getInfo, updateInfo} from "../config/authApi.js";
 import './Mypage.css';
 import Vector from "../assets/Vector.png";
+import {useNavigate} from "react-router-dom";
 
 
 const MyPage = () => {
@@ -10,7 +11,7 @@ const MyPage = () => {
     const [ownerEmail, setOwnerEmail] = useState('');
     const [ownerName, setOwnerName] = useState('');
     const [ownerBusinessNumber, setOwnerBusinessNumber] = useState('');
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchOwnerInfo = async () => {
@@ -40,7 +41,8 @@ const MyPage = () => {
                 }
             } catch (error) {
                 console.log("Error fetching owner info:", error);
-                alert("Error fetching owner info");
+                alert("로그인 후 이용해주세요!");
+                navigate("/");
             }
         };
 

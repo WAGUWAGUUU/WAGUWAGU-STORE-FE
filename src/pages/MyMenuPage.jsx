@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import ShowMenuList from "../components/ShowMenuList";
 import ShowMenuDetail from "../components/ShowMenuDetail";
 import { getStoreByOwnerId } from "../config/storeApi";
+import Lottie from "lottie-react";
+import loadingLottie from "../assets/Animation - 1724243583826.json";
 
 import { useQuery } from "@apollo/client";
 import { GET_STORE_BY_OWNERID } from "../config/storeRoles.jsx";
@@ -15,13 +17,15 @@ const MyMenuPage = () => {
     variables: { ownerId: localStorage.getItem("ownerId") },
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading) return (<div style={{height: "500px"}}>
+      <Lottie animationData={loadingLottie} style={{height: "250px"}}/>
+  </div>);
+    if (error) return <p>Error: {error.message}</p>;
 
-  console.log("Data" + data.getStoreByOwnerId);
+    console.log("Data" + data.getStoreByOwnerId);
 
-  return (
-    <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+    return (
+        <div style={{display: "flex", justifyContent: "space-evenly" }}>
       <ShowMenuList
         store={data.getStoreByOwnerId}
         setMenu={setMenu}

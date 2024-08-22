@@ -152,14 +152,8 @@ const OrderNotification = () => {
   };
 
   useEffect(() => {
-    if(!selectedOrder){
-      navigate("/");
-      alert("로그인 후 이용해주세요!");
-    }
-    else{
-      console.log("Selected order has been updated:", selectedOrder);
-      getStore();
-    }
+    console.log("Selected order has been updated:", selectedOrder);
+    getStore();
   }, [selectedOrder]);
 
   useEffect(() => {

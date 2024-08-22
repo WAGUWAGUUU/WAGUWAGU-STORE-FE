@@ -7,6 +7,8 @@ import StatusBox from "../components/StatusBox";
 import OrderAlarmBox from "../components/OrderAlarmBox";
 import { updateState, selectByOwner } from "../config/orderApi";
 import { getStoreByOwnerIdQL } from "../config/storeGraphQL";
+import Lottie from "lottie-react";
+import loadingLottie from "../assets/Animation - 1724243583826.json";
 
 const OrderNotification = () => {
   const [ownerId, setOwnerId] = useState("");
@@ -199,7 +201,11 @@ const OrderNotification = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+        <div style={{height: "500px"}}>
+          <Lottie animationData={loadingLottie} style={{height: "250px"}}/>
+        </div>
+    );
   }
 
   if (error) {
@@ -207,8 +213,8 @@ const OrderNotification = () => {
   }
 
   return (
-    <div className="order-notification">
-      <div className="input-box">
+      <div className="order-notification">
+        <div className="input-box">
         <button onClick={handleFetchOrders}>조회하기</button>
       </div>
       <div className="date">

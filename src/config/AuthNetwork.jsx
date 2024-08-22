@@ -2,6 +2,7 @@ import axios from "axios";
 
 export const api = async (url, method, body) => {
   axios.defaults.baseURL = "http://34.41.123.200";
+  // axios.defaults.baseURL = "https://waguwagu.shop";
   try {
     const res = await axios({
       url,

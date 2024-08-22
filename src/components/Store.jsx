@@ -120,7 +120,9 @@ const Store = ({ store, setStore }) => {
 
       let imageUrl = storeImageUuid;
       if (storeFile) {
+        console.log("스토어파일 들어옴");
         imageUrl = await uploadFile(storeFile);
+        console.log("스토어 파일 결과",imageUrl);
       }
       console.log("Abc" + imageUrl);
 

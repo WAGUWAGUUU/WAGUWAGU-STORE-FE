@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { getInfo, updateInfo } from "../config/authApi.js";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const SignupPage = () => {
     const [ownerEmail, setOwnerEmail] = useState('');
     const [ownerName, setOwnerName] = useState('');
-    const [ownerAddress, setOwnerAddress] = useState('');
     const [ownerBusinessNumber, setOwnerBusinessNumber] = useState('');
-    const [ownerLatitude, setOwnerLatitude] = useState('');
-    const [ownerLongitude, setOwnerLongitude] = useState('');
     const [error, setError] = useState(null);
 
 
     const navigate = useNavigate();
 
-    const REST_API_KEY = import.meta.env.VITE_REST_API_KEY;
 
     useEffect(() => {
         const fetchOwnerInfo = async () => {
@@ -25,14 +20,11 @@ const SignupPage = () => {
                     const {
                         ownerEmail,
                         ownerName,
-                        ownerAddress,
-                        ownerLatitude,
-                        ownerLongitude,
                         ownerId,
                         ownerBusinessNumber
                     } = res.data;
 
-                    if (ownerAddress === null) {
+                    if (ownerBusinessNumber === null) {
                         setOwnerEmail(ownerEmail);
                         setOwnerName(ownerName);
                         localStorage.setItem('ownerId', ownerId);
@@ -41,9 +33,6 @@ const SignupPage = () => {
                         localStorage.setItem('ownerId', ownerId);
                         localStorage.setItem('ownerName', ownerName);
                         localStorage.setItem('ownerEmail', ownerEmail);
-                        localStorage.setItem('ownerAddress', ownerAddress);
-                        localStorage.setItem('ownerLatitude', ownerLatitude);
-                        localStorage.setItem('ownerLongitude', ownerLongitude);
                         localStorage.setItem('ownerBusinessNumber', ownerBusinessNumber);
                     }
                 }
@@ -56,54 +45,21 @@ const SignupPage = () => {
         fetchOwnerInfo();
     }, []);
 
-    const handleAddressChange = async () => {
-        if (!ownerAddress.trim()) {
-            alert("주소를 입력하세요");
-            return;
-        }
-
-        try {
-            const response = await axios.get(`https://dapi.kakao.com/v2/local/search/address.json`, {
-                params: {
-                    query: ownerAddress,
-                },
-                headers: {
-                    Authorization: `KakaoAK ${REST_API_KEY}`,
-                },
-            });
-
-            const { documents } = response.data;
-            if (documents.length > 0) {
-                const { x, y } = documents[0].address;
-                setOwnerLatitude(parseFloat(y));
-                setOwnerLongitude(parseFloat(x));
-                alert("주소 입력 완료");
-            } else {
-                alert("잘못된 주소입니다");
-            }
-        } catch (error) {
-            console.error("Error converting address:", error);
-            alert("An error occurred while converting the address.");
-        }
-    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!ownerEmail || !ownerName || !ownerAddress || !ownerBusinessNumber) {
+        if (!ownerEmail || !ownerName || !ownerBusinessNumber) {
             setError('Please fill in all fields.');
             return;
         }
         try {
             const res = await updateInfo(
-                { ownerName, ownerAddress, ownerBusinessNumber, ownerLatitude, ownerLongitude });
+                { ownerName, ownerBusinessNumber });
             if (res.status === 200) {
                 alert('가입 완료');
                 localStorage.setItem('ownerName', ownerName);
                 localStorage.setItem('ownerEmail', ownerEmail);
-                localStorage.setItem('ownerAddress', ownerAddress);
-                localStorage.setItem('ownerLatitude', ownerLatitude);
-                localStorage.setItem('ownerLongitude', ownerLongitude);
                 localStorage.setItem('ownerBusinessNumber', ownerBusinessNumber);
                 navigate('/mystore');
             } else {
@@ -148,29 +104,6 @@ const SignupPage = () => {
                             required
                             style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
                         />
-                    </div>
-                    <div style={{ marginBottom: '15px' }}>
-                        <label htmlFor="address">가게 주소</label>
-                        <input
-                            type="text"
-                            id="address"
-                            value={ownerAddress}
-                            onChange={(e) => setOwnerAddress(e.target.value)}
-                            required
-                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-                        />
-                        <button type="button" onClick={handleAddressChange} style={{
-                            marginTop: '10px',
-                            backgroundColor: '#FF8FB1',
-                            color: 'white',
-                            padding: '10px 20px',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                            fontSize: '1em'
-                        }}>
-                            주소확인
-                        </button>
                     </div>
                     <div style={{ marginBottom: '15px' }}>
                         <label htmlFor="businessNumber">사업자번호</label>

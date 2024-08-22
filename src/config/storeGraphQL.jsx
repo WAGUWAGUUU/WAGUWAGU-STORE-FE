@@ -1,5 +1,6 @@
 import axios from "axios";
-const endpoint = "http://34.69.39.99/api/v1/store/graphql";
+// const endpoint = "http://34.69.39.99/api/v1/store/graphql";
+const endpoint = "https://waguwagu.shop/api/v1/store/graphql";
 
 export const getStoreByOwnerIdQL = async (variables) => {
   try {

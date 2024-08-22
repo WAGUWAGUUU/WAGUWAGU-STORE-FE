@@ -177,7 +177,7 @@ const ShowMenuDetail = ({
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `https://waguwagu.shop/api/v1/photo/store`,
+        `http://34.41.123.200/api/v1/photo/store`,
         formData,
         {
           headers: {
@@ -223,7 +223,7 @@ const ShowMenuDetail = ({
                   width={window.innerWidth / 3}
                   height="200px"
                   src={
-                    "https://storage.googleapis.com/wgwg_bucket/" +
+                    "https://storage.googleapis.com/waguwagu_bucket/" +
                     menuInfo.menuImage
                   }
                   onClick={handleFileClick}

@@ -12,7 +12,7 @@ const SelectYears = ({ store, selectYear, setSelectYear }) => {
   const getYears = async () => {
     try {
       const response = await axios.get(
-        `https://waguwagu.shop/api/v1/sales/sales-month/store/${store.storeId}/years`
+        `http://34.41.123.200/api/v1/sales/sales-month/store/${store.storeId}/years`
       );
       console.log(response.data);
       setYears(response.data);

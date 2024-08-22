@@ -177,7 +177,7 @@ const ShowMenuList = ({
                           style={{ margin: "0px" }}
                           src={
                             menu.menuImage
-                              ? "https://storage.googleapis.com/wgwg_bucket/" +
+                              ? "https://storage.googleapis.com/waguwagu_bucket/" +
                                 menu.menuImage
                               : menuImagePng
                           }
@@ -201,7 +201,9 @@ const ShowMenuList = ({
           navigator(`/mystore`);
         }}
       >
-        <p style={{ fontSize: "30px", color: "#FFFFFF" }}>+</p>
+        <p style={{ fontSize: "30px", color: "#FFFFFF", alignSelf: "center" }}>
+          +
+        </p>
       </button>
     </div>
   );

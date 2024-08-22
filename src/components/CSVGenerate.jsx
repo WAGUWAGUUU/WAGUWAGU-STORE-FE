@@ -9,7 +9,7 @@ const CSVGenerate = ({ store, selectYear }) => {
   const getCSVData = async () => {
     try {
       const response = await axios.get(
-        `https://waguwagu.shop/api/v1/sales/sales-month/store/${store.storeId}/year/${selectYear}`
+        `http://34.41.123.200/api/v1/sales/sales-month/store/${store.storeId}/year/${selectYear}`
       );
       console.log("csv" + response.data);
       const modifiedData = changeCSVData(response.data);

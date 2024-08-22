@@ -594,7 +594,7 @@ const Menu = ({ store, setStore }) => {
                   id="menu-select-option-list"
                   onChange={(e) => setOptionMenuId(e.target.value)}
               >
-                <option disabled selected hidden value="default">
+                <option disabled selected hidden value="">
                   메뉴 선택
                 </option>
                 {menus &&

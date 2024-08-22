@@ -29,7 +29,7 @@ const Menu = ({ store, setStore }) => {
   const [menus, setMenus] = useState([]);
   const [storeOptionList, setStoreOptionList] = useState([]);
   const [optionListsOfMenu, setOptionListsOfMenu] = useState([]);
-  const [selectedMenuId, setSelectedMenuId] = useState("default");
+  const [selectedMenuId, setSelectedMenuId] = useState("");
   const [optionMenuId, setOptionMenuId] = useState(""); // 추가된 부분
   const [selectedOptionListId, setSelectedOptionListId] = useState("");
   const [selectedOptionListIdForOptions, setSelectedOptionListIdForOptions] =
@@ -676,7 +676,7 @@ const Menu = ({ store, setStore }) => {
                 onChange={(e) => setSelectedMenuId(e.target.value)}
                 value={selectedMenuId}
               >
-                <option disabled selected hidden value="default">
+                <option disabled selected hidden value="">
                   메뉴 선택
                 </option>
                 {menus &&

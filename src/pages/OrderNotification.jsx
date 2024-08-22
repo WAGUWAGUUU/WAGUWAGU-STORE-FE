@@ -173,10 +173,10 @@ const OrderNotification = () => {
   }, [orders]);
 
   useEffect(() => {
-    // Fetch orders every 5 seconds
+    // Fetch orders every 1 분
     const intervalId = setInterval(() => {
       fetchOrders(store.storeId);
-    }, 5000);
+    }, 10000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);

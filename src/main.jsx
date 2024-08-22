@@ -16,7 +16,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import MySalesPage from "./pages/MySalesPage.jsx";
 
 export const client = new ApolloClient({
-  uri: "http://34.69.39.99/api/v1/store/graphql",
+  uri: "https://waguwagu.shop/api/v1/store/graphql",
   cache: new InMemoryCache(),
 });
 

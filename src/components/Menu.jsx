@@ -228,6 +228,7 @@ const Menu = ({ store, setStore }) => {
       try {
         const res = await getOptionListByMenuId(selectedMenuId);
         setOptionListsOfMenu(res);
+        return res;
       } catch {
         handleError("옵션 카테고리 불러오기에 실패했습니다");
       } finally {
@@ -355,8 +356,11 @@ const Menu = ({ store, setStore }) => {
   }, [menuAdded, menuCategories]);
 
   useEffect(() => {
+    console.log("hi", selectedMenuId)
     if (selectedMenuId) {
-      getOptionListsBySelectedMenu();
+      console.log("hi2 : ",selectedMenuId)
+       const res = getOptionListsBySelectedMenu();
+      console.log("hi3 : ",res) 
     }
   }, [selectedMenuId]);
 
@@ -458,7 +462,7 @@ const Menu = ({ store, setStore }) => {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-          `http://34.69.39.99/api/v1/photo/menu`,
+          `https://waguwagu.shop/api/v1/photo/menu`,
           formData,
           {
             headers: {

@@ -120,7 +120,9 @@ const Store = ({ store, setStore }) => {
 
       let imageUrl = storeImageUuid;
       if (storeFile) {
+        console.log("스토어파일 들어옴");
         imageUrl = await uploadFile(storeFile);
+        console.log("스토어 파일 결과",imageUrl);
       }
       console.log("Abc" + imageUrl);
 
@@ -197,7 +199,7 @@ const Store = ({ store, setStore }) => {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `http://34.69.39.99/api/v1/photo/store`,
+        `https://waguwagu.shop/api/v1/photo/store`,
         formData,
         {
           headers: {
@@ -222,7 +224,7 @@ const Store = ({ store, setStore }) => {
   const fetchUserProfileImage = async () => {
     try {
       const response = await axios.get(
-        `http://34.69.39.99/api/v1/store/${store.storeId}/photo`
+        `https://waguwagu.shop/api/v1/store/${store.storeId}/photo`
       );
       console.log(response.data);
       setStoreImageUuid(response.data);

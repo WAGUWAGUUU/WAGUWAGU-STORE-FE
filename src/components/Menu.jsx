@@ -177,7 +177,7 @@ const Menu = ({ store, setStore }) => {
     menuId,
     optionListName,
     options = [],
-    listId = null
+    listId = selectedOptionListId
   ) => {
     if (menuId !== "default" && optionListName !== "" && options.length > 0) {
       for (const option of options) {
@@ -372,6 +372,7 @@ const Menu = ({ store, setStore }) => {
   useEffect(() => {
     if (selectedOptionListId && selectedOptionListId !== "other") {
       getOptionByList();
+      console.log(selectedOptionListId)
     }
   }, [selectedOptionListId]);
 

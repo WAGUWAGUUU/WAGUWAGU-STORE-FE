@@ -3,15 +3,14 @@ import "./HistoryInquiry.css";
 import StatusBox from "../components/StatusBox";
 import { selectByStoreDate } from "../config/orderApi";
 import { useNavigate } from "react-router-dom";
-import { getStoreByOwnerIdQL } from "../config/storeGraphQL";
 
 const HistoryInquiry = () => {
   const [histories, setHistories] = useState([]);
   const [selectedFirstDate, setSelectedFirstDate] = useState("");
   const [selectedSecondDate, setSelectedSecondDate] = useState("");
+  const [requestId, setRequestId] = useState("");
   const [showDateInput, setShowDateInput] = useState(false);
   const [pageNumber, setPageNumber] = useState(0);
-  const [ownerId, setOwnerId] = useState("");
   const navigator = useNavigate();
 
   const statusCounts = histories.reduce((counts, history) => {
@@ -27,19 +26,12 @@ const HistoryInquiry = () => {
     setSelectedSecondDate(event.target.value);
   };
 
-  const toggleDateInput = () => {
-    setShowDateInput((prevShowDateInput) => !prevShowDateInput);
+  const handleRequestIdChange = (event) => {
+    setRequestId(event.target.value);
   };
 
-  const getStore = async () => {
-    const storedOwnerId = localStorage.getItem("ownerId");
-    setOwnerId(storedOwnerId); // Set the ownerId state with the value from localStorage
-    try {
-      const res = await getStoreByOwnerIdQL({ ownerId: storedOwnerId });
-      setStore(res);
-    } catch (error) {
-      console.error("Failed to fetch store:", error);
-    }
+  const toggleDateInput = () => {
+    setShowDateInput((prevShowDateInput) => !prevShowDateInput);
   };
 
   const formatDateForTimestamp = (date) => {
@@ -55,7 +47,7 @@ const HistoryInquiry = () => {
       const secondDateTimestamp = formatDateForTimestamp(selectedSecondDate);
 
       const data = await selectByStoreDate(
-        ownerId, // Use ownerId instead of requestId
+        requestId,
         firstDateTimestamp,
         secondDateTimestamp,
         0
@@ -74,7 +66,7 @@ const HistoryInquiry = () => {
       const secondDateTimestamp = formatDateForTimestamp(selectedSecondDate);
 
       const data = await selectByStoreDate(
-        ownerId, // Use ownerId instead of requestId
+        requestId,
         firstDateTimestamp,
         secondDateTimestamp,
         newPageNumber
@@ -96,12 +88,11 @@ const HistoryInquiry = () => {
   };
 
   useEffect(() => {
-    getStore(); // Fetch store details on component mount
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [selectedFirstDate, selectedSecondDate, pageNumber, ownerId]);
+  }, [selectedFirstDate, selectedSecondDate, pageNumber, requestId]);
 
   const formatDate = (date) => {
     if (!date) return { year: "", month: "", day: "" };
@@ -153,6 +144,13 @@ const HistoryInquiry = () => {
             id="secondDateInput"
             value={selectedSecondDate}
             onChange={handleSecondDateChange}
+          />
+          <input
+            type="text"
+            id="requestIdInput"
+            placeholder="Request ID"
+            value={requestId}
+            onChange={handleRequestIdChange}
           />
         </div>
       )}

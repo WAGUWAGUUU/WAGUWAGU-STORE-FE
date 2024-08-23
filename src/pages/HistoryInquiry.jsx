@@ -3,14 +3,15 @@ import "./HistoryInquiry.css";
 import StatusBox from "../components/StatusBox";
 import { selectByStoreDate } from "../config/orderApi";
 import { useNavigate } from "react-router-dom";
+import { getStoreByOwnerIdQL } from "../config/storeGraphQL";
 
 const HistoryInquiry = () => {
   const [histories, setHistories] = useState([]);
   const [selectedFirstDate, setSelectedFirstDate] = useState("");
   const [selectedSecondDate, setSelectedSecondDate] = useState("");
-  const [requestId, setRequestId] = useState("");
   const [showDateInput, setShowDateInput] = useState(false);
   const [pageNumber, setPageNumber] = useState(0);
+  const [ownerId, setOwnerId] = useState("");
   const navigator = useNavigate();
 
   const statusCounts = histories.reduce((counts, history) => {
@@ -26,12 +27,19 @@ const HistoryInquiry = () => {
     setSelectedSecondDate(event.target.value);
   };
 
-  const handleRequestIdChange = (event) => {
-    setRequestId(event.target.value);
-  };
-
   const toggleDateInput = () => {
     setShowDateInput((prevShowDateInput) => !prevShowDateInput);
+  };
+
+  const getStore = async () => {
+    const storedOwnerId = localStorage.getItem("ownerId");
+    setOwnerId(storedOwnerId); // Set the ownerId state with the value from localStorage
+    try {
+      const res = await getStoreByOwnerIdQL({ ownerId: storedOwnerId });
+      setStore(res);
+    } catch (error) {
+      console.error("Failed to fetch store:", error);
+    }
   };
 
   const formatDateForTimestamp = (date) => {
@@ -47,7 +55,7 @@ const HistoryInquiry = () => {
       const secondDateTimestamp = formatDateForTimestamp(selectedSecondDate);
 
       const data = await selectByStoreDate(
-        requestId,
+        ownerId, // Use ownerId instead of requestId
         firstDateTimestamp,
         secondDateTimestamp,
         0
@@ -66,7 +74,7 @@ const HistoryInquiry = () => {
       const secondDateTimestamp = formatDateForTimestamp(selectedSecondDate);
 
       const data = await selectByStoreDate(
-        requestId,
+        ownerId, // Use ownerId instead of requestId
         firstDateTimestamp,
         secondDateTimestamp,
         newPageNumber
@@ -88,11 +96,12 @@ const HistoryInquiry = () => {
   };
 
   useEffect(() => {
+    getStore(); // Fetch store details on component mount
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [selectedFirstDate, selectedSecondDate, pageNumber, requestId]);
+  }, [selectedFirstDate, selectedSecondDate, pageNumber, ownerId]);
 
   const formatDate = (date) => {
     if (!date) return { year: "", month: "", day: "" };
@@ -145,13 +154,6 @@ const HistoryInquiry = () => {
             value={selectedSecondDate}
             onChange={handleSecondDateChange}
           />
-          <input
-            type="text"
-            id="requestIdInput"
-            placeholder="Request ID"
-            value={requestId}
-            onChange={handleRequestIdChange}
-          />
         </div>
       )}
 
@@ -179,17 +181,55 @@ const HistoryInquiry = () => {
       </div>
 
       <div className="history-details">
-        {histories.map((history) => (
-          <div key={history.id} className="history-box">
+        {histories.map((history, index) => (
+          <div key={index} className="history-box">
             <div className="history-status">{history.status}</div>
-            <div>주문아이디: {history.id}</div>
-            <div>상태: {history.orderState.join(", ")}</div>{" "}
-            {/* Display orderState array */}
+            <div>주문아이디: {history.orderId.timestamp}</div>
+            <div>상태: {history.orderState.join(", ")}</div>
             <div>고객아이디: {history.customerId}</div>
-            <div>메뉴: {history.menu}</div>
-            <div>옵션: {history.options}</div>
-            <div>고객요청: {history.request}</div>
-            <div>고객주소: {history.address}</div>
+            <div>고객주소: {history.customerAddress}</div>
+            <div>총 금액: {history.orderTotalPrice}원</div>
+            <div>배달 수수료: {history.deliveryFee}원</div>
+            <div>거리: {history.distanceFromStoreToCustomer}km</div>
+            <div>고객요청: {history.customerRequests || "없음"}</div>
+
+            {history.menuItems && history.menuItems.length > 0 && (
+              <div>
+                <div>메뉴:</div>
+                <ul>
+                  {history.menuItems.map((menuItem, idx) => (
+                    <li key={idx}>
+                      <div>{menuItem.menuName}</div>
+                      <div>메뉴 가격: {menuItem.totalPrice}원</div>
+                      {menuItem.selectedOptions &&
+                      menuItem.selectedOptions.length > 0 ? (
+                        <ul>
+                          {menuItem.selectedOptions.map((optionList, optIdx) => (
+                            <li key={optIdx}>
+                              <div>{optionList.listName}:</div>
+                              {optionList.options &&
+                              optionList.options.length > 0 ? (
+                                <ul>
+                                  {optionList.options.map((option, oIdx) => (
+                                    <li key={oIdx}>
+                                      {option.optionTitle} (+{option.optionPrice}원)
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <div>옵션 없음</div>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div>옵션 없음</div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         ))}
       </div>

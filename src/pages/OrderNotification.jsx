@@ -176,7 +176,7 @@ const OrderNotification = () => {
     // Fetch orders every 1 분
     const intervalId = setInterval(() => {
       fetchOrders(store.storeId);
-    }, 10000);
+    }, 10000000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(intervalId);
